@@ -1,0 +1,137 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,100..900;1,100..900&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Playfair Display", Georgia, serif;
+  --font-sans: "Poppins", system-ui, -apple-system, sans-serif;
+  
+  --color-brand-lavender: #F8F0FF;
+  --color-brand-purple: #C8A2C8;
+  --color-brand-plum: #4B2E5D;
+  --color-brand-violet: #8B6FAE;
+  --color-brand-cream: #FFF9F3;
+  --color-brand-pink: #F6DDEB;
+  --color-brand-gold: #C9A24D;
+  --color-brand-dark: #2E2433;
+  
+  --color-craftoria-paper: #F8EEF8;
+  --color-craftoria-pearl: #FCF8FC;
+  --color-craftoria-pale-lilac: #F0E2F4;
+  --color-craftoria-soft-lilac: #E5D1EC;
+  --color-craftoria-lavender: #D4B9E1;
+  --color-craftoria-watercolor-purple: #B99ACD;
+  --color-craftoria-muted-violet: #9270A9;
+  --color-craftoria-deep-lavender: #76558F;
+  --color-craftoria-blush: #E9CFE4;
+  --color-craftoria-mauve: #CFAFD2;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    font-family: var(--font-sans);
+    color: var(--color-brand-dark);
+    /* Soft lavender paper foundation */
+    background: linear-gradient(
+      180deg,
+      #F3E6F6 0%,
+      #F8EEF8 28%,
+      #F4E8F6 58%,
+      #EEE0F3 100%
+    );
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+}
+
+/* Irregular watercolor wash blobs */
+.watercolor-blob {
+  position: absolute;
+  filter: blur(100px);
+  -webkit-filter: blur(100px);
+  opacity: 0.15;
+  pointer-events: none;
+  z-index: -2;
+  border-radius: 40% 60% 50% 50% / 50% 40% 60% 50%;
+  mix-blend-mode: multiply;
+}
+
+/* Floral line-art corner overlays */
+.floral-corner {
+  position: absolute;
+  pointer-events: none;
+  z-index: -1;
+  background-image: url('./assets/background.jpeg');
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+/* Glassmorphism custom classes */
+.glass-card {
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(200, 162, 200, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(139, 110, 174, 0.05);
+}
+
+.glass-nav {
+  background: rgba(252, 248, 252, 0.72);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(146, 112, 169, 0.12);
+  box-shadow: 0 4px 24px 0 rgba(146, 112, 169, 0.02);
+}
+
+.glass-input {
+  background: rgba(255, 255, 255, 0.45);
+  border: 1px solid rgba(200, 162, 200, 0.25);
+  color: #2E2433;
+}
+
+.glass-input:focus {
+  background: rgba(255, 255, 255, 0.75);
+  border-color: #8B6FAE;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(139, 110, 174, 0.15);
+}
+
+/* Scroll Customization */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(243, 232, 255, 0.4);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(139, 110, 174, 0.35);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(75, 46, 93, 0.6);
+}
+
+/* Lenis scroll optimization */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis-scrolling iframe {
+  pointer-events: none;
+}

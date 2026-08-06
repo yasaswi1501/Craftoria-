@@ -1,0 +1,424 @@
+import { useState, useMemo, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  ArrowLeft, Heart, ShoppingBag, Star, Check, Sparkles, ChevronDown, 
+  ChevronUp, Truck, ShieldCheck, RefreshCw, AlertCircle 
+} from 'lucide-react';
+import { useRouter } from '../context/RouterContext';
+import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
+import { productsData, collectionsData } from '../data/products';
+
+import sellerMemoryCanvas from '../assets/seller-memory-canvas.png';
+import sellerEmbroideryHoop from '../assets/seller-embroidery-hoop.png';
+import sellerBloomBouquets from '../assets/seller-bloom-bouquets.png';
+import sellerBloomKeychains from '../assets/seller-bloom-keychains.png';
+import coverPolaroids from '../assets/polaroids-new.jpg';
+import coverClips from '../assets/clips-rubber-bands.jpg';
+import coverMacrame from '../assets/macrame-wall-hanging.jpg';
+import coverBouquets from '../assets/bloom-bouquets-cover.jpg';
+import coverChildFrame from '../assets/gallery-5-child-frame.jpg';
+import coverCoupleEmbroidery from '../assets/gallery-3-couple-embroidery.jpg';
+import coverBlueFlowerKeychain from '../assets/gallery-2-blue-flower-keychain.jpg';
+
+const ProductPage = ({ productSlug }) => {
+  const { navigate } = useRouter();
+  const { addToCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
+
+  // Find product by slug
+  const product = useMemo(() => {
+    return productsData.find(p => p.slug === productSlug) || productsData[0];
+  }, [productSlug]);
+
+  // Load collection metadata
+  const collection = useMemo(() => {
+    return collectionsData.find(c => c.id === product.category) || {
+      id: product.category,
+      name: 'Artisan Collection',
+    };
+  }, [product.category]);
+
+  // Map image string to Vite imports
+  const getGalleryImageSrc = (imgName) => {
+    if (imgName === 'seller-memory-canvas.png') return sellerMemoryCanvas;
+    if (imgName === 'seller-embroidery-hoop.png') return sellerEmbroideryHoop;
+    if (imgName === 'seller-bloom-keychains.png') return sellerBloomKeychains;
+    if (imgName === 'seller-bloom-bouquets.png') return sellerBloomBouquets;
+    if (imgName === 'gallery-1-polaroid.jpg') return coverPolaroids;
+    if (imgName === 'gallery-7-two-flower-keychain.jpg' || imgName === 'clips-rubber-bands.jpg') return coverClips;
+    if (imgName === 'macrame-wall-hanging.jpg') return coverMacrame;
+    if (imgName === 'bloom-bouquets-cover.jpg') return coverBouquets;
+    if (imgName === 'gallery-5-child-frame.jpg') return coverChildFrame;
+    if (imgName === 'gallery-3-couple-embroidery.jpg') return coverCoupleEmbroidery;
+    if (imgName === 'gallery-2-blue-flower-keychain.jpg') return coverBlueFlowerKeychain;
+    return sellerMemoryCanvas;
+  };
+
+  // State Management
+  const [activeImage, setActiveImage] = useState(0);
+  const [quantity, setQuantity] = useState(1);
+  const [customizationText, setCustomizationText] = useState('');
+  const [customizationError, setCustomizationError] = useState('');
+  const [isAddedToCart, setIsAddedToCart] = useState(false);
+  const [activeAccordion, setActiveAccordion] = useState('shipping'); // 'shipping' | 'warranty' | 'returns'
+
+  // Reset states on product changes
+  useEffect(() => {
+    setActiveImage(0);
+    setQuantity(1);
+    setCustomizationText('');
+    setCustomizationError('');
+    setIsAddedToCart(false);
+    // Scroll view to top
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [productSlug]);
+
+  // Filter out related products (in same category, excluding current product)
+  const relatedProducts = useMemo(() => {
+    return productsData
+      .filter(p => p.category === product.category && p.id !== product.id)
+      .slice(0, 4);
+  }, [product.category, product.id]);
+
+  const handleQtyChange = (val) => {
+    const nextVal = quantity + val;
+    if (nextVal >= 1 && nextVal <= 10) {
+      setQuantity(nextVal);
+    }
+  };
+
+  const handleAddToCart = () => {
+    if (product.customizable && !customizationText.trim()) {
+      setCustomizationError('Please enter your customization text details before adding to cart.');
+      return;
+    }
+    setCustomizationError('');
+
+    const cartItem = {
+      id: product.id,
+      name: product.title,
+      price: product.price,
+      desc: product.description,
+      customText: customizationText.trim() ? customizationText : undefined,
+      qty: quantity
+    };
+
+    // Call global Context addToCart helper
+    addToCart(cartItem);
+    setIsAddedToCart(true);
+    setTimeout(() => setIsAddedToCart(false), 2000);
+  };
+
+  const handleBuyNow = () => {
+    if (product.customizable && !customizationText.trim()) {
+      setCustomizationError('Please enter your customization text details before checking out.');
+      return;
+    }
+    setCustomizationError('');
+
+    const cartItem = {
+      id: product.id,
+      name: product.title,
+      price: product.price,
+      desc: product.description,
+      customText: customizationText.trim() ? customizationText : undefined,
+      qty: quantity
+    };
+
+    addToCart(cartItem);
+    navigate('/checkout');
+  };
+
+  return (
+    <div className="min-h-screen bg-[#FDFBFD] pt-24 pb-16 px-4 sm:px-6 lg:px-8 text-brand-dark max-w-[1250px] mx-auto text-left">
+      
+      {/* Breadcrumb Path */}
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3 text-xs font-semibold text-brand-plum">
+        <button
+          onClick={() => navigate(`/collections/${product.category}`)}
+          className="inline-flex items-center gap-1.5 hover:underline focus:outline-none cursor-pointer"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" /> Back to {collection.name}
+        </button>
+        <div className="text-brand-dark/50 select-none">
+          Home <span className="mx-1">/</span> Collections <span className="mx-1">/</span> 
+          <a href={`/collections/${product.category}`} className="hover:underline font-bold">{collection.name}</a> 
+          <span className="mx-1">/</span> <span className="text-brand-plum font-bold">{product.title}</span>
+        </div>
+      </div>
+
+      {/* Main Showcase Panel */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start mb-16 bg-white/40 border border-brand-purple/15 rounded-[32px] p-5 sm:p-8">
+        
+        {/* Left Column: Image Showcases (col-span-6) */}
+        <div className="lg:col-span-6 space-y-4">
+          <div className="h-[280px] sm:h-[400px] w-full rounded-[24px] overflow-hidden bg-gradient-to-tr from-[#FCF7FF] via-[#F3E7FA] to-[#E9D7F5] flex items-center justify-center p-6 border border-brand-purple/15 relative group">
+            <motion.img
+              key={activeImage}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              src={getGalleryImageSrc(product.galleryImages[activeImage] || product.thumbnail)}
+              alt={product.title}
+              style={{
+                objectFit: 'contain',
+                objectPosition: 'center',
+                width: '100%',
+                height: '100%',
+                maxWidth: '92%',
+                maxHeight: '92%'
+              }}
+              className="select-none pointer-events-none transition-transform duration-500 group-hover:scale-105"
+            />
+            {product.discount > 0 && (
+              <span className="absolute top-4 left-4 bg-emerald-500 text-white font-bold text-[9px] uppercase tracking-wider px-2 py-0.5 rounded-md font-mono shadow-xs">
+                Offer Active
+              </span>
+            )}
+          </div>
+
+          {/* Gallery Thumbnails List */}
+          {product.galleryImages && product.galleryImages.length > 1 && (
+            <div className="flex gap-3 overflow-x-auto pb-1 max-w-full">
+              {product.galleryImages.map((img, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setActiveImage(idx)}
+                  className={`w-16 h-16 sm:w-20 sm:h-20 rounded-xl border-2 flex items-center justify-center p-2 bg-white/60 cursor-pointer overflow-hidden flex-shrink-0 transition-all ${activeImage === idx ? 'border-brand-plum shadow-sm' : 'border-brand-purple/10 hover:border-brand-purple/40'}`}
+                >
+                  <img
+                    src={getGalleryImageSrc(img)}
+                    alt={`${product.title} view ${idx + 1}`}
+                    className="w-full h-full object-contain pointer-events-none"
+                  />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Right Column: Details & Purchasing (col-span-6) */}
+        <div className="lg:col-span-6 space-y-6">
+          <div>
+            <span className="text-[10px] font-bold text-brand-plum uppercase tracking-widest font-mono bg-brand-purple/10 px-2.5 py-1 rounded-md">
+              {collection.name}
+            </span>
+            <h1 className="font-serif text-2xl sm:text-3xl font-bold text-brand-dark mt-3.5 leading-tight">
+              {product.title}
+            </h1>
+            
+            {/* Reviews Rating summary */}
+            <div className="flex items-center gap-1.5 mt-2.5">
+              <div className="flex text-amber-400">
+                {[...Array(5)].map((_, i) => (
+                  <Star
+                    key={i}
+                    className={`w-3.5 h-3.5 ${i < Math.floor(product.rating) ? 'fill-amber-400' : 'text-gray-300'}`}
+                  />
+                ))}
+              </div>
+              <span className="text-xs font-bold text-brand-dark/70 font-mono">
+                {product.rating} ({product.reviewCount} customer reviews)
+              </span>
+            </div>
+          </div>
+
+          {/* Pricing Box */}
+          <div className="flex items-baseline gap-2.5 pt-1.5 border-t border-brand-purple/10">
+            <span className="text-2xl font-bold text-brand-plum">₹{product.price}</span>
+            {product.discount > 0 && (
+              <>
+                <span className="line-through text-brand-dark/40 text-sm">₹{product.price + product.discount}</span>
+                <span className="text-xs text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100 font-mono">
+                  Save ₹{product.discount}
+                </span>
+              </>
+            )}
+          </div>
+
+          {/* Basic description */}
+          <p className="text-xs sm:text-sm text-brand-dark/75 font-medium leading-relaxed">
+            {product.details || product.description}
+          </p>
+
+          {/* Customization Text Field (if applicable) */}
+          {product.customizable && (
+            <div className="space-y-2 pt-2">
+              <label className="text-xs font-bold text-brand-dark/85 flex items-center gap-1">
+                <Sparkles className="w-3.5 h-3.5 text-brand-plum" /> Personalized Details <span className="text-red-500 font-normal">(Required)</span>
+              </label>
+              <textarea
+                value={customizationText}
+                onChange={(e) => {
+                  setCustomizationText(e.target.value);
+                  if (e.target.value.trim()) setCustomizationError('');
+                }}
+                placeholder="Enter initials, custom letters, couples name, or anniversary dates (e.g. 'A & S, 25-10-2026')."
+                className="w-full text-xs p-3 rounded-2xl border border-brand-purple/20 bg-white/60 focus:outline-none focus:border-brand-purple min-h-[75px] resize-none leading-relaxed transition-all"
+              />
+              {customizationError && (
+                <div className="flex items-center gap-1 text-[10px] font-semibold text-red-500">
+                  <AlertCircle className="w-3.5 h-3.5" />
+                  <span>{customizationError}</span>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Interactive Row: Quantity & Status */}
+          <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-brand-purple/10">
+            <div className="flex items-center gap-3">
+              <span className="text-xs font-bold text-brand-dark/75 font-mono">QTY:</span>
+              <div className="flex items-center border border-brand-purple/20 rounded-full bg-white h-9 px-1">
+                <button
+                  onClick={() => handleQtyChange(-1)}
+                  disabled={quantity <= 1}
+                  className="w-7 h-7 flex items-center justify-center text-xs font-bold text-brand-plum hover:bg-brand-purple/10 rounded-full disabled:opacity-40 cursor-pointer focus:outline-none"
+                >
+                  -
+                </button>
+                <span className="w-8 text-center text-xs font-bold text-brand-dark">{quantity}</span>
+                <button
+                  onClick={() => handleQtyChange(1)}
+                  disabled={quantity >= 10}
+                  className="w-7 h-7 flex items-center justify-center text-xs font-bold text-brand-plum hover:bg-brand-purple/10 rounded-full disabled:opacity-40 cursor-pointer focus:outline-none"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+
+            {/* Stock Availability */}
+            <div className="flex items-center gap-1.5 text-xs font-bold font-mono">
+              <div className={`w-2 h-2 rounded-full ${product.stock > 0 ? 'bg-emerald-500' : 'bg-rose-500'}`} />
+              <span className={product.stock > 0 ? 'text-emerald-600' : 'text-rose-600'}>
+                {product.stock > 0 ? `${product.stock} Items In Stock` : 'Out of Stock (Stitched to Order)'}
+              </span>
+            </div>
+          </div>
+
+          {/* Action Purchase Buttons */}
+          <div className="flex flex-col sm:flex-row gap-3 pt-3">
+            <button
+              onClick={handleAddToCart}
+              className="flex-grow inline-flex items-center justify-center gap-2 py-3 px-6 rounded-full bg-brand-plum hover:bg-brand-violet text-white font-semibold text-xs uppercase tracking-widest hover:shadow-md cursor-pointer transition-all h-11"
+            >
+              {isAddedToCart ? (
+                <>
+                  <Check className="w-4 h-4" /> Added to Cart
+                </>
+              ) : (
+                <>
+                  <ShoppingBag className="w-4 h-4" /> Add to Cart
+                </>
+              )}
+            </button>
+
+            <button
+              onClick={handleBuyNow}
+              className="flex-grow inline-flex items-center justify-center py-3 px-6 rounded-full bg-brand-violet hover:bg-[#683b8a] text-white font-semibold text-xs uppercase tracking-widest hover:shadow-md cursor-pointer transition-all h-11"
+            >
+              Buy Now
+            </button>
+
+            <button
+              onClick={() => toggleWishlist({
+                id: product.id,
+                name: product.title,
+                price: product.price,
+                desc: product.description,
+                image: product.thumbnail
+              })}
+              className="p-3 rounded-full border border-brand-purple/20 text-brand-plum hover:bg-brand-purple/10 flex items-center justify-center cursor-pointer h-11 w-11 focus:outline-none"
+              aria-label="Wishlist Toggle"
+            >
+              <Heart className={`w-4 h-4 ${isInWishlist(product.id) ? 'fill-red-500 text-red-500' : 'text-brand-dark/50'}`} />
+            </button>
+          </div>
+
+          {/* Information Accordions / Tabs */}
+          <div className="border border-brand-purple/15 rounded-2xl bg-white/30 overflow-hidden text-xs text-brand-dark/80">
+            {/* Tabs Selector headers */}
+            <div className="flex border-b border-brand-purple/10 font-bold bg-white/50 text-[10px] uppercase tracking-wider font-mono">
+              <button
+                onClick={() => setActiveAccordion('shipping')}
+                className={`flex-grow py-2.5 px-3 border-r border-brand-purple/10 flex items-center justify-center gap-1 ${activeAccordion === 'shipping' ? 'bg-white text-brand-plum' : 'hover:bg-brand-purple/5'}`}
+              >
+                <Truck className="w-3.5 h-3.5" /> Shipping Details
+              </button>
+              <button
+                onClick={() => setActiveAccordion('returns')}
+                className={`flex-grow py-2.5 px-3 border-r border-brand-purple/10 flex items-center justify-center gap-1 ${activeAccordion === 'returns' ? 'bg-white text-brand-plum' : 'hover:bg-brand-purple/5'}`}
+              >
+                <RefreshCw className="w-3.5 h-3.5" /> Returns Policy
+              </button>
+              <button
+                onClick={() => setActiveAccordion('warranty')}
+                className={`flex-grow py-2.5 px-3 flex items-center justify-center gap-1 ${activeAccordion === 'warranty' ? 'bg-white text-brand-plum' : 'hover:bg-brand-purple/5'}`}
+              >
+                <ShieldCheck className="w-3.5 h-3.5" /> Craft Guarantee
+              </button>
+            </div>
+
+            {/* Tabs content block */}
+            <div className="p-4 leading-relaxed font-medium">
+              {activeAccordion === 'shipping' && (
+                <div className="space-y-1.5">
+                  <p>{product.shippingDetails || 'Bespoke wrapped packaging in reinforced boxes to prevent physical damage.'}</p>
+                  <p className="font-bold text-brand-plum font-mono flex items-center gap-1">
+                    <Sparkles className="w-3.5 h-3.5" /> Estimated Delivery: {product.estimatedDelivery || '3-5 Business Days'}
+                  </p>
+                </div>
+              )}
+              {activeAccordion === 'returns' && (
+                <p>{product.returnPolicy || 'Unused standard crafts can be returned within 14 days. Monogrammed or personalized items are custom crafted to order and are returnable only in cases of shipping damage.'}</p>
+              )}
+              {activeAccordion === 'warranty' && (
+                <p>Every Craftoria piece is hand-sewn, wrapped, or framed with love. We use museum-grade linen threads, reinforced wood backing molds, and premium acrylic elements that remain vibrant forever.</p>
+              )}
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      {/* Related Products Grid */}
+      {relatedProducts.length > 0 && (
+        <div className="space-y-6">
+          <div className="border-b border-brand-purple/10 pb-4 text-left">
+            <h2 className="font-serif text-lg sm:text-xl font-bold text-brand-dark">Related Crafts</h2>
+            <p className="text-xs text-brand-dark/65 mt-1 font-medium">Explore alternative designs from our {collection.name} collection.</p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+            {relatedProducts.map((p) => (
+              <div
+                key={p.id}
+                onClick={() => navigate(`/product/${p.slug}`)}
+                className="glass-card rounded-[22px] overflow-hidden flex flex-col group border border-brand-purple/20 shadow-xs relative bg-white/40 cursor-pointer min-h-[305px] text-left p-3"
+              >
+                <div className="h-40 w-full rounded-xl overflow-hidden bg-gradient-to-tr from-[#FCF7FF] via-[#F3E7FA] to-[#E9D7F5] flex items-center justify-center p-3 relative">
+                  <img
+                    src={getGalleryImageSrc(p.thumbnail)}
+                    alt={p.title}
+                    className="h-full object-contain pointer-events-none transition-transform duration-500 group-hover:scale-105"
+                    style={{ maxWidth: '88%', maxHeight: '88%' }}
+                  />
+                </div>
+                <div className="pt-3 flex flex-col flex-grow">
+                  <h4 className="font-serif text-xs sm:text-sm font-bold text-brand-dark leading-tight line-clamp-1 mb-1 group-hover:text-brand-plum transition-colors">
+                    {p.title}
+                  </h4>
+                  <div className="text-xs font-bold text-brand-plum mt-auto">₹{p.price}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+    </div>
+  );
+};
+
+export default ProductPage;

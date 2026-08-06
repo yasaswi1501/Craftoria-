@@ -1,0 +1,116 @@
+# Craftoria Landing Page Implementation Tasks
+
+- [x] Initialize React + Vite project in the current directory
+- [x] Install dependencies (framer-motion, @studio-freight/lenis, lucide-react, tailwindcss, postcss, autoprefixer)
+- [x] Configure Tailwind CSS and PostCSS
+- [x] Create assets directory and copy the uploaded watercolor background image to `src/assets/background.jpeg`
+- [x] Set up index.css with Google Fonts (Playfair Display & Poppins) and base styles
+- [x] Implement `src/App.jsx` with Lenis smooth scrolling configuration
+- [x] Implement components:
+  - [x] `Header.jsx` (Sticky transparent glassmorphism navbar with mobile hamburger menu)
+  - [x] `Hero.jsx` (Premium hero with text and floating layered glass cards)
+  - [x] `About.jsx` (The story behind Craftoria with 3 highlight cards)
+  - [x] `Collections.jsx` (Grid of 6 craft category cards with Lucide icons)
+  - [x] `BestSellers.jsx` (4 product cards with gradient graphics, rating stars, and cart actions)
+  - [x] `WhyChoose.jsx` (4 features: Quality, Custom, Eco-friendly, Delivery)
+  - [x] `Gallery.jsx` (Masonry-style portfolio grid of crafts)
+  - [x] `Testimonials.jsx` (3 reviews with ratings and names)
+  - [x] `Contact.jsx` (Glassmorphism form with client-side success notice)
+  - [x] `Footer.jsx` (Footer with social icons and links)
+- [x] Rebuild Global Background System (Art Director Revisions)
+  - [x] Isolated stacking contexts (Background at z-0, Content at z-10) in App.jsx
+  - [x] Added custom property colors variables in index.css
+  - [x] Set base multi-stop gradient body background in index.css
+  - [x] Built organic layered watercolor washes via nested 3-part SVG paths
+  - [x] Implemented custom inline SVG hibiscus blossom outlines (`HibiscusFlower`)
+  - [x] Configured alternating colors: 55-65% purple outline, 35-45% white outline
+  - [x] Set coordinate positions for 9 blossoms Framing margins at high opacities
+  - [x] Placed visual transitions and decorative floral bridges scrolling downstream
+  - [x] Configured sticky navbar transparency (`glass-nav`) for background visibility
+  - [x] Added center readability zone (feathered radial mask overlay) in PremiumBackground.jsx
+- [x] Rebuild Background Continuity across all sections
+  - [x] Best Sellers: soft lavender washes, purple outline right flower, white outline left flower
+  - [x] Why Choose: soft mauve-lavender wash, large white outline flower on the left
+  - [x] Gallery: rich lavender washes, purple botanical outline at bottom-right
+  - [x] Testimonials: horizontal blur band, organic wash, purple/white boundary outlines
+  - [x] Contact: strong bottom-left and top-right washes, purple/white form border illustrations
+  - [x] Footer: soft pearl-lavender stationery background, corner white/purple outline blossoms
+  - [x] Set relative z-10 wrappers on all section content grids to maintain readability
+- [x] Rebuild Hero product visual with actual craft image
+  - [x] Copied newly uploaded image to `src/assets/hero-craft-showcase.jpg`
+  - [x] Swapped old image and SVG illustration with `hero-craft-showcase.jpg` inside Hero.jsx
+  - [x] Set image size to `width: 100%; height: 100%; object-fit: contain;` to preserve full aspect ratio details
+  - [x] Configured rounded corners, card overlay shadow, and cleaned up legacy vector elements
+  - [x] Shifted floating card badge to `left-[-25px] bottom-10` to prevent obstructing heart and frame visual areas
+- [x] Fix Hero image blending (Art Director Blending Revision)
+  - [x] Added custom wrapper container inside Hero.jsx for image rendering
+  - [x] Applied radial-gradient `mask-image` and `-webkit-mask-image` to fade square lavender background borders to transparent
+  - [x] Set container opacity to `0.95` and overflow-hidden to blend smoothly into the off-white glass card base
+- [x] Rebuild Collections Categories
+  - [x] Replaced default 4 categories with 6 Craftoria categories (Frames, Embroidery, Keychains, Polaroids, Gifts, Decor)
+  - [x] Integrated custom descriptions and matching Lucide icons for each category card
+  - [x] Adjusted layout grid to 3-column desktop, 2-column tablet, 1-column mobile
+  - [x] Modified glass-card heights to `min-h-[210px]` with flex alignment
+- [x] Refine Collections Typography
+  - [x] Set heading font sizes to 3.2rem (desktop) down to 2.1rem (mobile)
+  - [x] Adjusted eyebrow size to 0.9rem (desktop), letter-spacing to 0.16em, weight to bold (700)
+  - [x] Configured card title sizes to 1.4rem (desktop), weight to bold (700), line-height to 1.2
+  - [x] Configured description sizes to 0.95rem (desktop), line-height to 1.6
+  - [x] Set explore links size to 0.9rem (desktop), weight to 600
+- [x] Rebuild Best Sellers Catalog with photorealistic visuals
+  - [x] Created `crop_sellers.py` to extract the standalone product visuals directly from the supplied 4-quadrant reference image
+  - [x] Applied feathered edge transparency masking on the cropped assets to blend naturally with the card graphics background
+  - [x] Set product card images to scale up to `80-82%` of the card area, establishing immediate visual focus
+  - [x] Completely removed pricing strings from the product array and rebalanced card layouts with full-width action buttons
+- [x] Fix Best Sellers image fitting and clipping at CSS level
+  - [x] Set direct inline style rules for container-level padding: `22px 24px`
+  - [x] Applied exact inline style configurations (`objectFit: 'contain'`, `objectPosition: 'center'`, `width: 'auto'`, `height: 'auto'`)
+  - [x] Configured max-width and max-height bounds: Memory Canvas at 82%, Embroidery Hoop Art at 86%, Bloom Bouquets at 80%, Keychains at 78%
+- [x] Refine Best Sellers card height boundaries and image spaces
+  - [x] Set image containers height dynamically (Desktop: 255px, Tablet: 230px, Mobile: 210px) via responsive classes
+  - [x] Set image container overflow to visible to prevent element boundary clipping
+  - [x] Changed image container padding to 18px 22px
+  - [x] Configured images to scale at 100% width and height
+  - [x] Re-tuned per-product bounds: Memory Canvas at 86%, Hoop Art at 90%, Bouquets at 84%, Keychains at 84%
+  - [x] Reduced card text-spacing by micro-adjusting star rating margin from `mb-5` to `mb-3`
+- [x] Replace Memory Canvas image with exact newly provided image asset
+  - [x] Loaded the exact raw file `media__1783521731551.jpg` without any cropping or content changes
+  - [x] Preserved the inner frame text "little memories, big heart." exactly as shown
+  - [x] Applied a 60px transparent fade border around the outer edges of the asset, melting the background boundaries into the card gradient
+  - [x] Adjusted max-width and max-height bounds in BestSellers.jsx to 96% to match the scale prominence of the rest of the cards
+- [x] Update “A GLIMPSE OF OUR CRAFT” gallery section with 7 handmade photos
+  - [x] Copied and mapped all 7 raw image assets to the local project folder
+  - [x] Structured items in the exact left-to-right alternating sequence (Polaroid ➔ Blue flower keychain ➔ Couple embroidery hoop ➔ Heart keychain ➔ Child photo frame ➔ Pink bouquet keychain ➔ Wrapped two-flower keychain)
+  - [x] Formatted card border radius to 22px with subtle shadows and premium lifting hover effects (y: -5, scale: 1.02)
+  - [x] Configured smart `object-fit` containment rules for hoop and photo frame images, preventing subject clipping
+  - [x] Rebalanced layout width rules to support horizontal snap-scroll on tablet/mobile screens
+- [x] Connect Craftoria to Real Supabase Auth Integration
+  - [x] Installed official package `@supabase/supabase-js`
+  - [x] Configured `.env` carrying real Supabase URL (`https://mufzicikwsgcmgzmhdxt.supabase.co`) and publishable key (`sb_publishable_4ZtL9Q9IF65ls9QveLcW6Q_r6oQZ73S`)
+  - [x] Created `src/lib/supabase.js` to initialize the client securely
+  - [x] Linked email signup, signin, Google OAuth (`signInWithOAuth`), and signout queries
+  - [x] Added `ResetPassword.jsx` component and enabled recovery redirect checks (`/reset-password`)
+  - [x] Confirmed cart list items merge upon user registration or sign-in sessions
+  - [x] Ensured no backend secret keys are committed or exposed
+  - [x] Fully tested the build script output
+- [x] Create Secure Checkout Flow and Abstractions
+  - [x] Created `src/components/Checkout.jsx` containing delivery and payment columns
+  - [x] Built the testing gateway mode triggers in `src/services/paymentService.js`
+- [x] Upgrade Cart, Wishlist, Save for Later, and Browser Routing
+  - [x] Synchronized cart initialization directly from storage to prevent page refresh race conditions
+  - [x] Exposed product prices in Best Sellers and mapped thumbnails in review and cart drawer
+  - [x] Integrated "Remove" and "Save for Later" options in active cart lists
+  - [x] Built a "Saved for Later" tab list section inside CartDrawer
+  - [x] Integrated a global `WishlistContext.jsx` wrapped in `main.jsx`
+  - [x] Added a header navigation Heart button and count badge
+  - [x] Created `/wishlist` full-page path handler in `App.jsx`
+  - [x] Embedded a live wishlist tab list inside AccountMenu dashboard
+  - [x] Synchronized active checkout wizard screens to URL hashes (`#address`, `#payment`, `#review`) for full Back/Forward browser history support
+  - [x] Implemented Clear Cart double-confirmation triggers
+- [x] Verify build and fix errors
+- [x] Test mobile responsiveness, smooth scrolling, and form actions
+- [x] Fix background black rendering spot artifacts (undefined SVG color gradients)
+- [x] Implement non-intrusive Add to Cart premium Toast success notifications and disable auto-open cart drawer behaviour
+- [x] Convert Homepage cards into Collection Cards
+- [x] Implement dedicated Collection Browsing page (`/collections/:id`) with Search, Sidebar filters, Sorting, and responsive Product Grid
+- [x] Implement Product Details modal details view (Apple-style details panel overlay)
