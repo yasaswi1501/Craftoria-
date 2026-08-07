@@ -9,14 +9,35 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
-  const handleSession = (session) => {
+  const handleSession = async (session) => {
     if (session?.user) {
+      // Role is authorization state, not identity -- it must come from the
+      // profiles row (DB-enforced, RLS-protected), never from user_metadata
+      // or a JWT claim the client could otherwise influence. Every table
+      // that cares about role re-checks it server-side via RLS regardless;
+      // this is only used for UI decisions (e.g. showing admin nav later).
+      let role = 'customer';
+      try {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', session.user.id)
+          .single();
+        if (profile?.role) role = profile.role;
+      } catch (err) {
+        // Table may not exist yet if migrations haven't been applied -- fail
+        // safe to the least-privileged role rather than breaking the app.
+        console.error('Could not load profile role:', err);
+      }
+
       const loggedUser = {
         name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'Customer',
         email: session.user.email,
         phone: session.user.phone || session.user.user_metadata?.phone || '',
         picture: session.user.user_metadata?.avatar_url || null,
         id: session.user.id,
+        role,
+        emailConfirmed: !!session.user.email_confirmed_at,
       };
       setUser(loggedUser);
       setIsLoggedIn(true);
@@ -34,8 +55,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     // Check initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      handleSession(session);
-      setLoading(false);
+      handleSession(session).finally(() => setLoading(false));
     }).catch((err) => {
       console.error('Error fetching Supabase session:', err);
       setLoading(false);
@@ -43,6 +63,14 @@ export const AuthProvider = ({ children }) => {
 
     // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      // Flag that this session came from a real recovery-email link, not
+      // just "some session happens to be active in this browser" --
+      // ResetPassword.jsx gates the password form on this. Registered here
+      // (mounted app-wide, early) rather than in ResetPassword itself
+      // because the event can fire before that route's component mounts.
+      if (_event === 'PASSWORD_RECOVERY') {
+        try { sessionStorage.setItem('craftoria_password_recovery', '1'); } catch (err) {}
+      }
       handleSession(session);
     });
 
@@ -50,6 +78,34 @@ export const AuthProvider = ({ children }) => {
       subscription.unsubscribe();
     };
   }, []);
+
+  // Protected-action redirect flow: save what the user was trying to do,
+  // send them to login, and resume it after a successful sign-in. Persisted
+  // to localStorage (not just React state) because Google OAuth does a full
+  // page redirect away and back, which would otherwise lose in-memory state.
+  const REDIRECT_STORAGE_KEY = 'craftoria_post_login_redirect';
+
+  const requireAuth = (intendedPath) => {
+    if (isLoggedIn) return true;
+    try {
+      localStorage.setItem(REDIRECT_STORAGE_KEY, intendedPath);
+    } catch (err) {
+      // localStorage unavailable (private browsing etc.) -- login still
+      // works, the user just lands on the homepage afterward instead.
+    }
+    setIsAuthModalOpen(true);
+    return false;
+  };
+
+  const consumePostLoginRedirect = () => {
+    try {
+      const path = localStorage.getItem(REDIRECT_STORAGE_KEY);
+      if (path) localStorage.removeItem(REDIRECT_STORAGE_KEY);
+      return path;
+    } catch (err) {
+      return null;
+    }
+  };
 
   const login = async (email, password) => {
     try {
@@ -146,19 +202,29 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // UI-only convenience -- never the actual authorization boundary. Every
+  // sensitive table/RPC re-checks role itself via RLS regardless of what
+  // this returns, so a stale or spoofed client value can't grant real access.
+  const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
+  const isStaff = isAdmin || user?.role === 'support' || user?.role === 'inventory_manager';
+
   return (
-    <AuthContext.Provider 
-      value={{ 
-        user, 
-        isLoggedIn, 
-        login, 
-        signup, 
-        loginWithGoogle, 
-        logout, 
-        forgotPassword, 
+    <AuthContext.Provider
+      value={{
+        user,
+        isLoggedIn,
+        login,
+        signup,
+        loginWithGoogle,
+        logout,
+        forgotPassword,
         loading,
         isAuthModalOpen,
-        setIsAuthModalOpen
+        setIsAuthModalOpen,
+        requireAuth,
+        consumePostLoginRedirect,
+        isAdmin,
+        isStaff
       }}
     >
       {!loading && children}

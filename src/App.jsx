@@ -17,16 +17,22 @@ import Wishlist from './components/Wishlist';
 import CollectionPage from './components/CollectionPage';
 import ProductPage from './components/ProductPage';
 import { useRouter } from './context/RouterContext';
+import { useAuth } from './context/AuthContext';
+
+const PROTECTED_PATHS = ['/checkout', '/wishlist'];
 
 function App() {
-  const { currentPath } = useRouter();
-  
+  const { currentPath, navigate } = useRouter();
+  const { isLoggedIn, requireAuth, consumePostLoginRedirect } = useAuth();
+
   // Parse pathname to strip any query params or hash anchors
   const pathname = currentPath.split('#')[0].split('?')[0];
+  const isProtectedPath = PROTECTED_PATHS.includes(pathname);
+  const blockedByAuth = isProtectedPath && !isLoggedIn;
 
   const isResetPage = pathname === '/reset-password';
-  const isCheckoutPage = pathname === '/checkout';
-  const isWishlistPage = pathname === '/wishlist';
+  const isCheckoutPage = pathname === '/checkout' && !blockedByAuth;
+  const isWishlistPage = pathname === '/wishlist' && !blockedByAuth;
   const isCollectionsPage = pathname.startsWith('/collections/');
   const collectionId = isCollectionsPage ? pathname.split('/').pop() : null;
   const isProductPage = pathname.startsWith('/product/');
@@ -36,6 +42,24 @@ function App() {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [currentPath]);
+
+  // Protected routes: bounce logged-out visitors home and prompt login,
+  // saving where they were headed so they land back there after signing in.
+  useEffect(() => {
+    if (blockedByAuth) {
+      requireAuth(pathname);
+      navigate('/');
+    }
+  }, [blockedByAuth, pathname]);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      const redirectPath = consumePostLoginRedirect();
+      if (redirectPath && redirectPath !== currentPath) {
+        navigate(redirectPath);
+      }
+    }
+  }, [isLoggedIn]);
 
   useEffect(() => {
     const lenis = new Lenis({

@@ -4,6 +4,7 @@ import { X, User, ShoppingBag, Heart, MapPin, LogOut, ChevronRight, Settings, Tr
 import { useAuth } from '../context/AuthContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
+import { supabase } from '../lib/supabase';
 
 const AccountMenu = ({ isOpen, onClose }) => {
   const { user, logout } = useAuth();
@@ -18,16 +19,35 @@ const AccountMenu = ({ isOpen, onClose }) => {
   ]);
 
   useEffect(() => {
-    // Load orders
-    const savedOrders = localStorage.getItem('craftoria_orders');
-    if (savedOrders) {
-      try {
-        setOrders(JSON.parse(savedOrders));
-      } catch (e) {
+    if (!isOpen || activeTab !== 'orders' || !user) return;
+    let active = true;
+
+    (async () => {
+      const { data, error } = await supabase
+        .from('orders')
+        .select('order_number, status, payment_status, created_at, total_amount, shipping_address_snapshot, order_items(product_name, quantity)')
+        .order('created_at', { ascending: false });
+
+      if (!active) return;
+      if (error) {
+        console.error('Failed to load orders:', error);
         setOrders([]);
+        return;
       }
-    }
-  }, [isOpen, activeTab]);
+
+      setOrders((data || []).map((o) => ({
+        orderId: o.order_number,
+        date: new Date(o.created_at).toLocaleDateString(),
+        total: o.total_amount,
+        orderStatus: o.status?.replace(/_/g, ' ').toUpperCase(),
+        paymentStatus: o.payment_status?.toUpperCase(),
+        items: (o.order_items || []).map((it) => ({ name: it.product_name, quantity: it.quantity })),
+        shippingAddress: o.shipping_address_snapshot,
+      })));
+    })();
+
+    return () => { active = false; };
+  }, [isOpen, activeTab, user]);
 
   if (!isOpen) return null;
 
@@ -225,7 +245,7 @@ const AccountMenu = ({ isOpen, onClose }) => {
                     <div key={ord.orderId} className="glass-card p-4 rounded-[22px] border border-brand-purple/15 text-xs">
                       <div className="flex items-center justify-between border-b border-brand-purple/10 pb-2 mb-2">
                         <span className="font-mono font-bold text-brand-plum">{ord.orderId}</span>
-                        <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">{ord.status}</span>
+                        <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">{ord.orderStatus || ord.paymentStatus || 'CONFIRMED'}</span>
                       </div>
                       <div className="flex flex-col gap-1 text-[11px] mb-2.5">
                         <span className="text-brand-dark/65 font-medium">Placed on: {ord.date}</span>
@@ -240,7 +260,11 @@ const AccountMenu = ({ isOpen, onClose }) => {
                       </div>
                       <div className="pt-2 border-t border-brand-purple/10 text-[10px] text-brand-dark/70">
                         <span className="font-semibold block mb-0.5">Shipping to:</span>
-                        <span>{ord.shipping.name}, {ord.shipping.address}, {ord.shipping.city}</span>
+                        <span>
+                          {ord.shippingAddress
+                            ? `${ord.shippingAddress.fullName}, ${ord.shippingAddress.building}, ${ord.shippingAddress.street}, ${ord.shippingAddress.city} - ${ord.shippingAddress.pinCode}`
+                            : 'Address on file'}
+                        </span>
                       </div>
                     </div>
                   ))}

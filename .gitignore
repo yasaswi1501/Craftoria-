@@ -28,3 +28,5 @@ dist-ssr
 .env.local
 .env.*
 !.env.example
+!.env.seed.example
+!supabase/functions/.env.example

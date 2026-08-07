@@ -7,6 +7,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { useCart as useCartContext } from '../context/CartContext';
 import { paymentService } from '../services/paymentService';
+import { supabase } from '../lib/supabase';
 
 import sellerMemoryCanvas from '../assets/seller-memory-canvas.png';
 import sellerEmbroideryHoop from '../assets/seller-embroidery-hoop.png';
@@ -16,14 +17,11 @@ import coverPolaroids from '../assets/gallery-1-polaroid.jpg';
 import coverClips from '../assets/gallery-7-two-flower-keychain.jpg';
 
 const Checkout = () => {
-  const { isLoggedIn, user, setIsAuthModalOpen } = useAuth();
+  const { user } = useAuth();
   const { cart, clearCart } = useCartContext();
 
   // Steps: 'address' | 'payment' | 'review' | 'success' | 'failure'
   const [activeStep, setActiveStep] = useState('address');
-  
-  // Guest checkout override flag
-  const [guestCheckout, setGuestCheckout] = useState(false);
 
   // Address list states
   const [addresses, setAddresses] = useState([]);
@@ -71,11 +69,16 @@ const Checkout = () => {
   const [isSummaryCollapsed, setIsSummaryCollapsed] = useState(true);
 
   // Simulation settings
-  const [simulationMode, setSimulationMode] = useState('success'); // 'success' | 'failure' | 'cancel'
   const [paymentProcessing, setPaymentProcessing] = useState(false);
 
   // Placed Order Details
   const [placedOrder, setPlacedOrder] = useState(null);
+  const [checkoutError, setCheckoutError] = useState('');
+
+  // One key per checkout attempt: a retried "Place Order" (double click,
+  // slow-network retry) reuses this and the backend returns the order
+  // already created instead of making a second one. Rotated after success.
+  const [idempotencyKey, setIdempotencyKey] = useState(() => crypto.randomUUID());
 
   // Image Mapper helper
   const getProductImage = (id) => {
@@ -161,7 +164,7 @@ const Checkout = () => {
   // Pricing calculations
   const cartSubtotal = cart.reduce((acc, item) => acc + (item.price || 249) * item.quantity, 0);
   const deliveryCharge = deliveryOption === 'express' ? 150 : 0;
-  const discountAmount = isLoggedIn ? 150 : 0; // ₹150 discount for logged-in members
+  const discountAmount = 150; // ₹150 member discount -- Checkout only renders for logged-in users (see App.jsx route guard)
   const taxAmount = Math.round(cartSubtotal * 0.05); // 5% GST
   const grandTotal = cartSubtotal + deliveryCharge + taxAmount - discountAmount;
 
@@ -273,135 +276,129 @@ const Checkout = () => {
     return Object.keys(errs).length === 0;
   };
 
-  // Submit / Place Order Logic
+  const PAYMENT_STATUS_LABELS = {
+    pending: 'PAY ON DELIVERY',
+    created: 'PAYMENT PENDING',
+    authorized: 'AUTHORIZED',
+    paid: 'PAID',
+    failed: 'FAILED',
+  };
+
+  const buildConfirmOrder = (data, activeAddress) => ({
+    orderId: data.order_number,
+    date: new Date().toLocaleDateString(),
+    items: cart.map(i => ({ name: i.name, quantity: i.quantity, price: i.price || 249 })),
+    total: data.total_amount,
+    paymentStatus: PAYMENT_STATUS_LABELS[data.payment_status] || data.payment_status?.toUpperCase(),
+    orderStatus: data.status,
+    shippingAddress: activeAddress,
+    estimatedDate: deliveryOption === 'express' ? '1-2 Business Days' : '3-5 Business Days'
+  });
+
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
     setPaymentProcessing(true);
 
     const activeAddress = addresses.find(a => a.id === selectedAddressId);
-    const orderDetails = {
-      items: cart.map(i => ({ name: i.name, quantity: i.quantity, price: i.price || 249 })),
-      amount: grandTotal,
-      currency: 'INR',
-      shippingAddress: activeAddress,
-      deliveryOption
+    const addressSnapshot = {
+      fullName: activeAddress.fullName,
+      phone: activeAddress.phone,
+      pinCode: activeAddress.pinCode,
+      building: activeAddress.building,
+      street: activeAddress.street,
+      landmark: activeAddress.landmark,
+      city: activeAddress.city,
+      stateName: activeAddress.stateName,
     };
 
+    if (paymentMethod === 'card' && !validateCardForm()) {
+      setPaymentProcessing(false);
+      return;
+    }
+    if (paymentMethod === 'upi' && !upiVerified) {
+      setPaymentProcessing(false);
+      setUpiErrors('Verify your UPI ID before completing payment.');
+      return;
+    }
+
+    // The order (and its stock reservation) is created first, for every
+    // payment method -- Razorpay needs a real order_id/total_amount to
+    // create its own order against, and this is also what makes the
+    // reservation exist while the customer is in the gateway's UI.
+    const { data: order, error: orderError } = await supabase.rpc('checkout', {
+      p_idempotency_key: idempotencyKey,
+      p_shipping_address: addressSnapshot,
+      p_billing_address: addressSnapshot,
+      p_payment_method: paymentMethod,
+      p_delivery_option: deliveryOption,
+      p_coupon_code: null,
+    });
+
+    if (orderError) {
+      setPaymentProcessing(false);
+      console.error('Checkout failed:', orderError);
+      setCheckoutError(orderError.message || '');
+      setActiveStep('failure');
+      return;
+    }
+    setCheckoutError('');
+
     if (paymentMethod === 'cod') {
-      setTimeout(() => {
-        const orderId = 'CR-' + Math.floor(100000 + Math.random() * 900000);
-        const confirmOrder = {
-          orderId,
-          date: new Date().toLocaleDateString(),
-          items: orderDetails.items,
-          total: grandTotal,
-          paymentStatus: 'COD_CONFIRMED',
-          orderStatus: 'COD_CONFIRMED',
-          shippingAddress: activeAddress,
-          estimatedDate: deliveryOption === 'express' ? '1-2 Business Days' : '3-5 Business Days'
-        };
-        saveOrderToHistory(confirmOrder);
-        setPlacedOrder(confirmOrder);
+      setPaymentProcessing(false);
+      setPlacedOrder(buildConfirmOrder(order, activeAddress));
+      clearCart();
+      setActiveStep('success');
+      setIdempotencyKey(crypto.randomUUID());
+      return;
+    }
+
+    // Online methods: the order exists as pending_payment with stock
+    // reserved. Everything below either confirms it (server-verified) or
+    // leaves it as a recorded failed/pending attempt -- nothing here can
+    // mark it paid on its own say-so.
+    try {
+      const session = await paymentService.createPaymentSession({ orderId: order.order_id });
+      const customerInfo = {
+        name: activeAddress.fullName,
+        email: user?.email || '',
+        phone: activeAddress.phone
+      };
+      const gatewayRes = await paymentService.triggerGatewayCheckout(session, customerInfo);
+      const verifyRes = await paymentService.verifyPaymentSignature(gatewayRes);
+
+      setPaymentProcessing(false);
+
+      if (verifyRes.verified) {
+        setPlacedOrder(buildConfirmOrder(
+          { ...order, status: verifyRes.orderStatus, payment_status: verifyRes.paymentStatus },
+          activeAddress
+        ));
         clearCart();
         setActiveStep('success');
-        setPaymentProcessing(false);
-      }, 1500);
-    } else {
-      if (paymentMethod === 'card' && !validateCardForm()) {
-        setPaymentProcessing(false);
-        return;
+        setIdempotencyKey(crypto.randomUUID());
+      } else {
+        setCheckoutError(verifyRes.message || '');
+        setActiveStep('failure');
       }
-      if (paymentMethod === 'upi' && !upiVerified) {
-        setPaymentProcessing(false);
-        setUpiErrors('Verify your UPI ID before completing payment.');
-        return;
-      }
-
-      try {
-        const session = await paymentService.createPaymentSession(orderDetails);
-        const customerInfo = {
-          name: activeAddress.fullName,
-          email: user?.email || 'guest@craftoria.com',
-          phone: activeAddress.phone
-        };
-        
-        const gatewayRes = await paymentService.triggerGatewayCheckout(session, customerInfo, simulationMode);
-        const verifyRes = await paymentService.verifyPaymentSignature(gatewayRes);
-
-        if (verifyRes.verified) {
-          const orderId = 'CR-' + Math.floor(100000 + Math.random() * 900000);
-          const confirmOrder = {
-            orderId,
-            date: new Date().toLocaleDateString(),
-            items: orderDetails.items,
-            total: grandTotal,
-            paymentStatus: 'PAID',
-            orderStatus: 'PAID',
-            shippingAddress: activeAddress,
-            estimatedDate: deliveryOption === 'express' ? '1-2 Business Days' : '3-5 Business Days'
-          };
-          saveOrderToHistory(confirmOrder);
-          setPlacedOrder(confirmOrder);
-          clearCart();
-          setActiveStep('success');
-        } else {
-          setActiveStep('failure');
-        }
-      } catch (err) {
-        if (err.status === 'CANCELLED') {
-          // Keep user on review/payment step with inputs preserved
-          console.warn('Payment Cancelled:', err.message);
-        } else {
-          setActiveStep('failure');
-        }
-      } finally {
-        setPaymentProcessing(false);
+    } catch (err) {
+      setPaymentProcessing(false);
+      if (err.status === 'CANCELLED') {
+        // Keep user on review/payment step with inputs preserved. The order
+        // stays pending_payment -- nothing to undo, no new checkout() call
+        // needed if they retry (same idempotency key still applies... but
+        // note a fresh Razorpay order is created on retry, see Phase 6 notes).
+        console.warn('Payment Cancelled:', err.message);
+      } else {
+        setCheckoutError(err.message || '');
+        setActiveStep('failure');
       }
     }
   };
 
-  const saveOrderToHistory = (order) => {
-    const saved = JSON.parse(localStorage.getItem('craftoria_orders') || '[]');
-    saved.push(order);
-    localStorage.setItem('craftoria_orders', JSON.stringify(saved));
-  };
-
   const selectedAddress = addresses.find(a => a.id === selectedAddressId);
 
-  // If not logged in and hasn't chosen guest checkout, show the auth notice
-  if (!isLoggedIn && !guestCheckout) {
-    return (
-      <div className="min-h-screen bg-[#FDFBFD] pt-28 pb-16 px-4 text-brand-dark max-w-[1250px] mx-auto flex items-center justify-center text-left">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="w-full max-w-md glass-card rounded-[32px] overflow-hidden p-6 sm:p-8 border border-brand-purple/20 shadow-md text-center flex flex-col items-center"
-        >
-          <ShoppingBag className="w-12 h-12 text-brand-plum mb-4 animate-pulse" />
-          <h2 className="font-serif text-2xl font-bold mb-2">Secure Checkout</h2>
-          <p className="text-xs text-brand-dark/75 leading-relaxed mb-6">
-            Log in to your Craftoria account to enjoy automatic member discounts (₹150 off your order) and save your delivery details for future checkouts.
-          </p>
-
-          <div className="flex flex-col gap-3 w-full">
-            <button
-              onClick={() => setIsAuthModalOpen(true)}
-              className="w-full py-3.5 rounded-full bg-brand-plum hover:bg-brand-violet text-white font-semibold text-xs uppercase tracking-widest shadow-md transition-colors cursor-pointer h-11 flex items-center justify-center"
-            >
-              Log In / Sign Up
-            </button>
-            <button
-              onClick={() => setGuestCheckout(true)}
-              className="w-full py-3.5 rounded-full border border-brand-purple/35 text-brand-plum font-semibold text-xs uppercase tracking-widest hover:bg-brand-purple/5 transition-colors cursor-pointer h-11 flex items-center justify-center"
-            >
-              Continue as Guest
-            </button>
-          </div>
-        </motion.div>
-      </div>
-    );
-  }
-
+  // No logged-out gate needed here: App.jsx's route guard never mounts
+  // Checkout unless the user is authenticated.
   return (
     <div className="min-h-screen bg-[#FDFBFD] pt-24 pb-16 px-4 sm:px-6 lg:px-8 text-brand-dark max-w-[1250px] mx-auto">
       {/* Checkout Header */}
@@ -774,36 +771,11 @@ const Checkout = () => {
                 <ArrowLeft className="w-3.5 h-3.5" /> Back to Shipping Address
               </button>
 
-              {/* Simulation Mode details */}
-              <div className="p-3.5 rounded-2xl bg-brand-purple/10 border border-brand-purple/20 text-brand-plum text-[11px] font-medium leading-relaxed">
-                <span className="font-bold uppercase tracking-wider block mb-1">🛠 Gateway Simulation Mode</span>
-                Choose how card / UPI verification behaves when submitted:
-                <div className="flex gap-2.5 mt-2">
-                  <button
-                    onClick={() => setSimulationMode('success')}
-                    className={`px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider border cursor-pointer ${
-                      simulationMode === 'success' ? 'bg-brand-plum text-white border-brand-plum' : 'bg-white border-brand-purple/20'
-                    }`}
-                  >
-                    Succeed Transaction
-                  </button>
-                  <button
-                    onClick={() => setSimulationMode('failure')}
-                    className={`px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider border cursor-pointer ${
-                      simulationMode === 'failure' ? 'bg-red-500 text-white border-red-500' : 'bg-white border-brand-purple/20'
-                    }`}
-                  >
-                    Fail Transaction
-                  </button>
-                  <button
-                    onClick={() => setSimulationMode('cancel')}
-                    className={`px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider border cursor-pointer ${
-                      simulationMode === 'cancel' ? 'bg-amber-600 text-white border-amber-600' : 'bg-white border-brand-purple/20'
-                    }`}
-                  >
-                    Cancel Transaction
-                  </button>
-                </div>
+              {/* Gateway trust indicator -- replaced the old dev-only simulation toggle
+                  now that card/UPI/netbanking/wallet route through real Razorpay Checkout. */}
+              <div className="flex items-center gap-2 p-3.5 rounded-2xl bg-brand-purple/10 border border-brand-purple/20 text-brand-plum text-[11px] font-medium">
+                <ShieldCheck className="w-4 h-4 flex-shrink-0" />
+                Payments are processed securely by Razorpay. Card and UPI details never touch Craftoria's servers.
               </div>
 
               {/* Payment Methods Card */}
@@ -1397,6 +1369,9 @@ const Checkout = () => {
             <h2 className="font-serif text-2xl font-bold mb-2">Payment failed</h2>
             <p className="text-xs text-brand-dark/70 leading-relaxed max-w-sm mb-6">
               Your order has not been placed. The card or UPI authorization transaction was declined by the cardholder bank.
+              {checkoutError && (
+                <span className="block mt-2 font-semibold text-red-600">{checkoutError}</span>
+              )}
             </p>
 
             <div className="flex flex-col gap-2.5 w-full">

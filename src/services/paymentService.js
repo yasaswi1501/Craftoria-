@@ -1,101 +1,102 @@
 /**
- * Craftoria Payment Service Abstraction
- * 
- * This service abstracts payment gateway interactions (Stripe, Razorpay, Cashfree).
- * In production, the client requests a payment session from the backend, 
- * which communicates with the gateway to create a secure session/intent.
+ * Craftoria Payment Service -- real Razorpay integration.
+ *
+ * Every function here talks to a Supabase Edge Function, never to Razorpay
+ * directly from the browser (that would require the secret key to be
+ * client-side). The signature verification in verifyPaymentSignature is
+ * what actually makes a "payment succeeded" claim trustworthy -- see
+ * supabase/functions/verify-razorpay-payment.
  */
+import { supabase } from '../lib/supabase';
+
+let razorpayScriptPromise = null;
+
+function loadRazorpayScript() {
+  if (window.Razorpay) return Promise.resolve(window.Razorpay);
+  if (razorpayScriptPromise) return razorpayScriptPromise;
+
+  razorpayScriptPromise = new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.onload = () => resolve(window.Razorpay);
+    script.onerror = () => reject(new Error('Failed to load the payment gateway. Check your connection and try again.'));
+    document.body.appendChild(script);
+  });
+  return razorpayScriptPromise;
+}
+
 export const paymentService = {
   /**
-   * Request a new payment session / transaction order from the backend.
-   * @param {Object} orderDetails - Cart items, shipping address, total price, etc.
-   * @returns {Promise<Object>} - Payment session details (session ID, transaction token, keys).
+   * Request a Razorpay order for an already-created (pending_payment)
+   * Craftoria order. The amount charged is whatever the order actually
+   * costs server-side -- nothing here is client-supplied.
+   * @param {{ orderId: string }} params
    */
-  async createPaymentSession(orderDetails) {
-    // In production, make a fetch request to the secure backend endpoint:
-    // const response = await fetch('/api/payments/create-session', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify(orderDetails)
-    // });
-    // return response.json();
-    
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          success: true,
-          sessionId: 'sess_' + Math.random().toString(36).substring(2, 9),
-          amount: orderDetails.amount,
-          currency: 'INR',
-          gateway: 'Razorpay', // Default India gateway recommendation
-          publishableKey: import.meta.env.VITE_RAZORPAY_KEY_ID || 'pk_test_placeholder'
-        });
-      }, 800);
+  async createPaymentSession({ orderId }) {
+    const { data, error } = await supabase.functions.invoke('create-razorpay-order', {
+      body: { order_id: orderId },
     });
+    if (error) throw new Error(error.message || 'Could not initialize payment.');
+    if (data?.error) throw new Error(data.error);
+    return data; // { razorpay_order_id, amount, currency, key_id }
   },
 
   /**
-   * Initialize and trigger the payment gateway checkout popup or redirect.
-   * @param {Object} session - Session details returned by createPaymentSession.
-   * @param {Object} customerInfo - Name, email, phone.
-   * @returns {Promise<Object>} - Verification payload (payment ID, signature, status).
+   * Opens the real Razorpay Checkout widget and resolves with the
+   * (unverified) callback payload once the customer completes payment.
+   * @param {Object} session - Result of createPaymentSession.
+   * @param {Object} customerInfo - Name, email, phone for prefill.
    */
-  async triggerGatewayCheckout(session, customerInfo, simulationMode = 'success') {
-    // In production, trigger the Stripe or Razorpay SDK checkout handler:
-    // Example Razorpay:
-    // const options = {
-    //   key: session.publishableKey,
-    //   amount: session.amount * 100,
-    //   name: 'Craftoria',
-    //   order_id: session.sessionId,
-    //   handler: function (response) { ... }
-    // };
-    // const rzp = new window.Razorpay(options);
-    // rzp.open();
+  async triggerGatewayCheckout(session, customerInfo) {
+    const Razorpay = await loadRazorpayScript();
 
     return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (simulationMode === 'success') {
+      const rzp = new Razorpay({
+        key: session.key_id,
+        amount: session.amount,
+        currency: session.currency,
+        name: 'Craftoria',
+        description: 'Handmade with love',
+        order_id: session.razorpay_order_id,
+        prefill: {
+          name: customerInfo.name,
+          email: customerInfo.email,
+          contact: customerInfo.phone,
+        },
+        theme: { color: '#4B2E5D' },
+        handler: (response) => {
           resolve({
-            status: 'PAID',
-            paymentId: 'pay_' + Math.random().toString(36).substring(2, 10),
-            signature: 'sig_' + Math.random().toString(36).substring(2, 12),
-            message: 'Gateway transaction completed successfully.'
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_signature: response.razorpay_signature,
           });
-        } else if (simulationMode === 'cancel') {
-          reject({
-            status: 'CANCELLED',
-            message: 'Payment checkout popup closed by user.'
-          });
-        } else {
-          reject({
-            status: 'FAILED',
-            message: 'Payment authorization declined by cardholder bank.'
-          });
-        }
-      }, 1000);
+        },
+        modal: {
+          ondismiss: () => {
+            reject({ status: 'CANCELLED', message: 'Payment checkout popup closed by user.' });
+          },
+        },
+      });
+
+      rzp.on('payment.failed', (resp) => {
+        reject({ status: 'FAILED', message: resp?.error?.description || 'Payment authorization was declined.' });
+      });
+
+      rzp.open();
     });
   },
 
   /**
-   * Verify the gateway signature on the server.
-   * Note: The client must never declare an order as paid without backend confirmation.
+   * Server-side signature verification -- the client's "it succeeded"
+   * callback above is never trusted on its own. Only a verified signature
+   * (or the independent webhook) actually marks the order paid.
    */
   async verifyPaymentSignature(verificationData) {
-    // In production, call backend webhook/verification endpoint:
-    // const response = await fetch('/api/payments/verify', {
-    //   method: 'POST',
-    //   body: JSON.stringify(verificationData)
-    // });
-    // return response.json();
-
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          verified: true,
-          orderStatus: 'PAID'
-        });
-      }, 600);
+    const { data, error } = await supabase.functions.invoke('verify-razorpay-payment', {
+      body: verificationData,
     });
+    if (error) return { verified: false, message: error.message || 'Could not verify payment.' };
+    if (data?.error) return { verified: false, message: data.error };
+    return { verified: true, orderStatus: data.status, paymentStatus: data.payment_status };
   }
 };

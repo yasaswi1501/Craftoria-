@@ -1,8 +1,8 @@
 import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  ArrowLeft, Heart, ShoppingBag, Search, SlidersHorizontal, X, 
-  Star, Check, Sparkles, Filter, Eye
+  ArrowLeft, Heart, ShoppingBag, Search, SlidersHorizontal, X,
+  Star, Check, Sparkles, Filter, Eye, Minus, Plus
 } from 'lucide-react';
 import { useRouter } from '../context/RouterContext';
 import { useCart } from '../context/CartContext';
@@ -20,7 +20,7 @@ import coverBouquets from '../assets/bloom-bouquets-cover.jpg';
 
 const CollectionPage = ({ collectionId }) => {
   const { navigate } = useRouter();
-  const { addToCart } = useCart();
+  const { addToCart, cart, updateQuantity } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
 
   // Mobile filter drawer visibility
@@ -369,7 +369,8 @@ const CollectionPage = ({ collectionId }) => {
                 {filteredProducts.map((product) => {
                   const isFav = isInWishlist(product.id);
                   const isAdded = addedStates[product.id];
-                  
+                  const cartQty = cart.find((item) => item.id === product.id)?.quantity || 0;
+
                   return (
                     <motion.div
                       key={product.id}
@@ -453,28 +454,54 @@ const CollectionPage = ({ collectionId }) => {
 
                         {/* Direct purchase row */}
                         <div className="flex gap-2 mt-auto pt-2 border-t border-brand-purple/10">
-                          {/* Add to Cart button */}
-                          <button
-                            onClick={(e) => handleAddToCart({
-                              id: product.id,
-                              name: product.title,
-                              price: product.price,
-                              desc: product.description
-                            }, e)}
-                            className="flex-grow inline-flex items-center justify-center gap-1 py-2 rounded-full bg-brand-plum hover:bg-brand-violet text-white text-[9px] font-bold uppercase tracking-wider h-8 shadow-xs cursor-pointer"
-                          >
-                            {isAdded ? (
-                              <>
-                                <Check className="w-3 h-3" />
-                                <span>Added</span>
-                              </>
-                            ) : (
-                              <>
-                                <ShoppingBag className="w-3 h-3" />
-                                <span>Add</span>
-                              </>
-                            )}
-                          </button>
+                          {/* Add to Cart button / Quantity stepper */}
+                          {cartQty > 0 ? (
+                            <div className="flex-grow inline-flex items-center justify-between rounded-full bg-brand-plum text-white h-8 px-1 shadow-xs">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  updateQuantity(product.id, cartQty - 1);
+                                }}
+                                className="w-6 h-6 rounded-full flex items-center justify-center hover:bg-white/20 cursor-pointer focus:outline-none"
+                                aria-label="Decrease quantity"
+                              >
+                                <Minus className="w-3 h-3" />
+                              </button>
+                              <span className="text-[10px] font-bold min-w-[1.25rem] text-center">{cartQty}</span>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  updateQuantity(product.id, cartQty + 1);
+                                }}
+                                className="w-6 h-6 rounded-full flex items-center justify-center hover:bg-white/20 cursor-pointer focus:outline-none"
+                                aria-label="Increase quantity"
+                              >
+                                <Plus className="w-3 h-3" />
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={(e) => handleAddToCart({
+                                id: product.id,
+                                name: product.title,
+                                price: product.price,
+                                desc: product.description
+                              }, e)}
+                              className="flex-grow inline-flex items-center justify-center gap-1 py-2 rounded-full bg-brand-plum hover:bg-brand-violet text-white text-[9px] font-bold uppercase tracking-wider h-8 shadow-xs cursor-pointer"
+                            >
+                              {isAdded ? (
+                                <>
+                                  <Check className="w-3 h-3" />
+                                  <span>Added</span>
+                                </>
+                              ) : (
+                                <>
+                                  <ShoppingBag className="w-3 h-3" />
+                                  <span>Add</span>
+                                </>
+                              )}
+                            </button>
+                          )}
 
                           {/* View details button */}
                           <button

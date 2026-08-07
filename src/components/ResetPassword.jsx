@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Lock, Eye, EyeOff, Loader2, CheckCircle2, ArrowLeft } from 'lucide-react';
+import { Lock, Eye, EyeOff, Loader2, CheckCircle2, ArrowLeft, AlertTriangle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 const ResetPassword = () => {
@@ -8,7 +8,7 @@ const ResetPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  
+
   // Strength states
   const [passwordStrength, setPasswordStrength] = useState('');
   const [strengthColor, setStrengthColor] = useState('');
@@ -17,6 +17,54 @@ const ResetPassword = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  // null = still checking, true = valid recovery session, false = invalid/expired.
+  // Without this, anyone landing on this URL with *any* active session in the
+  // browser (not necessarily one from a real recovery email) could reach the
+  // password form -- see Phase 3 audit notes.
+  const [hasRecoverySession, setHasRecoverySession] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+
+    // AuthContext's app-wide listener (mounted earlier than this route) sets
+    // this flag the moment Supabase confirms the URL held a real recovery
+    // token. That's the authoritative signal -- a plain getSession() truthy
+    // check isn't, since it would also pass for a browser that simply has
+    // some unrelated active session (e.g. a shared/public computer).
+    const checkFlag = () => {
+      let flagged = false;
+      try { flagged = sessionStorage.getItem('craftoria_password_recovery') === '1'; } catch (err) {}
+      if (active && flagged) setHasRecoverySession(true);
+      return flagged;
+    };
+
+    if (checkFlag()) return () => { active = false; };
+
+    // Not set yet -- the recovery redirect may still be resolving. Listen
+    // for it, with a short poll as a fallback in case the event already
+    // fired a tick before this listener attached.
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (!active) return;
+      if (event === 'PASSWORD_RECOVERY') setHasRecoverySession(true);
+    });
+
+    const pollId = setInterval(() => {
+      if (checkFlag()) clearInterval(pollId);
+    }, 300);
+
+    const timeoutId = setTimeout(() => {
+      clearInterval(pollId);
+      if (active) setHasRecoverySession((prev) => (prev === null ? false : prev));
+    }, 4000);
+
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+      clearInterval(pollId);
+      clearTimeout(timeoutId);
+    };
+  }, []);
 
   useEffect(() => {
     if (!password) {
@@ -79,6 +127,7 @@ const ResetPassword = () => {
         setSuccess(true);
         setPassword('');
         setConfirmPassword('');
+        try { sessionStorage.removeItem('craftoria_password_recovery'); } catch (err) {}
       }
     } catch (err) {
       setError('An unexpected error occurred during password update.');
@@ -107,7 +156,26 @@ const ResetPassword = () => {
           </div>
         )}
 
-        {success ? (
+        {hasRecoverySession === null ? (
+          <div className="text-center py-10 flex flex-col items-center">
+            <Loader2 className="w-8 h-8 text-brand-plum animate-spin mb-4" />
+            <p className="text-xs text-brand-dark/70">Verifying your reset link...</p>
+          </div>
+        ) : hasRecoverySession === false ? (
+          <div className="text-center py-6 flex flex-col items-center">
+            <AlertTriangle className="w-12 h-12 text-amber-500 mb-4" />
+            <h3 className="font-serif text-lg font-bold mb-2">Link Invalid or Expired</h3>
+            <p className="text-xs text-brand-dark/75 mb-6">
+              This password reset link is no longer valid. Please request a new one from the login screen.
+            </p>
+            <a
+              href="/"
+              className="inline-flex items-center gap-2 py-3 px-6 rounded-full bg-brand-plum text-white font-semibold text-xs uppercase tracking-widest hover:bg-brand-violet transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" /> Back to Home
+            </a>
+          </div>
+        ) : success ? (
           <div className="text-center py-6 flex flex-col items-center">
             <CheckCircle2 className="w-12 h-12 text-emerald-500 mb-4 animate-bounce" />
             <h3 className="font-serif text-lg font-bold mb-2">Password Updated!</h3>

@@ -1,7 +1,8 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, X, ShoppingBag } from 'lucide-react';
 import { useAuth } from './AuthContext';
+import { supabase } from '../lib/supabase';
 
 const CartContext = createContext();
 
@@ -53,7 +54,15 @@ const ToastNotification = ({ title, message, onClose, onViewCart }) => {
 };
 
 export const CartProvider = ({ children }) => {
-  const { user } = useAuth();
+  const { user, isLoggedIn } = useAuth();
+
+  // sku -> DB variant UUID, fetched once and cached for the session. Only
+  // resolved when actually needed (logged-in cart operations) -- guests
+  // never touch the network for cart actions, unchanged from before.
+  const variantMapRef = useRef(null);
+  // Guards the guest->server cart merge from re-running on every render;
+  // keyed by user id so a logout+different-login re-merges correctly.
+  const mergedUserIdRef = useRef(null);
 
   // Initialize cart state directly from storage on first render to prevent asynchronous stale resets
   const [cart, setCart] = useState(() => {
@@ -104,41 +113,132 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  // Merge guest cart & save later with user details upon login
-  useEffect(() => {
-    if (user && user.email) {
-      const userCartKey = `craftoria_cart_${user.email}`;
-      const userSaveLaterKey = `craftoria_save_later_${user.email}`;
+  const getVariantMap = async () => {
+    if (variantMapRef.current) return variantMapRef.current;
+    const { data, error } = await supabase.from('product_variants').select('id, sku');
+    if (error) {
+      console.error('Failed to load product catalog for cart:', error);
+      return new Map();
+    }
+    variantMapRef.current = new Map(data.map((v) => [v.sku, v.id]));
+    return variantMapRef.current;
+  };
 
-      // 1. Merge Cart
-      let userSavedCart = [];
+  const mapDbCartToLocalShape = (summary) =>
+    (summary?.items || []).map((line) => ({
+      id: line.sku,
+      name: line.product_name,
+      price: Number(line.unit_price),
+      desc: line.product_description || '',
+      quantity: line.quantity,
+      image: '',
+      isAvailable: line.is_available,
+      availableQuantity: line.available_quantity,
+    }));
+
+  const fetchDbCart = async () => {
+    const { data, error } = await supabase.rpc('get_cart_summary');
+    if (error) {
+      console.error('Failed to load cart:', error);
+      return;
+    }
+    setCart(mapDbCartToLocalShape(data));
+  };
+
+  // Core add-to-cart operation shared by addToCart (user-facing, shows a
+  // toast) and moveToCart (silent, matching its pre-existing behavior) --
+  // one place that knows how to talk to either storage backend.
+  const addItemQuantity = async (product, addQty) => {
+    if (!isLoggedIn) {
+      const productPrice = product.price || 249;
+      const existingIndex = cart.findIndex((item) => item.id === product.id);
+      const isNewItem = existingIndex === -1;
+      if (!isNewItem) {
+        saveCartToStorage(cart.map((item, idx) =>
+          idx === existingIndex ? { ...item, quantity: item.quantity + addQty } : item
+        ));
+      } else {
+        saveCartToStorage([...cart, {
+          id: product.id,
+          name: product.name,
+          price: productPrice,
+          desc: product.desc || '',
+          quantity: addQty,
+          image: product.image || ''
+        }]);
+      }
+      return { success: true, isNewItem };
+    }
+
+    const variantMap = await getVariantMap();
+    const variantId = variantMap.get(product.id);
+    if (!variantId) {
+      return { success: false, message: `${product.name} could not be added right now.` };
+    }
+
+    const isNewItem = !cart.some((item) => item.id === product.id);
+    const { error } = await supabase.rpc('cart_add_item', { p_variant_id: variantId, p_quantity: addQty });
+    if (error) {
+      return { success: false, message: error.message || 'Please try again.' };
+    }
+    await fetchDbCart();
+    return { success: true, isNewItem };
+  };
+
+  // Merge any guest-session cart into the account's server cart once per
+  // login (ref-guarded so it doesn't re-run on every render, and re-runs
+  // correctly if the user logs out and into a different account), then
+  // switch this context into DB-backed mode. Save-for-later stays
+  // localStorage-only -- it isn't part of the backend schema.
+  useEffect(() => {
+    if (!user) {
+      // Logout: the DB cart stays safely on the server, it must not keep
+      // showing in local state, and it must never leak into the next
+      // guest's (or a different account's) localStorage cart.
+      if (mergedUserIdRef.current !== null) {
+        setCart([]);
+      }
+      mergedUserIdRef.current = null;
+      return;
+    }
+    if (mergedUserIdRef.current === user.id) return;
+    mergedUserIdRef.current = user.id;
+
+    (async () => {
+      let guestItems = [];
       try {
-        const saved = localStorage.getItem(userCartKey);
-        userSavedCart = saved ? JSON.parse(saved) : [];
+        const saved = localStorage.getItem('craftoria_cart');
+        guestItems = saved ? JSON.parse(saved) : [];
       } catch (e) {
-        userSavedCart = [];
+        guestItems = [];
       }
 
-      const cartMap = new Map();
-      cart.forEach(item => {
-        if (item && item.id) cartMap.set(item.id, { ...item });
-      });
-      userSavedCart.forEach(savedItem => {
-        if (savedItem && savedItem.id) {
-          if (cartMap.has(savedItem.id)) {
-            const existing = cartMap.get(savedItem.id);
-            existing.quantity = Math.max(existing.quantity, savedItem.quantity);
-          } else {
-            cartMap.set(savedItem.id, { ...savedItem });
+      if (guestItems.length > 0) {
+        const variantMap = await getVariantMap();
+        for (const item of guestItems) {
+          const variantId = variantMap.get(item.id);
+          if (!variantId) {
+            console.warn(`Skipping unmapped cart item during login merge: ${item.id}`);
+            continue;
           }
+          const { error } = await supabase.rpc('cart_add_item', {
+            p_variant_id: variantId,
+            p_quantity: item.quantity,
+          });
+          if (error) console.error(`Failed to merge cart item ${item.id}:`, error);
         }
-      });
-      const mergedCart = Array.from(cartMap.values());
-      setCart(mergedCart);
-      localStorage.setItem('craftoria_cart', JSON.stringify(mergedCart));
-      localStorage.setItem(userCartKey, JSON.stringify(mergedCart));
+      }
 
-      // 2. Merge Save for Later
+      try {
+        localStorage.removeItem('craftoria_cart');
+        localStorage.removeItem(`craftoria_cart_${user.email}`);
+      } catch (e) {}
+
+      await fetchDbCart();
+    })();
+
+    if (user.email) {
+      const userSaveLaterKey = `craftoria_save_later_${user.email}`;
       let userSavedLater = [];
       try {
         const saved = localStorage.getItem(userSaveLaterKey);
@@ -163,95 +263,102 @@ export const CartProvider = ({ children }) => {
     }
   }, [user]);
 
-  const addToCart = (product) => {
+  const addToCart = async (product, quantity = 1) => {
     if (!product || !product.id) return;
-    
-    const productPrice = product.price || 249;
-    const existingIndex = cart.findIndex((item) => item.id === product.id);
-    let isNewItem = true;
 
-    if (existingIndex > -1) {
-      const updatedCart = [...cart];
-      updatedCart[existingIndex].quantity += 1;
-      saveCartToStorage(updatedCart);
-      isNewItem = false;
-    } else {
-      const cartItem = {
-        id: product.id,
-        name: product.name,
-        price: productPrice,
-        desc: product.desc || '',
-        quantity: 1,
-        image: product.image || ''
-      };
-      const updatedCart = [...cart, cartItem];
-      saveCartToStorage(updatedCart);
+    // Honor an explicit quantity passed either as a second arg or on the product (product.qty)
+    const addQty = Math.max(1, parseInt(product.qty ?? quantity, 10) || 1);
+    const result = await addItemQuantity(product, addQty);
+
+    if (!result.success) {
+      setToast({ id: Date.now(), title: '⚠ Could Not Add Item', message: result.message });
+      return;
     }
 
     // Trigger premium Toast notification instead of opening the drawer automatically
     setToast({
       id: Date.now(),
-      title: isNewItem ? '✓ Added to Cart' : '✓ Quantity Updated',
+      title: result.isNewItem ? '✓ Added to Cart' : '✓ Quantity Updated',
       message: `${product.name} has been added to your cart.`
     });
   };
 
-  const removeFromCart = (productId) => {
-    const updatedCart = cart.filter((item) => item.id !== productId);
-    saveCartToStorage(updatedCart);
-  };
-
-  const updateQuantity = (productId, newQuantity) => {
-    const parsedQty = parseInt(newQuantity, 10);
-    if (isNaN(parsedQty) || parsedQty <= 0) {
-      removeFromCart(productId);
+  const removeFromCart = async (productId) => {
+    if (!isLoggedIn) {
+      saveCartToStorage(cart.filter((item) => item.id !== productId));
       return;
     }
-    const updatedCart = cart.map((item) =>
-      item.id === productId ? { ...item, quantity: parsedQty } : item
-    );
-    saveCartToStorage(updatedCart);
+    const variantMap = await getVariantMap();
+    const variantId = variantMap.get(productId);
+    if (!variantId) return;
+    const { error } = await supabase.rpc('cart_remove_item', { p_variant_id: variantId });
+    if (error) {
+      console.error('Failed to remove cart item:', error);
+      return;
+    }
+    await fetchDbCart();
   };
 
-  const clearCart = () => {
-    saveCartToStorage([]);
+  const updateQuantity = async (productId, newQuantity) => {
+    const parsedQty = parseInt(newQuantity, 10);
+
+    if (!isLoggedIn) {
+      if (isNaN(parsedQty) || parsedQty <= 0) {
+        saveCartToStorage(cart.filter((item) => item.id !== productId));
+        return;
+      }
+      saveCartToStorage(cart.map((item) =>
+        item.id === productId ? { ...item, quantity: parsedQty } : item
+      ));
+      return;
+    }
+
+    const variantMap = await getVariantMap();
+    const variantId = variantMap.get(productId);
+    if (!variantId) return;
+    const { error } = await supabase.rpc('cart_set_item_quantity', {
+      p_variant_id: variantId,
+      p_quantity: isNaN(parsedQty) ? 0 : parsedQty,
+    });
+    if (error) {
+      console.error('Failed to update cart item quantity:', error);
+      return;
+    }
+    await fetchDbCart();
+  };
+
+  const clearCart = async () => {
+    if (!isLoggedIn) {
+      saveCartToStorage([]);
+      return;
+    }
+    const { error } = await supabase.rpc('cart_clear');
+    if (error) {
+      console.error('Failed to clear cart:', error);
+      return;
+    }
+    setCart([]);
   };
 
   // Save for Later Actions
-  const saveForLater = (productId) => {
+  const saveForLater = async (productId) => {
     const itemToSave = cart.find(item => item.id === productId);
     if (!itemToSave) return;
 
-    // Remove from active cart
-    const updatedCart = cart.filter(item => item.id !== productId);
-    saveCartToStorage(updatedCart);
+    await removeFromCart(productId);
 
-    // Add to save later list
     const exists = saveForLaterList.some(item => item.id === productId);
     if (!exists) {
-      const updatedList = [...saveForLaterList, itemToSave];
-      saveSaveLaterToStorage(updatedList);
+      saveSaveLaterToStorage([...saveForLaterList, itemToSave]);
     }
   };
 
-  const moveToCart = (productId) => {
+  const moveToCart = async (productId) => {
     const itemToMove = saveForLaterList.find(item => item.id === productId);
     if (!itemToMove) return;
 
-    // Remove from Save for Later
-    const updatedList = saveForLaterList.filter(item => item.id !== productId);
-    saveSaveLaterToStorage(updatedList);
-
-    // Add back to active cart
-    const existingIndex = cart.findIndex(item => item.id === productId);
-    if (existingIndex > -1) {
-      const updatedCart = [...cart];
-      updatedCart[existingIndex].quantity += itemToMove.quantity;
-      saveCartToStorage(updatedCart);
-    } else {
-      const updatedCart = [...cart, itemToMove];
-      saveCartToStorage(updatedCart);
-    }
+    saveSaveLaterToStorage(saveForLaterList.filter(item => item.id !== productId));
+    await addItemQuantity(itemToMove, itemToMove.quantity);
   };
 
   const removeFromSaveForLater = (productId) => {

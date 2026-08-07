@@ -12,5 +12,17 @@ if (!supabaseUrl || !supabaseAnonKey || supabaseUrl === 'YOUR_SUPABASE_PROJECT_U
 
 export const supabase = createClient(
   supabaseUrl || 'https://placeholder-url.supabase.co',
-  supabaseAnonKey || 'placeholder-anon-key'
+  supabaseAnonKey || 'placeholder-anon-key',
+  {
+    auth: {
+      // PKCE instead of the older implicit flow: the OAuth/recovery code is
+      // exchanged for a session using a locally-held verifier, so a leaked
+      // redirect URL alone (referrer headers, browser history, logs) can't
+      // be replayed to steal a session the way an implicit-flow token can.
+      flowType: 'pkce',
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+    },
+  }
 );

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, ShoppingBag, Trash, ArrowLeft, Check, Sparkles } from 'lucide-react';
+import { Heart, ShoppingBag, Trash, ArrowLeft, Check, Sparkles, Minus, Plus } from 'lucide-react';
 import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
 import { useRouter } from '../context/RouterContext';
@@ -17,7 +17,7 @@ import coverBouquets from '../assets/bloom-bouquets-cover.jpg';
 
 const Wishlist = () => {
   const { wishlist, removeFromWishlist } = useWishlist();
-  const { addToCart } = useCart();
+  const { addToCart, cart, updateQuantity } = useCart();
   const { navigate } = useRouter();
   const [cartStates, setCartStates] = useState({}); // { productId: boolean }
 
@@ -103,7 +103,9 @@ const Wishlist = () => {
             exit={{ opacity: 0 }}
             className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-7"
           >
-            {wishlist.map(item => (
+            {wishlist.map(item => {
+              const cartQty = cart.find((c) => c.id === item.id)?.quantity || 0;
+              return (
               <motion.div
                 key={item.id}
                 layout
@@ -160,28 +162,58 @@ const Wishlist = () => {
                   </div>
 
                   {/* Actions */}
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleAddToCart(item);
-                    }}
-                    className="w-full mt-auto inline-flex items-center justify-center gap-2 py-2.5 rounded-full bg-brand-plum hover:bg-brand-violet text-white font-semibold text-[10px] sm:text-xs uppercase tracking-widest hover:shadow-md transition-all duration-300 cursor-pointer h-10"
-                  >
-                    {cartStates[item.id] ? (
-                      <>
-                        <Check className="w-3.5 h-3.5 animate-pulse" />
-                        <span>Added!</span>
-                      </>
-                    ) : (
-                      <>
-                        <ShoppingBag className="w-3.5 h-3.5" />
-                        <span>Add to Cart</span>
-                      </>
-                    )}
-                  </button>
+                  {cartQty > 0 ? (
+                    <div
+                      onClick={(e) => e.stopPropagation()}
+                      className="w-full mt-auto inline-flex items-center justify-between rounded-full bg-brand-plum text-white h-10 px-2"
+                    >
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          updateQuantity(item.id, cartQty - 1);
+                        }}
+                        className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-white/20 cursor-pointer focus:outline-none"
+                        aria-label="Decrease quantity"
+                      >
+                        <Minus className="w-3.5 h-3.5" />
+                      </button>
+                      <span className="text-xs font-bold min-w-[1.5rem] text-center">{cartQty}</span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          updateQuantity(item.id, cartQty + 1);
+                        }}
+                        className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-white/20 cursor-pointer focus:outline-none"
+                        aria-label="Increase quantity"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleAddToCart(item);
+                      }}
+                      className="w-full mt-auto inline-flex items-center justify-center gap-2 py-2.5 rounded-full bg-brand-plum hover:bg-brand-violet text-white font-semibold text-[10px] sm:text-xs uppercase tracking-widest hover:shadow-md transition-all duration-300 cursor-pointer h-10"
+                    >
+                      {cartStates[item.id] ? (
+                        <>
+                          <Check className="w-3.5 h-3.5 animate-pulse" />
+                          <span>Added!</span>
+                        </>
+                      ) : (
+                        <>
+                          <ShoppingBag className="w-3.5 h-3.5" />
+                          <span>Add to Cart</span>
+                        </>
+                      )}
+                    </button>
+                  )}
                 </div>
               </motion.div>
-            ))}
+              );
+            })}
           </motion.div>
         )}
       </AnimatePresence>
