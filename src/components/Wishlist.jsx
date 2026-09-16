@@ -24,6 +24,7 @@ import flowerVase from '../assets/flower-vase.jpg';
 import bouquet1Flower from '../assets/bouquet-1-flower.jpg';
 import bouquet3Flower from '../assets/bouquet-3-flower.jpg';
 import bouquet5Flower from '../assets/bouquet-5-flower.jpg';
+import customHomeDecor from '../assets/custom-home-decor.jpg';
 
 const Wishlist = () => {
   const { wishlist, removeFromWishlist } = useWishlist();
@@ -40,6 +41,7 @@ const Wishlist = () => {
     if (rawSaved === 'bouquet-1-flower.jpg' || rawId === 'bloom-bouquet-1-flower') return bouquet1Flower;
     if (rawSaved === 'bouquet-3-flower.jpg' || rawId === 'bloom-bouquet-3-flower') return bouquet3Flower;
     if (rawSaved === 'bouquet-5-flower.jpg' || rawId === 'bloom-bouquet-5-flower') return bouquet5Flower;
+    if (rawSaved === 'custom-home-decor.jpg' || rawId.includes('custom-home-decor')) return customHomeDecor;
     if (rawSaved === 'embroidery-shirt.jpg' || rawId.includes('shirt')) return embroideryShirt;
     if (rawSaved === 'fridge-magnets.jpg' || rawId.includes('magnet')) return fridgeMagnets;
     if (rawSaved === 'flower-vase.jpg' || rawId.includes('vase')) return flowerVase;

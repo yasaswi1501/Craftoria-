@@ -28,6 +28,7 @@ import flowerVase from '../assets/flower-vase.jpg';
 import bouquet1Flower from '../assets/bouquet-1-flower.jpg';
 import bouquet3Flower from '../assets/bouquet-3-flower.jpg';
 import bouquet5Flower from '../assets/bouquet-5-flower.jpg';
+import customHomeDecor from '../assets/custom-home-decor.jpg';
 
 const CollectionPage = ({ collectionId }) => {
   const { navigate } = useRouter();
@@ -82,6 +83,7 @@ const CollectionPage = ({ collectionId }) => {
     if (imgName === 'bouquet-1-flower.jpg' || id === 'bloom-bouquet-1-flower') return bouquet1Flower;
     if (imgName === 'bouquet-3-flower.jpg' || id === 'bloom-bouquet-3-flower') return bouquet3Flower;
     if (imgName === 'bouquet-5-flower.jpg' || id === 'bloom-bouquet-5-flower') return bouquet5Flower;
+    if (imgName === 'custom-home-decor.jpg' || id.includes('custom-home-decor')) return customHomeDecor;
     if (imgName === 'embroidery-shirt.jpg' || id.includes('shirt')) return embroideryShirt;
     if (imgName === 'fridge-magnets.jpg' || id.includes('magnet')) return fridgeMagnets;
     if (imgName === 'flower-vase.jpg' || id.includes('vase')) return flowerVase;

@@ -28,6 +28,7 @@ import flowerVase from '../assets/flower-vase.jpg';
 import bouquet1Flower from '../assets/bouquet-1-flower.jpg';
 import bouquet3Flower from '../assets/bouquet-3-flower.jpg';
 import bouquet5Flower from '../assets/bouquet-5-flower.jpg';
+import customHomeDecor from '../assets/custom-home-decor.jpg';
 
 const ProductPage = ({ productSlug }) => {
   const { navigate } = useRouter();
@@ -53,6 +54,7 @@ const ProductPage = ({ productSlug }) => {
     if (imgName === 'bouquet-1-flower.jpg') return bouquet1Flower;
     if (imgName === 'bouquet-3-flower.jpg') return bouquet3Flower;
     if (imgName === 'bouquet-5-flower.jpg') return bouquet5Flower;
+    if (imgName === 'custom-home-decor.jpg') return customHomeDecor;
     if (imgName === 'embroidery-shirt.jpg') return embroideryShirt;
     if (imgName === 'fridge-magnets.jpg') return fridgeMagnets;
     if (imgName === 'flower-vase.jpg') return flowerVase;
