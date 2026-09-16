@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, CheckCircle2, Sparkles, Mail, Phone, AlertCircle } from 'lucide-react';
+import { Send, CheckCircle2, Sparkles, Mail, Phone, AlertCircle, MessageCircle } from 'lucide-react';
 import { HibiscusFlower, WatercolorWash } from './PremiumBackground';
+import { sendCustomRequestToWhatsApp, sendCustomRequestEmail, TARGET_CONTACT_EMAIL, WHATSAPP_PHONE_NUMBER } from '../utils/whatsapp';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -45,13 +46,23 @@ const Contact = () => {
     return Object.keys(errs).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
 
     setIsSubmitting(true);
-    // Simulate brief network submission
-    setTimeout(() => {
+    const submissionPayload = { ...formData };
+
+    try {
+      // 1. Dispatch email to thecraftoriaaa26@gmail.com
+      await sendCustomRequestEmail(submissionPayload);
+
+      // 2. Open WhatsApp pre-filled message to 9908860895
+      sendCustomRequestToWhatsApp(submissionPayload);
+    } catch (err) {
+      console.warn('Dispatch note:', err);
+      sendCustomRequestToWhatsApp(submissionPayload);
+    } finally {
       setIsSubmitting(false);
       setIsSubmitted(true);
       setFormData({
@@ -62,7 +73,7 @@ const Contact = () => {
         message: '',
       });
       setErrors({});
-    }, 400);
+    }
   };
 
   const handleChange = (e) => {
@@ -130,13 +141,13 @@ const Contact = () => {
             {/* Direct Clickable Contact Cards */}
             <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto pt-2">
               <a
-                href="mailto:contact@craftoria.com"
+                href="mailto:thecraftoriaaa26@gmail.com"
                 className="inline-flex items-center gap-2.5 px-4.5 py-2.5 rounded-2xl bg-white/70 hover:bg-white border border-brand-purple/20 text-brand-plum text-xs font-semibold shadow-xs transition-all duration-200"
               >
                 <div className="w-6 h-6 rounded-full bg-brand-purple/15 flex items-center justify-center">
                   <Mail className="w-3.5 h-3.5 text-brand-plum" />
                 </div>
-                <span>contact@craftoria.com</span>
+                <span>thecraftoriaaa26@gmail.com</span>
               </a>
 
               <a
@@ -282,7 +293,6 @@ const Contact = () => {
                             <option value="Polaroids">Aesthetic Polaroids</option>
                             <option value="Home Decor">Home Decor & Wall Hangings</option>
                             <option value="Clips & Rubber Bands">Clips & Hair Accessories</option>
-                            <option value="Custom Gifts">Personalized Gift Boxes</option>
                           </select>
                           <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-brand-plum text-[10px]">
                             ▼
@@ -322,7 +332,7 @@ const Contact = () => {
                         className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-brand-plum text-white font-semibold text-xs uppercase tracking-wider hover:bg-brand-violet hover:translate-y-[-1px] transition-all duration-300 shadow-md hover:shadow-lg w-full sm:w-auto cursor-pointer disabled:opacity-50"
                       >
                         {isSubmitting ? (
-                          <span>Sending Request...</span>
+                          <span>Sending to WhatsApp & Email...</span>
                         ) : (
                           <>
                             <span>Send Custom Request</span>
@@ -346,11 +356,11 @@ const Contact = () => {
                     </div>
 
                     <h3 className="font-serif text-2xl font-bold text-brand-dark">
-                      Request Received!
+                      Request Sent Successfully! 🎉
                     </h3>
 
                     <p className="text-xs sm:text-sm text-brand-dark/80 max-w-md leading-relaxed">
-                      Thank you for sharing your bespoke idea. Our artisan team will review your requirements and reach out via email within 24 hours.
+                      Your custom design request has been sent to our email (<span className="font-semibold text-brand-plum">thecraftoriaaa26@gmail.com</span>) and WhatsApp (<span className="font-semibold text-brand-plum">+91 99088 60895</span>). Our artisan team will review your requirements and respond promptly!
                     </p>
 
                     <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-cream border border-brand-purple/20 text-xs font-semibold text-brand-plum">
@@ -358,7 +368,17 @@ const Contact = () => {
                       <span>Artisan Commission Assigned</span>
                     </div>
 
-                    <div className="pt-3">
+                    <div className="pt-3 flex flex-wrap gap-3 items-center justify-center">
+                      <a
+                        href={`https://wa.me/${WHATSAPP_PHONE_NUMBER}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-emerald-600 text-white text-xs uppercase tracking-wider font-bold hover:bg-emerald-700 transition-all duration-200 shadow-sm cursor-pointer"
+                      >
+                        <MessageCircle className="w-4 h-4" />
+                        <span>Chat on WhatsApp</span>
+                      </a>
+
                       <button
                         onClick={() => setIsSubmitted(false)}
                         className="px-6 py-2.5 rounded-full border border-brand-purple/40 text-brand-plum text-xs uppercase tracking-wider font-bold hover:bg-brand-purple/10 transition-all duration-200 cursor-pointer"

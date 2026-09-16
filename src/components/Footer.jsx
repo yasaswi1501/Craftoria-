@@ -118,13 +118,13 @@ const Footer = () => {
 
             {/* Clickable Email Address */}
             <a
-              href="mailto:contact@craftoria.com"
+              href="mailto:thecraftoriaaa26@gmail.com"
               className="inline-flex items-center gap-2.5 text-brand-dark/80 hover:text-brand-plum font-semibold transition-colors group"
             >
               <div className="w-7 h-7 rounded-full bg-brand-purple/10 flex items-center justify-center group-hover:bg-brand-purple/20 transition-colors">
                 <Mail className="w-3.5 h-3.5 text-brand-plum" />
               </div>
-              <span>contact@craftoria.com</span>
+              <span>thecraftoriaaa26@gmail.com</span>
             </a>
           </div>
 
@@ -152,7 +152,7 @@ const Footer = () => {
                 <Facebook className="w-3.5 h-3.5" />
               </a>
               <a
-                href="mailto:contact@craftoria.com"
+                href="mailto:thecraftoriaaa26@gmail.com"
                 className="w-8 h-8 rounded-full bg-brand-cream/90 border border-brand-purple/20 flex items-center justify-center text-brand-plum hover:bg-brand-purple hover:text-white hover:translate-y-[-2px] transition-all duration-300 shadow-xs"
                 aria-label="Email Craftoria support"
               >

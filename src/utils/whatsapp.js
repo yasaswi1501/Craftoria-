@@ -62,3 +62,69 @@ export const redirectToWhatsApp = (cart, addressDetails = null, deliveryOption =
     window.location.href = whatsappUrl;
   }
 };
+
+export const TARGET_CONTACT_EMAIL = 'thecraftoriaaa26@gmail.com';
+
+/**
+ * Generate a formatted WhatsApp message for custom bespoke requests.
+ */
+export const generateCustomRequestWhatsAppMessage = ({ name, email, phone, productType, message }) => {
+  let text = `🌸 *New Custom Commission Request - Craftoria* 🌸\n\n`;
+  text += `👤 *Client Information:*\n`;
+  text += `• *Name:* ${name}\n`;
+  text += `• *Email:* ${email}\n`;
+  if (phone) text += `• *Mobile:* ${phone}\n`;
+  text += `\n🎨 *Craft Category:* ${productType}\n\n`;
+  text += `📝 *Design Details & Requirements:*\n${message}\n\n`;
+  text += `✨ Sent via Craftoria Bespoke Commission Form`;
+
+  return text;
+};
+
+/**
+ * Open WhatsApp with the pre-filled custom request details.
+ */
+export const sendCustomRequestToWhatsApp = ({ name, email, phone, productType, message }) => {
+  const text = generateCustomRequestWhatsAppMessage({ name, email, phone, productType, message });
+  const encodedText = encodeURIComponent(text);
+  const whatsappUrl = `https://wa.me/${WHATSAPP_PHONE_NUMBER}?text=${encodedText}`;
+
+  try {
+    const newWindow = window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+    if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+      window.location.href = whatsappUrl;
+    }
+  } catch {
+    window.location.href = whatsappUrl;
+  }
+};
+
+/**
+ * Dispatch the custom request form data to the target email address (thecraftoriaaa26@gmail.com).
+ */
+export const sendCustomRequestEmail = async ({ name, email, phone, productType, message }) => {
+  try {
+    const response = await fetch(`https://formsubmit.co/ajax/${TARGET_CONTACT_EMAIL}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({
+        _subject: `New Custom Commission Request from ${name} - Craftoria`,
+        _template: 'table',
+        name,
+        email,
+        phone: phone || 'Not provided',
+        craft_category: productType,
+        message,
+        sent_at: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
+      }),
+    });
+
+    return response.ok;
+  } catch (err) {
+    console.warn('FormSubmit AJAX request encountered an issue:', err);
+    return false;
+  }
+};

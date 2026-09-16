@@ -346,11 +346,11 @@ const Header = () => {
                   <span>+91 99088 60895</span>
                 </a>
                 <a
-                  href="mailto:contact@craftoria.com"
+                  href="mailto:thecraftoriaaa26@gmail.com"
                   className="flex items-center gap-2 text-xs font-semibold text-brand-dark hover:text-brand-plum transition-colors py-1"
                 >
                   <Mail className="w-3.5 h-3.5 text-brand-plum" />
-                  <span>contact@craftoria.com</span>
+                  <span>thecraftoriaaa26@gmail.com</span>
                 </a>
               </div>
             </motion.div>
