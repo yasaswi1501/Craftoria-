@@ -52,7 +52,7 @@ export const generateWhatsAppOrderMessage = (cart, addressDetails = null, delive
   }
 
   text += `\n*Photo / Reference Attachments:* If you have reference photos, polaroid pictures, or custom sketches, please attach them directly in this WhatsApp chat!\n`;
-  text += `\n*Message:* Hi Craftoria! I would like to proceed with the payment and place an order for the above handcrafted items. Please share the pricing and payment details!`;
+  text += `\n*Message:* Hi Craftoria! I would like to proceed with the payment and place an order for the above handcrafted items. Please share the pricing and payment details! ✨`;
 
   return text;
 };
@@ -65,7 +65,7 @@ export const redirectToWhatsApp = (cart, addressDetails = null, deliveryOption =
 
   const text = generateWhatsAppOrderMessage(cart, addressDetails, deliveryOption);
   const encodedText = encodeURIComponent(text);
-  const whatsappUrl = `https://wa.me/${WHATSAPP_PHONE_NUMBER}?text=${encodedText}`;
+  const whatsappUrl = `https://api.whatsapp.com/send?phone=${WHATSAPP_PHONE_NUMBER}&text=${encodedText}`;
 
   try {
     const newWindow = window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
@@ -101,7 +101,7 @@ export const generateCustomRequestWhatsAppMessage = ({ name, email, phone, produ
 export const sendCustomRequestToWhatsApp = ({ name, email, phone, productType, message }) => {
   const text = generateCustomRequestWhatsAppMessage({ name, email, phone, productType, message });
   const encodedText = encodeURIComponent(text);
-  const whatsappUrl = `https://wa.me/${WHATSAPP_PHONE_NUMBER}?text=${encodedText}`;
+  const whatsappUrl = `https://api.whatsapp.com/send?phone=${WHATSAPP_PHONE_NUMBER}&text=${encodedText}`;
 
   try {
     const newWindow = window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
