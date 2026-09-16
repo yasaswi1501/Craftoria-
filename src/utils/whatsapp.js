@@ -11,34 +11,34 @@ export const WHATSAPP_PHONE_NUMBER = '919908860895';
 export const generateWhatsAppOrderMessage = (cart, addressDetails = null, deliveryOption = 'standard') => {
   if (!cart || cart.length === 0) return '';
 
-  let text = `🌸 *New Order Request - Craftoria* 🌸\n\n`;
-  text += `🛍️ *Cart Items:*\n`;
+  let text = `*New Order Request - Craftoria*\n\n`;
+  text += `*Cart Items:*\n`;
 
   cart.forEach((item, index) => {
     text += `${index + 1}. *${item.name}* (Qty: ${item.quantity})\n`;
     const custText = item.customText || item.customization?.text;
     if (custText) {
-      text += `   ✍️ _Personalization: ${custText}_\n`;
+      text += `   _Personalization: ${custText}_\n`;
     }
     if (item.customization?.occasion) {
-      text += `   🎁 _Occasion: ${item.customization.occasion}_\n`;
+      text += `   _Occasion: ${item.customization.occasion}_\n`;
     }
     if (item.customization?.packaging) {
-      text += `   📦 _Packaging: ${item.customization.packaging}_\n`;
+      text += `   _Packaging: ${item.customization.packaging}_\n`;
     }
     if (item.customization?.giftNote) {
-      text += `   💌 _Gift Note: "${item.customization.giftNote}"_\n`;
+      text += `   _Gift Note: "${item.customization.giftNote}"_\n`;
     }
     if (item.customization?.specialNotes) {
-      text += `   📝 _Special Instructions: "${item.customization.specialNotes}"_\n`;
+      text += `   _Special Instructions: "${item.customization.specialNotes}"_\n`;
     }
   });
 
   const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
-  text += `\n📦 *Total Items:* ${totalItems}\n`;
+  text += `\n*Total Items:* ${totalItems}\n`;
 
   if (addressDetails) {
-    text += `\n📍 *Delivery Details:*\n`;
+    text += `\n*Delivery Details:*\n`;
     if (addressDetails.fullName) text += `• *Name:* ${addressDetails.fullName}\n`;
     if (addressDetails.phone) text += `• *Phone:* ${addressDetails.phone}\n`;
     if (addressDetails.building || addressDetails.street) {
@@ -51,8 +51,8 @@ export const generateWhatsAppOrderMessage = (cart, addressDetails = null, delive
     text += `• *Shipping Option:* ${deliveryOption === 'express' ? 'Express Delivery (1–2 Days)' : 'Standard Delivery (3–5 Days)'}\n`;
   }
 
-  text += `\n📸 *Photo / Reference Attachments:* If you have reference photos, polaroid pictures, or custom sketches, please attach them directly in this WhatsApp chat!\n`;
-  text += `\n💬 *Message:* Hi Craftoria! I would like to proceed with the payment and place an order for the above handcrafted items. Please share the pricing and payment details! ✨`;
+  text += `\n*Photo / Reference Attachments:* If you have reference photos, polaroid pictures, or custom sketches, please attach them directly in this WhatsApp chat!\n`;
+  text += `\n*Message:* Hi Craftoria! I would like to proceed with the payment and place an order for the above handcrafted items. Please share the pricing and payment details! ✨`;
 
   return text;
 };
@@ -83,14 +83,14 @@ export const TARGET_CONTACT_EMAIL = 'thecraftoriaaa26@gmail.com';
  * Generate a formatted WhatsApp message for custom bespoke requests.
  */
 export const generateCustomRequestWhatsAppMessage = ({ name, email, phone, productType, message }) => {
-  let text = `🌸 *New Custom Commission Request - Craftoria* 🌸\n\n`;
-  text += `👤 *Client Information:*\n`;
+  let text = `*New Custom Commission Request - Craftoria*\n\n`;
+  text += `*Client Information:*\n`;
   text += `• *Name:* ${name}\n`;
   text += `• *Email:* ${email}\n`;
   if (phone) text += `• *Mobile:* ${phone}\n`;
-  text += `\n🎨 *Craft Category:* ${productType}\n\n`;
-  text += `📝 *Design Details & Requirements:*\n${message}\n\n`;
-  text += `✨ Sent via Craftoria Bespoke Commission Form`;
+  text += `\n*Craft Category:* ${productType}\n\n`;
+  text += `*Design Details & Requirements:*\n${message}\n\n`;
+  text += `Sent via Craftoria Bespoke Commission Form`;
 
   return text;
 };
