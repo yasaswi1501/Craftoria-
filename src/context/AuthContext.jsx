@@ -202,6 +202,42 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const updateUserProfile = async ({ name, phone, picture }) => {
+    try {
+      const updatedUser = {
+        ...user,
+        name: name !== undefined ? name : user?.name,
+        phone: phone !== undefined ? phone : user?.phone,
+        picture: picture !== undefined ? picture : user?.picture,
+      };
+      setUser(updatedUser);
+      localStorage.setItem('craftoria_user', JSON.stringify(updatedUser));
+
+      // Attempt background update with Supabase
+      try {
+        await supabase.auth.updateUser({
+          data: {
+            full_name: name,
+            phone: phone,
+          }
+        });
+        if (user?.id) {
+          await supabase.from('profiles').update({
+            full_name: name,
+            phone: phone,
+          }).eq('id', user.id);
+        }
+      } catch (e) {
+        console.warn('Background profile update notice:', e);
+      }
+
+      return { success: true };
+    } catch (err) {
+      console.error('Error updating profile:', err);
+      return { success: false, message: 'Failed to update profile.' };
+    }
+  };
+
   // UI-only convenience -- never the actual authorization boundary. Every
   // sensitive table/RPC re-checks role itself via RLS regardless of what
   // this returns, so a stale or spoofed client value can't grant real access.
@@ -218,6 +254,7 @@ export const AuthProvider = ({ children }) => {
         loginWithGoogle,
         logout,
         forgotPassword,
+        updateUserProfile,
         loading,
         isAuthModalOpen,
         setIsAuthModalOpen,

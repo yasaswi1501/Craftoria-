@@ -1,49 +1,113 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, User, ShoppingBag, Heart, MapPin, LogOut, ChevronRight, Settings, Trash } from 'lucide-react';
+import { 
+  X, User, ShoppingBag, Heart, MapPin, LogOut, ChevronRight, 
+  Trash, Edit2, Plus, Check, Save, AlertCircle, Phone, Mail, Home, Briefcase
+} from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
 import { supabase } from '../lib/supabase';
 
 const AccountMenu = ({ isOpen, onClose }) => {
-  const { user, logout } = useAuth();
+  const { user, logout, updateUserProfile } = useAuth();
   const { wishlist, removeFromWishlist } = useWishlist();
   const { addToCart } = useCart();
   
   // Current tab: 'menu' | 'profile' | 'orders' | 'wishlist' | 'addresses'
   const [activeTab, setActiveTab] = useState('menu');
   const [orders, setOrders] = useState([]);
-  const [addresses, setAddresses] = useState([
-    { id: 1, type: 'Home', address: '123 Lavender Lane, Lily Valley, 10001' }
-  ]);
 
+  // --- Profile Edit State ---
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [profileName, setProfileName] = useState(user?.name || '');
+  const [profilePhone, setProfilePhone] = useState(user?.phone || '');
+  const [profileSaveStatus, setProfileSaveStatus] = useState(null); // 'saving' | 'saved' | 'error'
+
+  // --- Addresses State ---
+  const getInitialAddresses = () => {
+    try {
+      const key = `craftoria_addresses_${user?.email || 'default'}`;
+      const saved = localStorage.getItem(key);
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return [
+      {
+        id: 1,
+        type: 'Home',
+        recipientName: user?.name || 'Customer',
+        phone: user?.phone || '+91 99088 60895',
+        building: 'Flat 4B, Lavender Meadows',
+        street: 'Artisan Blossom Road, Lily Valley',
+        city: 'Hyderabad',
+        state: 'Telangana',
+        pinCode: '500081',
+      }
+    ];
+  };
+
+  const [addresses, setAddresses] = useState(getInitialAddresses);
+  const [editingAddressId, setEditingAddressId] = useState(null); // null | address.id | 'new'
+  const [addressForm, setAddressForm] = useState({
+    type: 'Home',
+    recipientName: '',
+    phone: '',
+    building: '',
+    street: '',
+    city: '',
+    state: '',
+    pinCode: '',
+  });
+
+  // Sync profile fields when user changes
+  useEffect(() => {
+    if (user) {
+      setProfileName(user.name || '');
+      setProfilePhone(user.phone || '');
+    }
+  }, [user]);
+
+  // Sync addresses to localStorage whenever addresses change
+  const saveAddressesToStorage = (updated) => {
+    setAddresses(updated);
+    try {
+      const key = `craftoria_addresses_${user?.email || 'default'}`;
+      localStorage.setItem(key, JSON.stringify(updated));
+    } catch (e) {
+      console.error('Failed to save addresses:', e);
+    }
+  };
+
+  // Load orders from Supabase if activeTab is 'orders'
   useEffect(() => {
     if (!isOpen || activeTab !== 'orders' || !user) return;
     let active = true;
 
     (async () => {
-      const { data, error } = await supabase
-        .from('orders')
-        .select('order_number, status, payment_status, created_at, total_amount, shipping_address_snapshot, order_items(product_name, quantity)')
-        .order('created_at', { ascending: false });
+      try {
+        const { data, error } = await supabase
+          .from('orders')
+          .select('order_number, status, payment_status, created_at, total_amount, shipping_address_snapshot, order_items(product_name, quantity)')
+          .order('created_at', { ascending: false });
 
-      if (!active) return;
-      if (error) {
-        console.error('Failed to load orders:', error);
-        setOrders([]);
-        return;
+        if (!active) return;
+        if (error) {
+          setOrders([]);
+          return;
+        }
+
+        setOrders((data || []).map((o) => ({
+          orderId: o.order_number,
+          date: new Date(o.created_at).toLocaleDateString(),
+          total: o.total_amount,
+          orderStatus: o.status?.replace(/_/g, ' ').toUpperCase(),
+          paymentStatus: o.payment_status?.toUpperCase(),
+          items: (o.order_items || []).map((it) => ({ name: it.product_name, quantity: it.quantity })),
+          shippingAddress: o.shipping_address_snapshot,
+        })));
+      } catch (e) {
+        if (active) setOrders([]);
       }
-
-      setOrders((data || []).map((o) => ({
-        orderId: o.order_number,
-        date: new Date(o.created_at).toLocaleDateString(),
-        total: o.total_amount,
-        orderStatus: o.status?.replace(/_/g, ' ').toUpperCase(),
-        paymentStatus: o.payment_status?.toUpperCase(),
-        items: (o.order_items || []).map((it) => ({ name: it.product_name, quantity: it.quantity })),
-        shippingAddress: o.shipping_address_snapshot,
-      })));
     })();
 
     return () => { active = false; };
@@ -58,6 +122,83 @@ const AccountMenu = ({ isOpen, onClose }) => {
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
+    setIsEditingProfile(false);
+    setEditingAddressId(null);
+    setProfileSaveStatus(null);
+  };
+
+  // --- Profile Edit Handlers ---
+  const handleSaveProfile = async (e) => {
+    e.preventDefault();
+    setProfileSaveStatus('saving');
+    const res = await updateUserProfile({
+      name: profileName.trim(),
+      phone: profilePhone.trim(),
+    });
+    if (res.success) {
+      setProfileSaveStatus('saved');
+      setTimeout(() => {
+        setIsEditingProfile(false);
+        setProfileSaveStatus(null);
+      }, 1000);
+    } else {
+      setProfileSaveStatus('error');
+    }
+  };
+
+  // --- Address Edit Handlers ---
+  const handleStartEditAddress = (adr) => {
+    setEditingAddressId(adr.id);
+    setAddressForm({
+      type: adr.type || 'Home',
+      recipientName: adr.recipientName || user?.name || '',
+      phone: adr.phone || user?.phone || '',
+      building: adr.building || '',
+      street: adr.street || '',
+      city: adr.city || '',
+      state: adr.state || '',
+      pinCode: adr.pinCode || '',
+    });
+  };
+
+  const handleStartNewAddress = () => {
+    setEditingAddressId('new');
+    setAddressForm({
+      type: 'Home',
+      recipientName: user?.name || '',
+      phone: user?.phone || '',
+      building: '',
+      street: '',
+      city: '',
+      state: '',
+      pinCode: '',
+    });
+  };
+
+  const handleSaveAddress = (e) => {
+    e.preventDefault();
+    if (!addressForm.building.trim() || !addressForm.city.trim() || !addressForm.pinCode.trim()) {
+      return;
+    }
+
+    if (editingAddressId === 'new') {
+      const newAddress = {
+        id: Date.now(),
+        ...addressForm,
+      };
+      saveAddressesToStorage([...addresses, newAddress]);
+    } else {
+      const updated = addresses.map((a) =>
+        a.id === editingAddressId ? { ...a, ...addressForm } : a
+      );
+      saveAddressesToStorage(updated);
+    }
+    setEditingAddressId(null);
+  };
+
+  const handleDeleteAddress = (id) => {
+    const updated = addresses.filter((a) => a.id !== id);
+    saveAddressesToStorage(updated);
   };
 
   return (
@@ -102,29 +243,44 @@ const AccountMenu = ({ isOpen, onClose }) => {
 
         {/* Content */}
         <div className="flex-grow overflow-y-auto px-6 py-6 text-left">
+          {/* MENU TAB */}
           {activeTab === 'menu' && (
             <div className="flex flex-col h-full justify-between">
               <div className="flex flex-col gap-6">
-                {/* User Greeting Card */}
-                <div className="glass-card p-5 rounded-[24px] border border-brand-purple/25 flex items-center gap-4 bg-white/20">
-                  <div className="w-12 h-12 rounded-full border border-brand-purple/10 overflow-hidden bg-brand-plum text-white flex items-center justify-center font-serif text-lg font-bold flex-shrink-0">
-                    {user?.picture ? (
-                      <img src={user.picture} alt={user.name} className="w-full h-full object-cover" />
-                    ) : (
-                      user?.name ? user.name[0].toUpperCase() : '👤'
-                    )}
+                {/* User Greeting Card with Quick Edit */}
+                <div className="glass-card p-5 rounded-[24px] border border-brand-purple/25 flex items-center justify-between gap-3 bg-white/40 shadow-xs">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-full border border-brand-purple/10 overflow-hidden bg-brand-plum text-white flex items-center justify-center font-serif text-lg font-bold flex-shrink-0">
+                      {user?.picture ? (
+                        <img src={user.picture} alt={user.name} className="w-full h-full object-cover" />
+                      ) : (
+                        user?.name ? user.name[0].toUpperCase() : '👤'
+                      )}
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-[10px] text-brand-dark/60 font-semibold uppercase tracking-wider font-mono">Welcome back,</span>
+                      <h3 className="font-serif text-base font-bold text-brand-dark leading-tight">{user?.name || 'Customer'}</h3>
+                      <span className="text-[11px] text-brand-dark/65 truncate max-w-[180px]">{user?.email}</span>
+                    </div>
                   </div>
-                  <div className="flex flex-col">
-                    <span className="text-xs text-brand-dark/60 font-semibold uppercase tracking-wider">Welcome back,</span>
-                    <h3 className="font-serif text-base font-bold text-brand-dark leading-tight">{user?.name || 'Customer'}</h3>
-                  </div>
+                  <button
+                    onClick={() => {
+                      setActiveTab('profile');
+                      setIsEditingProfile(true);
+                    }}
+                    className="p-2 rounded-full hover:bg-brand-purple/10 text-brand-plum cursor-pointer transition-colors"
+                    title="Edit Profile"
+                    aria-label="Edit Profile"
+                  >
+                    <Edit2 className="w-4 h-4" />
+                  </button>
                 </div>
 
-                {/* Menu items */}
+                {/* Menu Navigation Items */}
                 <div className="flex flex-col gap-2">
                   <button
                     onClick={() => handleTabChange('profile')}
-                    className="w-full flex items-center justify-between p-4 rounded-2xl hover:bg-brand-purple/10 transition-colors cursor-pointer text-sm font-semibold"
+                    className="w-full flex items-center justify-between p-4 rounded-2xl bg-white/40 border border-brand-purple/10 hover:bg-brand-purple/10 transition-colors cursor-pointer text-sm font-semibold"
                   >
                     <div className="flex items-center gap-3">
                       <User className="w-4.5 h-4.5 text-brand-plum" />
@@ -135,7 +291,7 @@ const AccountMenu = ({ isOpen, onClose }) => {
 
                   <button
                     onClick={() => handleTabChange('orders')}
-                    className="w-full flex items-center justify-between p-4 rounded-2xl hover:bg-brand-purple/10 transition-colors cursor-pointer text-sm font-semibold"
+                    className="w-full flex items-center justify-between p-4 rounded-2xl bg-white/40 border border-brand-purple/10 hover:bg-brand-purple/10 transition-colors cursor-pointer text-sm font-semibold"
                   >
                     <div className="flex items-center gap-3">
                       <ShoppingBag className="w-4.5 h-4.5 text-brand-plum" />
@@ -146,7 +302,7 @@ const AccountMenu = ({ isOpen, onClose }) => {
 
                   <button
                     onClick={() => handleTabChange('wishlist')}
-                    className="w-full flex items-center justify-between p-4 rounded-2xl hover:bg-brand-purple/10 transition-colors cursor-pointer text-sm font-semibold"
+                    className="w-full flex items-center justify-between p-4 rounded-2xl bg-white/40 border border-brand-purple/10 hover:bg-brand-purple/10 transition-colors cursor-pointer text-sm font-semibold"
                   >
                     <div className="flex items-center gap-3">
                       <Heart className="w-4.5 h-4.5 text-brand-plum" />
@@ -157,7 +313,7 @@ const AccountMenu = ({ isOpen, onClose }) => {
 
                   <button
                     onClick={() => handleTabChange('addresses')}
-                    className="w-full flex items-center justify-between p-4 rounded-2xl hover:bg-brand-purple/10 transition-colors cursor-pointer text-sm font-semibold"
+                    className="w-full flex items-center justify-between p-4 rounded-2xl bg-white/40 border border-brand-purple/10 hover:bg-brand-purple/10 transition-colors cursor-pointer text-sm font-semibold"
                   >
                     <div className="flex items-center gap-3">
                       <MapPin className="w-4.5 h-4.5 text-brand-plum" />
@@ -168,7 +324,7 @@ const AccountMenu = ({ isOpen, onClose }) => {
                 </div>
               </div>
 
-              {/* Logout at bottom */}
+              {/* Logout button at bottom */}
               <button
                 onClick={handleLogout}
                 className="mt-8 w-full py-3.5 rounded-full border border-red-200 text-red-600 hover:bg-red-50 transition-colors cursor-pointer flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider"
@@ -179,48 +335,131 @@ const AccountMenu = ({ isOpen, onClose }) => {
             </div>
           )}
 
-          {/* MY PROFILE DETAILS */}
+          {/* MY PROFILE DETAILS & EDITING */}
           {activeTab === 'profile' && (
             <div>
-              <button
-                onClick={() => handleTabChange('menu')}
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-plum/80 hover:text-brand-purple mb-6 focus:outline-none"
-              >
-                <ChevronRight className="w-3.5 h-3.5 rotate-180" /> Back to Account
-              </button>
+              <div className="flex items-center justify-between mb-6">
+                <button
+                  onClick={() => handleTabChange('menu')}
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-plum hover:underline focus:outline-none cursor-pointer"
+                >
+                  <ChevronRight className="w-3.5 h-3.5 rotate-180" /> Back to Account
+                </button>
 
-              <div className="flex flex-col gap-5">
-                {user?.picture && (
-                  <div className="flex flex-col items-center pb-4 border-b border-brand-purple/10">
-                    <img 
-                      src={user.picture} 
-                      alt={user.name} 
-                      className="w-20 h-20 rounded-full object-cover border-2 border-brand-purple/35 shadow-sm" 
-                    />
-                    <span className="text-[9px] bg-brand-purple/15 text-brand-plum font-bold px-2.5 py-0.5 rounded-full mt-2.5 uppercase tracking-wider inline-flex items-center gap-1">
-                      <svg className="w-3 h-3 text-brand-plum" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
-                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-                      </svg>
-                      Google Verified
-                    </span>
-                  </div>
+                {!isEditingProfile && (
+                  <button
+                    onClick={() => setIsEditingProfile(true)}
+                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-brand-plum/10 text-brand-plum hover:bg-brand-plum hover:text-white text-xs font-bold transition-all cursor-pointer"
+                  >
+                    <Edit2 className="w-3.5 h-3.5" /> Edit Profile
+                  </button>
                 )}
-                <div className="flex flex-col pb-4 border-b border-brand-purple/10">
-                  <span className="text-[10px] font-bold text-brand-plum/80 uppercase tracking-widest">Full Name</span>
-                  <span className="text-sm font-semibold mt-1">{user?.name}</span>
-                </div>
-                <div className="flex flex-col pb-4 border-b border-brand-purple/10">
-                  <span className="text-[10px] font-bold text-brand-plum/80 uppercase tracking-widest">Email Address</span>
-                  <span className="text-sm font-semibold mt-1">{user?.email}</span>
-                </div>
-                <div className="flex flex-col pb-4 border-b border-brand-purple/10">
-                  <span className="text-[10px] font-bold text-brand-plum/80 uppercase tracking-widest">Mobile Number</span>
-                  <span className="text-sm font-semibold mt-1">{user?.phone || 'Not provided'}</span>
-                </div>
               </div>
+
+              {isEditingProfile ? (
+                /* Profile Edit Form */
+                <form onSubmit={handleSaveProfile} className="space-y-4 bg-white/70 p-5 rounded-[24px] border border-brand-purple/20 shadow-xs">
+                  <div className="flex items-center justify-between pb-3 border-b border-brand-purple/10">
+                    <span className="font-serif text-sm font-bold text-brand-dark">Edit Profile Details</span>
+                    <span className="text-[10px] text-brand-dark/50 font-mono">Personal Info</span>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-bold text-brand-dark/80 block">Full Name</label>
+                    <input
+                      type="text"
+                      value={profileName}
+                      onChange={(e) => setProfileName(e.target.value)}
+                      required
+                      placeholder="Enter your full name"
+                      className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-brand-purple/20 bg-white focus:outline-none focus:border-brand-purple font-medium"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-bold text-brand-dark/80 block">Email Address (Read-only)</label>
+                    <input
+                      type="email"
+                      value={user?.email || ''}
+                      disabled
+                      className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-brand-purple/15 bg-gray-100/70 text-brand-dark/60 cursor-not-allowed font-medium"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-bold text-brand-dark/80 block">Mobile Number</label>
+                    <input
+                      type="tel"
+                      value={profilePhone}
+                      onChange={(e) => setProfilePhone(e.target.value)}
+                      placeholder="+91 98765 43210"
+                      className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-brand-purple/20 bg-white focus:outline-none focus:border-brand-purple font-medium"
+                    />
+                  </div>
+
+                  {profileSaveStatus === 'saved' && (
+                    <div className="p-2.5 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-semibold flex items-center gap-1.5">
+                      <Check className="w-4 h-4" /> Profile updated successfully!
+                    </div>
+                  )}
+
+                  {profileSaveStatus === 'error' && (
+                    <div className="p-2.5 rounded-xl bg-rose-50 text-rose-700 border border-rose-200 text-xs font-semibold flex items-center gap-1.5">
+                      <AlertCircle className="w-4 h-4" /> Failed to save profile changes.
+                    </div>
+                  )}
+
+                  <div className="flex gap-2.5 pt-2">
+                    <button
+                      type="submit"
+                      disabled={profileSaveStatus === 'saving'}
+                      className="flex-1 py-2.5 px-4 rounded-full bg-brand-plum hover:bg-brand-violet text-white text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-50"
+                    >
+                      <Save className="w-3.5 h-3.5" />
+                      {profileSaveStatus === 'saving' ? 'Saving...' : 'Save Changes'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsEditingProfile(false);
+                        setProfileName(user?.name || '');
+                        setProfilePhone(user?.phone || '');
+                      }}
+                      className="py-2.5 px-4 rounded-full border border-brand-purple/20 text-brand-dark/70 hover:bg-brand-purple/5 text-xs font-bold transition-colors cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                /* Profile View Details */
+                <div className="flex flex-col gap-4 bg-white/70 p-5 rounded-[24px] border border-brand-purple/20 shadow-xs">
+                  {user?.picture && (
+                    <div className="flex flex-col items-center pb-4 border-b border-brand-purple/10">
+                      <img 
+                        src={user.picture} 
+                        alt={user.name} 
+                        className="w-20 h-20 rounded-full object-cover border-2 border-brand-purple/35 shadow-sm" 
+                      />
+                      <span className="text-[9px] bg-brand-purple/15 text-brand-plum font-bold px-2.5 py-0.5 rounded-full mt-2.5 uppercase tracking-wider inline-flex items-center gap-1">
+                        Verified Member
+                      </span>
+                    </div>
+                  )}
+                  <div className="flex flex-col pb-3 border-b border-brand-purple/10">
+                    <span className="text-[10px] font-bold text-brand-plum/80 uppercase tracking-widest font-mono">Full Name</span>
+                    <span className="text-sm font-semibold mt-0.5 text-brand-dark">{user?.name || 'Customer'}</span>
+                  </div>
+                  <div className="flex flex-col pb-3 border-b border-brand-purple/10">
+                    <span className="text-[10px] font-bold text-brand-plum/80 uppercase tracking-widest font-mono">Email Address</span>
+                    <span className="text-sm font-semibold mt-0.5 text-brand-dark">{user?.email}</span>
+                  </div>
+                  <div className="flex flex-col pb-1">
+                    <span className="text-[10px] font-bold text-brand-plum/80 uppercase tracking-widest font-mono">Mobile Number</span>
+                    <span className="text-sm font-semibold mt-0.5 text-brand-dark">{user?.phone || 'Not provided'}</span>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -229,7 +468,7 @@ const AccountMenu = ({ isOpen, onClose }) => {
             <div className="h-full flex flex-col">
               <button
                 onClick={() => handleTabChange('menu')}
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-plum/80 hover:text-brand-purple mb-6 focus:outline-none"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-plum hover:underline mb-6 focus:outline-none cursor-pointer"
               >
                 <ChevronRight className="w-3.5 h-3.5 rotate-180" /> Back to Account
               </button>
@@ -242,7 +481,7 @@ const AccountMenu = ({ isOpen, onClose }) => {
               ) : (
                 <div className="flex flex-col gap-4">
                   {orders.map((ord) => (
-                    <div key={ord.orderId} className="glass-card p-4 rounded-[22px] border border-brand-purple/15 text-xs">
+                    <div key={ord.orderId} className="glass-card p-4 rounded-[22px] border border-brand-purple/15 text-xs bg-white/70">
                       <div className="flex items-center justify-between border-b border-brand-purple/10 pb-2 mb-2">
                         <span className="font-mono font-bold text-brand-plum">{ord.orderId}</span>
                         <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">{ord.orderStatus || ord.paymentStatus || 'CONFIRMED'}</span>
@@ -278,7 +517,7 @@ const AccountMenu = ({ isOpen, onClose }) => {
             <div>
               <button
                 onClick={() => handleTabChange('menu')}
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-plum/80 hover:text-brand-purple mb-6 focus:outline-none"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-plum hover:underline mb-6 focus:outline-none cursor-pointer"
               >
                 <ChevronRight className="w-3.5 h-3.5 rotate-180" /> Back to Account
               </button>
@@ -290,30 +529,31 @@ const AccountMenu = ({ isOpen, onClose }) => {
                   <a
                     href="/#collections"
                     onClick={onClose}
-                    className="text-[10px] font-bold text-brand-plum hover:underline mt-2"
+                    className="text-[10px] font-bold text-brand-plum hover:underline mt-2 cursor-pointer"
                   >
                     Explore Collections
                   </a>
                 </div>
               ) : (
-                <div className="flex flex-col gap-3 max-h-[300px] overflow-y-auto pr-1">
+                <div className="flex flex-col gap-3 max-h-[360px] overflow-y-auto pr-1">
                   {wishlist.map((item) => (
-                    <div key={item.id} className="glass-card p-3 rounded-xl border border-brand-purple/15 flex justify-between items-center text-xs text-left">
-                      <div className="flex flex-col text-left">
-                        <span className="font-serif font-bold text-brand-dark">{item.name}</span>
+                    <div key={item.id} className="glass-card p-3.5 rounded-2xl border border-brand-purple/15 flex justify-between items-center text-xs text-left bg-white/70">
+                      <div className="flex flex-col text-left pr-2">
+                        <span className="font-serif font-bold text-brand-dark line-clamp-1">{item.name}</span>
+                        {item.category && (
+                          <span className="text-[9px] text-brand-dark/50 capitalize font-mono">{item.category.replace('-', ' ')}</span>
+                        )}
                       </div>
-                      <div className="flex gap-2.5 items-center">
+                      <div className="flex gap-2 items-center flex-shrink-0">
                         <button
-                          onClick={() => {
-                            addToCart(item);
-                          }}
-                          className="px-2.5 py-1.5 rounded-full bg-brand-plum text-white text-[9px] font-bold uppercase tracking-wider hover:bg-brand-violet cursor-pointer"
+                          onClick={() => addToCart(item)}
+                          className="px-3 py-1.5 rounded-full bg-brand-plum text-white text-[9px] font-bold uppercase tracking-wider hover:bg-brand-violet cursor-pointer transition-colors"
                         >
-                          Add
+                          Add to Cart
                         </button>
                         <button
                           onClick={() => removeFromWishlist(item.id)}
-                          className="p-1.5 rounded-full text-red-500 hover:bg-red-50 cursor-pointer"
+                          className="p-1.5 rounded-full text-red-500 hover:bg-red-50 cursor-pointer transition-colors"
                           aria-label="Remove from wishlist"
                         >
                           <Trash className="w-3.5 h-3.5" />
@@ -325,7 +565,7 @@ const AccountMenu = ({ isOpen, onClose }) => {
                   <a
                     href="/wishlist"
                     onClick={onClose}
-                    className="text-center text-[10px] font-bold text-brand-plum hover:underline mt-2 block"
+                    className="text-center text-[11px] font-bold text-brand-plum hover:underline mt-3 block"
                   >
                     View Full Wishlist Page ➔
                   </a>
@@ -334,27 +574,209 @@ const AccountMenu = ({ isOpen, onClose }) => {
             </div>
           )}
 
-          {/* SAVED ADDRESSES */}
+          {/* SAVED ADDRESSES WITH FULL EDIT / ADD / DELETE */}
           {activeTab === 'addresses' && (
             <div>
-              <button
-                onClick={() => handleTabChange('menu')}
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-plum/80 hover:text-brand-purple mb-6 focus:outline-none"
-              >
-                <ChevronRight className="w-3.5 h-3.5 rotate-180" /> Back to Account
-              </button>
+              <div className="flex items-center justify-between mb-6">
+                <button
+                  onClick={() => handleTabChange('menu')}
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-plum hover:underline focus:outline-none cursor-pointer"
+                >
+                  <ChevronRight className="w-3.5 h-3.5 rotate-180" /> Back to Account
+                </button>
 
-              <div className="flex flex-col gap-3">
-                {addresses.map((adr) => (
-                  <div key={adr.id} className="glass-card p-4 rounded-2xl border border-brand-purple/15 flex gap-3 text-xs">
-                    <MapPin className="w-5 h-5 text-brand-plum flex-shrink-0" />
-                    <div className="flex flex-col">
-                      <span className="font-bold text-brand-plum">{adr.type} Address</span>
-                      <span className="text-brand-dark/75 mt-1 leading-relaxed">{adr.address}</span>
+                {editingAddressId === null && (
+                  <button
+                    onClick={handleStartNewAddress}
+                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-brand-plum text-white hover:bg-brand-violet text-xs font-bold transition-all cursor-pointer shadow-xs"
+                  >
+                    <Plus className="w-3.5 h-3.5" /> Add Address
+                  </button>
+                )}
+              </div>
+
+              {/* Add / Edit Address Form */}
+              {editingAddressId !== null ? (
+                <form onSubmit={handleSaveAddress} className="space-y-3.5 bg-white/70 p-5 rounded-[24px] border border-brand-purple/20 shadow-xs">
+                  <div className="flex items-center justify-between pb-2.5 border-b border-brand-purple/10">
+                    <span className="font-serif text-sm font-bold text-brand-dark">
+                      {editingAddressId === 'new' ? 'Add Delivery Address' : 'Edit Delivery Address'}
+                    </span>
+                    <div className="flex gap-1">
+                      {['Home', 'Work', 'Other'].map((t) => (
+                        <button
+                          key={t}
+                          type="button"
+                          onClick={() => setAddressForm({ ...addressForm, type: t })}
+                          className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition-all cursor-pointer ${
+                            addressForm.type === t ? 'bg-brand-plum text-white' : 'bg-brand-purple/10 text-brand-plum'
+                          }`}
+                        >
+                          {t}
+                        </button>
+                      ))}
                     </div>
                   </div>
-                ))}
-              </div>
+
+                  <div className="grid grid-cols-2 gap-2.5">
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-brand-dark/80 block">Recipient Name</label>
+                      <input
+                        type="text"
+                        value={addressForm.recipientName}
+                        onChange={(e) => setAddressForm({ ...addressForm, recipientName: e.target.value })}
+                        placeholder="Full Name"
+                        required
+                        className="w-full text-xs px-3 py-2 rounded-xl border border-brand-purple/20 bg-white focus:outline-none focus:border-brand-purple font-medium"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-brand-dark/80 block">Phone Number</label>
+                      <input
+                        type="tel"
+                        value={addressForm.phone}
+                        onChange={(e) => setAddressForm({ ...addressForm, phone: e.target.value })}
+                        placeholder="+91 98765 43210"
+                        required
+                        className="w-full text-xs px-3 py-2 rounded-xl border border-brand-purple/20 bg-white focus:outline-none focus:border-brand-purple font-medium"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-brand-dark/80 block">Flat / House No. / Building</label>
+                    <input
+                      type="text"
+                      value={addressForm.building}
+                      onChange={(e) => setAddressForm({ ...addressForm, building: e.target.value })}
+                      placeholder="e.g. Flat 302, Lavender Residency"
+                      required
+                      className="w-full text-xs px-3 py-2 rounded-xl border border-brand-purple/20 bg-white focus:outline-none focus:border-brand-purple font-medium"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-brand-dark/80 block">Street / Colony / Landmark</label>
+                    <input
+                      type="text"
+                      value={addressForm.street}
+                      onChange={(e) => setAddressForm({ ...addressForm, street: e.target.value })}
+                      placeholder="e.g. Near Rose Garden, Main Road"
+                      required
+                      className="w-full text-xs px-3 py-2 rounded-xl border border-brand-purple/20 bg-white focus:outline-none focus:border-brand-purple font-medium"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-brand-dark/80 block">City</label>
+                      <input
+                        type="text"
+                        value={addressForm.city}
+                        onChange={(e) => setAddressForm({ ...addressForm, city: e.target.value })}
+                        placeholder="City"
+                        required
+                        className="w-full text-xs px-3 py-2 rounded-xl border border-brand-purple/20 bg-white focus:outline-none focus:border-brand-purple font-medium"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-brand-dark/80 block">State</label>
+                      <input
+                        type="text"
+                        value={addressForm.state}
+                        onChange={(e) => setAddressForm({ ...addressForm, state: e.target.value })}
+                        placeholder="State"
+                        className="w-full text-xs px-3 py-2 rounded-xl border border-brand-purple/20 bg-white focus:outline-none focus:border-brand-purple font-medium"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-brand-dark/80 block">PIN Code</label>
+                      <input
+                        type="text"
+                        value={addressForm.pinCode}
+                        onChange={(e) => setAddressForm({ ...addressForm, pinCode: e.target.value })}
+                        placeholder="500081"
+                        required
+                        className="w-full text-xs px-3 py-2 rounded-xl border border-brand-purple/20 bg-white focus:outline-none focus:border-brand-purple font-medium"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2 pt-2">
+                    <button
+                      type="submit"
+                      className="flex-1 py-2.5 px-4 rounded-full bg-brand-plum hover:bg-brand-violet text-white text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+                    >
+                      <Save className="w-3.5 h-3.5" /> Save Address
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setEditingAddressId(null)}
+                      className="py-2.5 px-4 rounded-full border border-brand-purple/20 text-brand-dark/70 hover:bg-brand-purple/5 text-xs font-bold transition-colors cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                /* Address Cards List */
+                <div className="flex flex-col gap-3.5">
+                  {addresses.length === 0 ? (
+                    <div className="text-center py-12 bg-white/40 rounded-2xl border border-brand-purple/15 p-6">
+                      <MapPin className="w-8 h-8 text-brand-plum/40 mx-auto mb-2" />
+                      <p className="text-xs font-semibold text-brand-dark/70">No saved addresses yet.</p>
+                      <button
+                        onClick={handleStartNewAddress}
+                        className="mt-3 inline-flex items-center gap-1 px-4 py-1.5 rounded-full bg-brand-plum text-white text-xs font-bold hover:bg-brand-violet cursor-pointer"
+                      >
+                        <Plus className="w-3 h-3" /> Add Address
+                      </button>
+                    </div>
+                  ) : (
+                    addresses.map((adr) => (
+                      <div key={adr.id} className="glass-card p-4 rounded-2xl border border-brand-purple/15 flex flex-col gap-2.5 bg-white/70 shadow-xs">
+                        <div className="flex items-center justify-between border-b border-brand-purple/10 pb-2">
+                          <span className="font-bold text-xs text-brand-plum flex items-center gap-1.5">
+                            {adr.type === 'Work' ? <Briefcase className="w-3.5 h-3.5" /> : <Home className="w-3.5 h-3.5" />}
+                            {adr.type} Address
+                          </span>
+                          <div className="flex items-center gap-1.5">
+                            <button
+                              onClick={() => handleStartEditAddress(adr)}
+                              className="p-1.5 rounded-full hover:bg-brand-purple/10 text-brand-plum cursor-pointer transition-colors"
+                              title="Edit Address"
+                              aria-label="Edit Address"
+                            >
+                              <Edit2 className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteAddress(adr.id)}
+                              className="p-1.5 rounded-full hover:bg-red-50 text-red-500 cursor-pointer transition-colors"
+                              title="Delete Address"
+                              aria-label="Delete Address"
+                            >
+                              <Trash className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="text-xs leading-relaxed text-brand-dark/80 space-y-0.5">
+                          {adr.recipientName && (
+                            <p className="font-bold text-brand-dark">{adr.recipientName} {adr.phone && <span className="font-normal text-brand-dark/60">({adr.phone})</span>}</p>
+                          )}
+                          <p>{adr.building || adr.address}</p>
+                          {adr.street && <p>{adr.street}</p>}
+                          {(adr.city || adr.pinCode) && (
+                            <p className="font-semibold text-brand-dark/70">
+                              {[adr.city, adr.state, adr.pinCode].filter(Boolean).join(', ')}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
             </div>
           )}
         </div>
