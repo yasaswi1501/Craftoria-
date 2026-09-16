@@ -429,11 +429,11 @@ const Header = () => {
               transition={{ type: 'spring', damping: 25, stiffness: 220 }}
               onWheel={(e) => e.stopPropagation()}
               data-lenis-prevent="true"
-              className="relative w-80 max-w-[88vw] h-full bg-[#FCF8FC] border-r border-brand-purple/20 shadow-[0_0_40px_rgba(75,46,93,0.15)] flex flex-col z-10 text-brand-dark p-4 sm:p-5 overflow-y-auto overscroll-contain custom-scrollbar pb-safe"
+              className="relative w-80 max-w-[88vw] h-full bg-[#FCF8FC] border-r border-brand-purple/20 shadow-[0_0_40px_rgba(75,46,93,0.15)] flex flex-col z-10 text-brand-dark p-4 sm:p-5 pb-8 sm:pb-10 overflow-y-auto overscroll-contain custom-scrollbar pb-safe"
               style={{ touchAction: 'pan-y' }}
             >
               {/* Drawer Top Row: Flipkart/Amazon Brand & Close */}
-              <div className="flex items-center justify-between mb-4 pb-3 border-b border-brand-purple/10">
+              <div className="flex items-center justify-between mb-3.5 pb-2.5 border-b border-brand-purple/10 flex-shrink-0">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-full bg-brand-purple/15 flex items-center justify-center">
                     <Sparkles className="w-4 h-4 text-brand-plum" />
@@ -443,20 +443,20 @@ const Header = () => {
                 
                 <button
                   onClick={() => setIsNavOpen(false)}
-                  className="w-9 h-9 rounded-full bg-brand-lavender/40 hover:bg-brand-lavender flex items-center justify-center cursor-pointer transition-all focus:outline-none"
+                  className="w-8 h-8 rounded-full bg-brand-lavender/40 hover:bg-brand-lavender flex items-center justify-center cursor-pointer transition-all focus:outline-none"
                   aria-label="Close navigation menu"
                 >
-                  <X className="w-5 h-5 text-brand-plum" />
+                  <X className="w-4.5 h-4.5 text-brand-plum" />
                 </button>
               </div>
 
               {/* Flipkart/Amazon Style Account Banner In Mobile Menu */}
-              <div className="mb-5 p-4 rounded-2xl bg-gradient-to-br from-white via-white/80 to-brand-purple/10 border border-brand-purple/20 shadow-xs text-left">
+              <div className="mb-4 p-3.5 rounded-2xl bg-gradient-to-br from-white via-white/80 to-brand-purple/10 border border-brand-purple/20 shadow-xs text-left flex-shrink-0">
                 {isLoggedIn ? (
                   <div>
-                    <div className="flex items-center justify-between gap-3 mb-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-11 h-11 rounded-full bg-brand-plum text-white font-bold flex items-center justify-center text-base flex-shrink-0 overflow-hidden shadow-xs">
+                    <div className="flex items-center justify-between gap-3 mb-2.5">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="w-10 h-10 rounded-full bg-brand-plum text-white font-bold flex items-center justify-center text-sm flex-shrink-0 overflow-hidden shadow-xs">
                           {user?.picture ? (
                             <img src={user.picture} alt={user.name} className="w-full h-full object-cover" />
                           ) : (
@@ -464,30 +464,30 @@ const Header = () => {
                           )}
                         </div>
                         <div className="flex flex-col min-w-0">
-                          <span className="text-[10px] text-brand-dark/60 font-semibold uppercase tracking-wider font-mono">Hello,</span>
+                          <span className="text-[9px] text-brand-dark/60 font-semibold uppercase tracking-wider font-mono">Hello,</span>
                           <h4 className="font-serif text-sm font-bold text-brand-dark leading-tight truncate">{user?.name || 'Customer'}</h4>
                         </div>
                       </div>
                       <button
                         onClick={() => openAccountSection('profile')}
-                        className="p-2 rounded-full hover:bg-brand-purple/10 text-brand-plum cursor-pointer"
+                        className="p-1.5 rounded-full hover:bg-brand-purple/10 text-brand-plum cursor-pointer"
                         title="Edit Profile"
                       >
-                        <Edit2 className="w-4 h-4" />
+                        <Edit2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
 
                     {/* Quick Account Links Inside Menu */}
-                    <div className="grid grid-cols-2 gap-2 pt-2.5 border-t border-brand-purple/10 text-[11px] font-bold">
+                    <div className="grid grid-cols-2 gap-2 pt-2 border-t border-brand-purple/10 text-[11px] font-bold">
                       <button
                         onClick={() => openAccountSection('orders')}
-                        className="py-1.5 px-2.5 rounded-xl bg-brand-purple/10 hover:bg-brand-purple/20 text-brand-plum flex items-center gap-1.5 cursor-pointer"
+                        className="py-1.5 px-2 rounded-xl bg-brand-purple/10 hover:bg-brand-purple/20 text-brand-plum flex items-center justify-center gap-1.5 cursor-pointer"
                       >
                         <Package className="w-3.5 h-3.5" /> Orders
                       </button>
                       <button
                         onClick={() => openAccountSection('addresses')}
-                        className="py-1.5 px-2.5 rounded-xl bg-brand-purple/10 hover:bg-brand-purple/20 text-brand-plum flex items-center gap-1.5 cursor-pointer"
+                        className="py-1.5 px-2 rounded-xl bg-brand-purple/10 hover:bg-brand-purple/20 text-brand-plum flex items-center justify-center gap-1.5 cursor-pointer"
                       >
                         <MapPin className="w-3.5 h-3.5" /> Addresses
                       </button>
@@ -496,8 +496,8 @@ const Header = () => {
                 ) : (
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-10 h-10 rounded-full bg-brand-plum/15 flex items-center justify-center text-brand-plum">
-                        <User className="w-5 h-5" />
+                      <div className="w-9 h-9 rounded-full bg-brand-plum/15 flex items-center justify-center text-brand-plum">
+                        <User className="w-4.5 h-4.5" />
                       </div>
                       <div className="flex flex-col">
                         <span className="font-serif text-xs font-bold text-brand-dark">Hello, Sign In</span>
@@ -518,7 +518,7 @@ const Header = () => {
               </div>
 
               {/* Navigation Links */}
-              <nav className="flex flex-col gap-1 text-left mb-6">
+              <nav className="flex flex-col gap-0.5 text-left mb-4 flex-shrink-0">
                 <span className="text-[9px] uppercase font-bold text-brand-plum/80 tracking-widest block px-2 mb-1">
                   Explore Craftoria
                 </span>
@@ -527,7 +527,7 @@ const Header = () => {
                     key={link.name}
                     href={link.href}
                     onClick={(e) => handleLinkClick(e, link.href)}
-                    className={`text-xs font-bold uppercase tracking-wider transition-colors duration-200 py-2.5 px-3 rounded-xl flex items-center justify-between ${
+                    className={`text-xs font-bold uppercase tracking-wider transition-colors duration-200 py-2 px-3 rounded-xl flex items-center justify-between ${
                       activeSection === link.href ? 'text-brand-plum bg-brand-purple/15' : 'text-brand-dark hover:bg-brand-purple/5'
                     }`}
                   >
@@ -538,10 +538,10 @@ const Header = () => {
               </nav>
 
               {/* Wishlist & Shopping Bag Shortcuts */}
-              <div className="flex flex-col gap-2 pt-3 border-t border-brand-purple/10 mb-6 text-left">
+              <div className="flex flex-col gap-1.5 pt-2.5 border-t border-brand-purple/10 mb-4 text-left flex-shrink-0">
                 <button
                   onClick={handleWishlistClick}
-                  className="flex items-center justify-between p-3 rounded-xl bg-white/60 border border-brand-purple/15 text-xs font-bold text-brand-dark hover:bg-brand-purple/10 transition-colors"
+                  className="flex items-center justify-between p-2.5 rounded-xl bg-white/60 border border-brand-purple/15 text-xs font-bold text-brand-dark hover:bg-brand-purple/10 transition-colors"
                 >
                   <div className="flex items-center gap-2.5">
                     <Heart className="w-4 h-4 text-brand-plum" />
@@ -556,7 +556,7 @@ const Header = () => {
 
                 <button
                   onClick={handleCartClick}
-                  className="flex items-center justify-between p-3 rounded-xl bg-white/60 border border-brand-purple/15 text-xs font-bold text-brand-dark hover:bg-brand-purple/10 transition-colors"
+                  className="flex items-center justify-between p-2.5 rounded-xl bg-white/60 border border-brand-purple/15 text-xs font-bold text-brand-dark hover:bg-brand-purple/10 transition-colors"
                 >
                   <div className="flex items-center gap-2.5">
                     <ShoppingBag className="w-4 h-4 text-brand-plum" />
@@ -575,7 +575,7 @@ const Header = () => {
                       setIsNavOpen(false);
                       logout();
                     }}
-                    className="flex items-center gap-2.5 p-3 rounded-xl text-red-600 hover:bg-red-50 text-xs font-bold transition-colors cursor-pointer"
+                    className="flex items-center gap-2.5 p-2.5 rounded-xl text-red-600 hover:bg-red-50 text-xs font-bold transition-colors cursor-pointer"
                   >
                     <LogOut className="w-4 h-4" />
                     <span>Sign Out</span>
@@ -583,8 +583,8 @@ const Header = () => {
                 )}
               </div>
               
-              {/* Direct Support Links in Mobile Drawer */}
-              <div className="mt-auto pt-3 border-t border-brand-purple/10 text-left space-y-1.5">
+              {/* Direct Support Links in Mobile Drawer - Elevated with clean spacing */}
+              <div className="mt-auto pt-3.5 pb-2 border-t border-brand-purple/10 text-left space-y-1.5 flex-shrink-0">
                 <span className="text-[9px] uppercase font-bold text-brand-plum/80 tracking-widest block">Customer Support</span>
                 <a
                   href="tel:+919908860895"
@@ -598,7 +598,7 @@ const Header = () => {
                   className="flex items-center gap-2 text-xs font-semibold text-brand-dark hover:text-brand-plum transition-colors py-0.5"
                 >
                   <Mail className="w-3.5 h-3.5 text-brand-plum" />
-                  <span>thecraftoriaaa26@gmail.com</span>
+                  <span className="truncate">thecraftoriaaa26@gmail.com</span>
                 </a>
               </div>
             </motion.div>
