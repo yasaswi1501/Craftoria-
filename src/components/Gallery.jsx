@@ -15,51 +15,42 @@ const Gallery = () => {
       id: 1,
       src: gallery1Polaroid,
       alt: 'Lavender flat-lay with Polaroid photographs, candles, books, and flowers',
-      objectFit: 'cover',
       objectPosition: 'center',
     },
     {
       id: 2,
       src: gallery2BlueFlowerKeychain,
       alt: 'Blue and purple flower keychain hanging from antique brass wall hook',
-      objectFit: 'cover',
       objectPosition: 'center',
     },
     {
       id: 3,
       src: gallery3CoupleEmbroidery,
       alt: 'Handmade embroidery hoop artwork featuring a couple, J ♥ H, and flower accents',
-      objectFit: 'contain',
       objectPosition: 'center',
-      bgColor: '#FDFBFD',
     },
     {
       id: 4,
       src: gallery4HeartKeychain,
       alt: 'Lavender heart-shaped crochet keychain hanging from antique brass wall hook',
-      objectFit: 'cover',
       objectPosition: 'center',
     },
     {
       id: 5,
       src: gallery5ChildFrame,
       alt: 'White photo frame showing child photograph adorned with red embroidered hearts',
-      objectFit: 'contain',
       objectPosition: 'center',
-      bgColor: '#FAF7FA',
     },
     {
       id: 6,
       src: gallery6PinkBouquetKeychain,
       alt: 'Pink flower bouquet style keychain hanging from antique brass wall hook',
-      objectFit: 'cover',
       objectPosition: 'center',
     },
     {
       id: 7,
       src: gallery7TwoFlowerKeychain,
       alt: 'Wrapped two-flower bouquet keychain with purple and pink flowers on brass hook',
-      objectFit: 'cover',
       objectPosition: 'center',
     },
   ];
@@ -120,23 +111,18 @@ const Gallery = () => {
                 boxShadow: "0 20px 35px -10px rgba(118, 85, 143, 0.32)",
                 transition: { duration: 0.25 }
               }}
-              className={`relative rounded-[22px] overflow-hidden group border border-brand-purple/15 shadow-sm transition-all duration-300 ease-out cursor-pointer ${
+              className={`relative rounded-[20px] sm:rounded-[24px] overflow-hidden group border border-brand-purple/15 shadow-sm transition-all duration-300 ease-out cursor-pointer bg-white/40 ${
                 idx === 6 
                   ? 'col-span-2 md:col-span-2 lg:col-span-1 aspect-[16/9] md:aspect-[3/4]' 
                   : 'aspect-[3/4]'
               }`}
-              style={{ backgroundColor: item.bgColor || 'transparent' }}
             >
               <img
                 src={item.src}
                 alt={item.alt}
                 loading="lazy"
                 decoding="async"
-                className="w-full h-full select-none pointer-events-none transition-transform duration-700 ease-out group-hover:scale-110"
-                style={{
-                  objectFit: item.objectFit,
-                  objectPosition: item.objectPosition,
-                }}
+                className="w-full h-full object-cover object-center select-none pointer-events-none transition-transform duration-700 ease-out group-hover:scale-110"
               />
             </motion.div>
           ))}
