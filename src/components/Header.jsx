@@ -159,37 +159,40 @@ const Header = () => {
           scrolled ? 'glass-nav py-3' : 'bg-transparent py-4 sm:py-6'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-3.5 sm:px-6 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-2 sm:gap-4">
           
-          {/* Mobile Left Hamburger Menu Toggle */}
-          <div className="flex lg:hidden">
-            <button
-              onClick={() => setIsNavOpen(true)}
-              className="w-11 h-11 rounded-full hover:bg-brand-lavender/35 text-brand-dark flex items-center justify-center cursor-pointer transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-brand-purple/20"
-              aria-label="Open navigation menu"
-            >
-              <Menu className="w-6 h-6" />
-            </button>
-          </div>
+          {/* Left: Mobile Hamburger + Brand Logo */}
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            {/* Mobile Left Hamburger Menu Toggle */}
+            <div className="flex lg:hidden">
+              <button
+                onClick={() => setIsNavOpen(true)}
+                className="w-10 h-10 -ml-1 rounded-full hover:bg-brand-lavender/35 text-brand-dark flex items-center justify-center cursor-pointer transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-brand-purple/20"
+                aria-label="Open navigation menu"
+              >
+                <Menu className="w-5 h-5 sm:w-6 sm:h-6" />
+              </button>
+            </div>
 
-          {/* Brand Logo & Tagline */}
-          <a
-            href="#home"
-            onClick={(e) => handleLinkClick(e, '#home')}
-            className="flex items-center gap-2 group mx-auto lg:mx-0"
-          >
-            <div className="w-9 h-9 rounded-full bg-brand-purple/15 flex items-center justify-center group-hover:bg-brand-purple/25 transition-colors duration-300">
-              <Sparkles className="w-5 h-5 text-brand-plum" />
-            </div>
-            <div className="flex flex-col items-start text-left">
-              <span className="font-serif text-2xl font-bold tracking-wide text-brand-dark leading-tight">
-                Craftoria
-              </span>
-              <span className="text-[8px] font-semibold tracking-widest text-brand-plum/80 uppercase -mt-0.5">
-                Handmade With Love
-              </span>
-            </div>
-          </a>
+            {/* Brand Logo & Tagline */}
+            <a
+              href="#home"
+              onClick={(e) => handleLinkClick(e, '#home')}
+              className="flex items-center gap-2 group"
+            >
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-brand-purple/15 flex items-center justify-center group-hover:bg-brand-purple/25 transition-colors duration-300 flex-shrink-0">
+                <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-brand-plum" />
+              </div>
+              <div className="flex flex-col items-start text-left">
+                <span className="font-serif text-xl sm:text-2xl font-bold tracking-wide text-brand-dark leading-tight">
+                  Craftoria
+                </span>
+                <span className="text-[7.5px] sm:text-[8px] font-semibold tracking-widest text-brand-plum/80 uppercase -mt-0.5">
+                  Handmade With Love
+                </span>
+              </div>
+            </a>
+          </div>
 
           {/* Desktop Navigation Links */}
           <nav className="hidden lg:flex items-center gap-7">
@@ -210,14 +213,14 @@ const Header = () => {
             ))}
           </nav>
 
-          {/* Action Controls (Desktop/Tablet) */}
+          {/* Action Controls (Desktop/Tablet/Mobile) */}
           <div className="flex items-center gap-1.5 sm:gap-3">
             
             {/* E-Commerce Style Account Menu Dropdown (Flipkart / Amazon pattern) */}
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setIsAccountDropdownOpen((prev) => !prev)}
-                className={`inline-flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 rounded-full text-xs font-semibold cursor-pointer transition-all duration-200 h-10 border ${
+                className={`inline-flex items-center justify-center gap-1 px-2 sm:px-4 py-2 rounded-full text-xs font-semibold cursor-pointer transition-all duration-200 h-9 sm:h-10 border ${
                   isAccountDropdownOpen
                     ? 'bg-brand-purple/15 border-brand-purple/30 text-brand-plum shadow-xs'
                     : 'bg-white/50 border-brand-purple/15 hover:bg-brand-purple/10 text-brand-dark'
@@ -225,7 +228,7 @@ const Header = () => {
                 aria-label={isLoggedIn ? `Account menu for ${user?.name}` : 'Login or Sign up'}
                 aria-expanded={isAccountDropdownOpen}
               >
-                <div className="w-6 h-6 rounded-full bg-brand-plum/10 text-brand-plum flex items-center justify-center text-[10px] font-bold">
+                <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-brand-plum/10 text-brand-plum flex items-center justify-center text-[10px] font-bold flex-shrink-0">
                   {isLoggedIn && user?.picture ? (
                     <img src={user.picture} alt={user.name} className="w-full h-full rounded-full object-cover" />
                   ) : isLoggedIn && user?.name ? (
@@ -237,7 +240,7 @@ const Header = () => {
                 <span className="hidden sm:inline font-medium">
                   {isLoggedIn ? `Hi, ${firstName}` : 'Login / Sign In'}
                 </span>
-                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isAccountDropdownOpen ? 'rotate-180' : ''}`} />
+                <ChevronDown className={`w-3 h-3 sm:w-3.5 sm:h-3.5 transition-transform duration-200 ${isAccountDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
 
               {/* Floating Dropdown Menu Card */}

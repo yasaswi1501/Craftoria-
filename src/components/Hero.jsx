@@ -27,7 +27,7 @@ const Hero = () => {
   return (
     <section
       id="home"
-      className="min-h-[580px] lg:min-h-[calc(100vh-80px)] lg:max-h-[760px] flex items-center justify-center pt-20 sm:pt-16 pb-8 sm:pb-10 px-4 sm:px-6 relative overflow-hidden scroll-mt-20 sm:scroll-mt-24"
+      className="min-h-[580px] lg:min-h-[calc(100vh-80px)] lg:max-h-[760px] flex items-center justify-center pt-28 sm:pt-32 pb-14 sm:pb-20 px-4 sm:px-6 relative overflow-hidden scroll-mt-20 sm:scroll-mt-24"
     >
       {/* Soft lavender/pink glow blobs behind the hero text and hero visual */}
       <div 
@@ -44,7 +44,7 @@ const Hero = () => {
         style={{ background: 'radial-gradient(circle, rgba(246, 221, 235, 0.20) 0%, transparent 70%)', contain: 'strict' }}
       />
 
-      <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10">
+      <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-10 sm:gap-12 lg:gap-16 items-center relative z-10">
         {/* Left Content Column */}
         <div className="lg:col-span-7 flex flex-col items-start text-left">
           {/* Badge */}
@@ -64,7 +64,7 @@ const Hero = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="font-serif text-3.5xl sm:text-5xl md:text-6.5xl font-bold leading-[1.12] text-brand-dark mb-4 sm:mb-6 tracking-tight"
+            className="font-serif text-3xl sm:text-5xl md:text-6.5xl font-bold leading-[1.2] sm:leading-[1.12] text-brand-dark mb-4 sm:mb-6 tracking-tight"
           >
             Handmade Happiness, <br />
             <span className="text-brand-plum italic font-normal">from Our Hands to</span> <br />
@@ -86,18 +86,18 @@ const Hero = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            className="flex flex-wrap items-center gap-3 sm:gap-4 mb-6 sm:mb-8 w-full sm:w-auto"
+            className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mb-6 sm:mb-8 w-full sm:w-auto"
           >
             <button
               onClick={() => handleScroll('bestsellers')}
-              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 sm:px-7 py-3 sm:py-3.5 rounded-full bg-brand-plum text-white font-semibold hover:bg-brand-violet hover:translate-y-[-2px] transition-all duration-300 shadow-md hover:shadow-lg text-xs uppercase tracking-wider cursor-pointer h-11"
+              className="inline-flex items-center justify-center gap-2 px-6 sm:px-7 py-3.5 rounded-full bg-brand-plum text-white font-semibold hover:bg-brand-violet hover:translate-y-[-2px] transition-all duration-300 shadow-md hover:shadow-lg text-xs uppercase tracking-wider cursor-pointer h-12"
             >
               <span>Explore Collection</span>
               <ArrowRight className="w-4 h-4" />
             </button>
             <button
               onClick={() => setIsCustomModalOpen(true)}
-              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 sm:px-7 py-3 sm:py-3.5 rounded-full bg-brand-cream/70 border border-brand-purple/35 text-brand-plum font-semibold hover:bg-brand-purple/10 hover:translate-y-[-2px] transition-all duration-300 text-xs uppercase tracking-wider cursor-pointer h-11"
+              className="inline-flex items-center justify-center gap-2 px-6 sm:px-7 py-3.5 rounded-full bg-brand-cream/70 border border-brand-purple/35 text-brand-plum font-semibold hover:bg-brand-purple/10 hover:translate-y-[-2px] transition-all duration-300 text-xs uppercase tracking-wider cursor-pointer h-12"
             >
               <Paintbrush className="w-4 h-4 text-brand-purple" />
               <span>Custom Orders</span>
