@@ -339,11 +339,11 @@ const Header = () => {
               <div className="mt-auto pt-4 border-t border-brand-purple/10 text-left space-y-2">
                 <span className="text-[9px] uppercase font-bold text-brand-plum/80 tracking-widest block">Customer Support</span>
                 <a
-                  href="tel:+919876543210"
+                  href="tel:+919908860895"
                   className="flex items-center gap-2 text-xs font-semibold text-brand-dark hover:text-brand-plum transition-colors py-1"
                 >
                   <Phone className="w-3.5 h-3.5 text-brand-plum" />
-                  <span>+91 98765 43210</span>
+                  <span>+91 99088 60895</span>
                 </a>
                 <a
                   href="mailto:contact@craftoria.com"

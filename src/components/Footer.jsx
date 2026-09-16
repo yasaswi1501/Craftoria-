@@ -107,13 +107,13 @@ const Footer = () => {
           <div className="flex flex-col gap-2 text-xs sm:text-sm">
             {/* Clickable Phone Number */}
             <a
-              href="tel:+919876543210"
+              href="tel:+919908860895"
               className="inline-flex items-center gap-2.5 text-brand-dark/80 hover:text-brand-plum font-semibold transition-colors group"
             >
               <div className="w-7 h-7 rounded-full bg-brand-purple/10 flex items-center justify-center group-hover:bg-brand-purple/20 transition-colors">
                 <Phone className="w-3.5 h-3.5 text-brand-plum" />
               </div>
-              <span>+91 98765 43210</span>
+              <span>+91 99088 60895</span>
             </a>
 
             {/* Clickable Email Address */}

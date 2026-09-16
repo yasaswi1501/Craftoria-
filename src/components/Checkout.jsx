@@ -2,12 +2,13 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   MapPin, CreditCard, ChevronDown, ChevronUp, Check, Plus, Trash, 
-  ArrowLeft, ShoppingBag, ShieldCheck, CheckCircle2, AlertCircle, RefreshCw 
+  ArrowLeft, ShoppingBag, ShieldCheck, CheckCircle2, AlertCircle, RefreshCw, MessageCircle 
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart as useCartContext } from '../context/CartContext';
 import { paymentService } from '../services/paymentService';
 import { supabase } from '../lib/supabase';
+import { redirectToWhatsApp } from '../utils/whatsapp';
 
 import sellerMemoryCanvas from '../assets/seller-memory-canvas.png';
 import sellerEmbroideryHoop from '../assets/seller-embroidery-hoop.png';
@@ -310,6 +311,12 @@ const Checkout = () => {
     shippingAddress: activeAddress,
     estimatedDate: deliveryOption === 'express' ? '1-2 Business Days' : '3-5 Business Days'
   });
+
+  const handleProceedToPaymentWhatsApp = (e) => {
+    if (e) e.preventDefault();
+    const activeAddress = addresses.find(a => a.id === selectedAddressId);
+    redirectToWhatsApp(cart, activeAddress, deliveryOption);
+  };
 
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
@@ -726,10 +733,11 @@ const Checkout = () => {
               {/* Action Button */}
               <button
                 disabled={!selectedAddressId}
-                onClick={() => goToStep('payment')}
-                className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-brand-plum hover:bg-brand-violet text-white font-semibold text-xs uppercase tracking-widest shadow-md hover:shadow-lg transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                onClick={handleProceedToPaymentWhatsApp}
+                className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs uppercase tracking-widest shadow-md hover:shadow-lg transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
-                Continue to Payment
+                <MessageCircle className="w-4 h-4" />
+                <span>Proceed to Payment</span>
               </button>
             </div>
 
@@ -1233,20 +1241,11 @@ const Checkout = () => {
 
               {/* Complete Payment Button */}
               <button
-                onClick={handlePlaceOrder}
-                disabled={paymentProcessing}
-                className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-brand-plum hover:bg-brand-violet text-white font-semibold text-xs uppercase tracking-widest shadow-md hover:shadow-lg transition-all cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
+                onClick={handleProceedToPaymentWhatsApp}
+                className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs uppercase tracking-widest shadow-md hover:shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2"
               >
-                {paymentProcessing ? (
-                  <>
-                    <RefreshCw className="w-4 h-4 animate-spin" />
-                    <span>Processing Order...</span>
-                  </>
-                ) : (
-                  <span>
-                    Confirm & Place Order
-                  </span>
-                )}
+                <MessageCircle className="w-4 h-4" />
+                <span>Proceed to Payment on WhatsApp</span>
               </button>
 
             </div>

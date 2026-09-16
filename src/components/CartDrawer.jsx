@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ShoppingBag, Plus, Minus, Trash2, ShieldCheck } from 'lucide-react';
+import { X, ShoppingBag, Plus, Minus, Trash2, ShieldCheck, MessageCircle } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useRouter } from '../context/RouterContext';
+import { redirectToWhatsApp } from '../utils/whatsapp';
 
 import sellerMemoryCanvas from '../assets/seller-memory-canvas.png';
 import sellerEmbroideryHoop from '../assets/seller-embroidery-hoop.png';
@@ -60,6 +61,10 @@ const CartDrawer = () => {
   const handleClose = () => {
     setIsCartOpen(false);
     setShowClearConfirm(false);
+  };
+
+  const handleProceedToPayment = () => {
+    redirectToWhatsApp(cart);
   };
 
   const handleProceedToCheckout = () => {
@@ -293,19 +298,26 @@ const CartDrawer = () => {
 
         {/* Footer */}
         {cart.length > 0 && (
-          <div className="px-6 py-5 border-t border-brand-purple/15 bg-white/40 backdrop-blur-md flex flex-col gap-4 text-left">
+          <div className="px-6 py-5 border-t border-brand-purple/15 bg-white/40 backdrop-blur-md flex flex-col gap-3 text-left">
             <div className="flex items-center justify-between text-xs font-semibold">
               <span className="text-brand-dark/75">Total Items:</span>
               <span className="text-sm font-bold text-brand-plum">{totalItemsCount} {totalItemsCount === 1 ? 'item' : 'items'}</span>
             </div>
             
             <button
-              onClick={handleProceedToCheckout}
+              onClick={handleProceedToPayment}
               disabled={cart.length === 0}
-              className="w-full inline-flex items-center justify-center gap-2 py-3 px-6 rounded-full bg-brand-plum text-white font-semibold text-xs uppercase tracking-widest hover:bg-brand-violet transition-all duration-300 cursor-pointer shadow-md hover:shadow-lg disabled:opacity-40 disabled:cursor-not-allowed"
+              className="w-full inline-flex items-center justify-center gap-2 py-3 px-6 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs uppercase tracking-widest transition-all duration-300 cursor-pointer shadow-md hover:shadow-lg disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              <ShieldCheck className="w-4 h-4" />
-              <span>Proceed to Checkout</span>
+              <MessageCircle className="w-4 h-4" />
+              <span>Proceed to Payment</span>
+            </button>
+
+            <button
+              onClick={handleProceedToCheckout}
+              className="w-full inline-flex items-center justify-center gap-1.5 py-1 text-[11px] font-bold text-brand-plum hover:underline cursor-pointer focus:outline-none"
+            >
+              <span>Add Delivery Address First &rarr;</span>
             </button>
           </div>
         )}

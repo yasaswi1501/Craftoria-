@@ -140,13 +140,13 @@ const Contact = () => {
               </a>
 
               <a
-                href="tel:+919876543210"
+                href="tel:+919908860895"
                 className="inline-flex items-center gap-2.5 px-4.5 py-2.5 rounded-2xl bg-white/70 hover:bg-white border border-brand-purple/20 text-brand-plum text-xs font-semibold shadow-xs transition-all duration-200"
               >
                 <div className="w-6 h-6 rounded-full bg-brand-purple/15 flex items-center justify-center">
                   <Phone className="w-3.5 h-3.5 text-brand-plum" />
                 </div>
-                <span>+91 98765 43210</span>
+                <span>+91 99088 60895</span>
               </a>
             </div>
 
