@@ -19,7 +19,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className="border-t border-brand-purple/15 py-10 sm:py-12 px-4 sm:px-6 relative overflow-hidden text-brand-dark pb-safe bg-white/40 backdrop-blur-xs">
+    <footer className="border-t border-brand-purple/15 pt-12 sm:pt-16 pb-16 sm:pb-24 px-4 sm:px-6 relative overflow-hidden text-brand-dark pb-safe bg-white/40 backdrop-blur-xs">
       {/* Subtle floral corner line arts in the footer */}
       <HibiscusFlower
         className="w-[200px] h-[200px] left-[-30px] bottom-[-30px]"
@@ -164,7 +164,7 @@ const Footer = () => {
       </div>
 
       {/* Copyright Bar */}
-      <div className="max-w-7xl mx-auto border-t border-brand-purple/10 mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-brand-dark/60 gap-4 text-center sm:text-left">
+      <div className="max-w-7xl mx-auto border-t border-brand-purple/10 mt-12 pt-8 pb-6 sm:pb-8 flex flex-col sm:flex-row items-center justify-between text-xs text-brand-dark/70 gap-4 text-center sm:text-left">
         <span>© 2026 Craftoria Boutique. All rights reserved.</span>
         <span className="inline-flex items-center gap-1">
           Handcrafted with <Heart className="w-3.5 h-3.5 text-brand-purple fill-brand-purple" /> for art lovers everywhere.

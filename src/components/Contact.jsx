@@ -85,7 +85,7 @@ const Contact = () => {
   };
 
   return (
-    <section id="contact" className="pt-14 sm:pt-20 pb-12 sm:pb-16 px-4 sm:px-6 relative overflow-hidden border-t border-brand-purple/10 scroll-mt-20 sm:scroll-mt-24">
+    <section id="contact" className="pt-16 sm:pt-24 pb-16 sm:pb-24 px-4 sm:px-6 relative overflow-hidden border-t border-brand-purple/10 scroll-mt-24 sm:scroll-mt-28">
       {/* Section Background Washes */}
       <WatercolorWash
         className="w-[500px] h-[500px] -left-16 bottom-[-5%]"
