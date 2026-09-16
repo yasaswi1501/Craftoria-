@@ -9,14 +9,20 @@ import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
 import { supabase } from '../lib/supabase';
 
-const AccountMenu = ({ isOpen, onClose }) => {
+const AccountMenu = ({ isOpen, onClose, initialTab = 'menu' }) => {
   const { user, logout, updateUserProfile } = useAuth();
   const { wishlist, removeFromWishlist } = useWishlist();
   const { addToCart } = useCart();
   
   // Current tab: 'menu' | 'profile' | 'orders' | 'wishlist' | 'addresses'
-  const [activeTab, setActiveTab] = useState('menu');
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [orders, setOrders] = useState([]);
+
+  useEffect(() => {
+    if (isOpen) {
+      setActiveTab(initialTab || 'menu');
+    }
+  }, [isOpen, initialTab]);
 
   // --- Profile Edit State ---
   const [isEditingProfile, setIsEditingProfile] = useState(false);
