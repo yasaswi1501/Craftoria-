@@ -37,23 +37,14 @@ const AccountMenu = ({ isOpen, onClose, initialTab = 'menu' }) => {
   // --- Addresses State ---
   const getInitialAddresses = () => {
     try {
-      const key = `craftoria_addresses_${user?.email || 'default'}`;
-      const saved = localStorage.getItem(key);
-      if (saved) return JSON.parse(saved);
-    } catch (e) {}
-    return [
-      {
-        id: 1,
-        type: 'Home',
-        recipientName: user?.name || 'Customer',
-        phone: user?.phone || '+91 99088 60895',
-        building: 'Flat 4B, Lavender Meadows',
-        street: 'Artisan Blossom Road, Lily Valley',
-        city: 'Hyderabad',
-        state: 'Telangana',
-        pinCode: '500081',
+      if (user?.email) {
+        const userSaved = localStorage.getItem(`craftoria_addresses_${user.email}`);
+        if (userSaved) return JSON.parse(userSaved);
       }
-    ];
+      const generalSaved = localStorage.getItem('craftoria_saved_addresses');
+      if (generalSaved) return JSON.parse(generalSaved);
+    } catch (e) {}
+    return [];
   };
 
   const [addresses, setAddresses] = useState(getInitialAddresses);
@@ -69,11 +60,12 @@ const AccountMenu = ({ isOpen, onClose, initialTab = 'menu' }) => {
     pinCode: '',
   });
 
-  // Sync profile fields when user changes
+  // Sync profile fields & addresses when user changes
   useEffect(() => {
     if (user) {
       setProfileName(user.name || '');
       setProfilePhone(user.phone || '');
+      setAddresses(getInitialAddresses());
     }
   }, [user]);
 
@@ -81,8 +73,10 @@ const AccountMenu = ({ isOpen, onClose, initialTab = 'menu' }) => {
   const saveAddressesToStorage = (updated) => {
     setAddresses(updated);
     try {
-      const key = `craftoria_addresses_${user?.email || 'default'}`;
-      localStorage.setItem(key, JSON.stringify(updated));
+      if (user?.email) {
+        localStorage.setItem(`craftoria_addresses_${user.email}`, JSON.stringify(updated));
+      }
+      localStorage.setItem('craftoria_saved_addresses', JSON.stringify(updated));
     } catch (e) {
       console.error('Failed to save addresses:', e);
     }

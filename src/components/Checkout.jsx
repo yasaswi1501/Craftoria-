@@ -161,38 +161,42 @@ const Checkout = () => {
 
   // Fetch / Initialize addresses
   useEffect(() => {
-    const saved = localStorage.getItem('craftoria_saved_addresses');
     let loadedAddresses = [];
-    if (saved) {
-      try {
-        loadedAddresses = JSON.parse(saved);
-      } catch (e) {
-        loadedAddresses = [];
+    try {
+      if (user?.email) {
+        const userSaved = localStorage.getItem(`craftoria_addresses_${user.email}`);
+        if (userSaved) loadedAddresses = JSON.parse(userSaved);
       }
+      if (loadedAddresses.length === 0) {
+        const saved = localStorage.getItem('craftoria_saved_addresses');
+        if (saved) loadedAddresses = JSON.parse(saved);
+      }
+    } catch (e) {
+      loadedAddresses = [];
     }
     
-    // Fallback default address for seamless first-time review
-    if (loadedAddresses.length === 0) {
-      loadedAddresses = [
-        {
-          id: 'addr_default_1',
-          fullName: user?.name || 'Rahul Sharma',
-          phone: user?.phone || '9876543210',
-          pinCode: '110001',
-          building: 'A-24, 3rd Floor',
-          street: 'Connaught Place',
-          landmark: 'Near Metro Station Gate 3',
-          city: 'New Delhi',
-          stateName: 'Delhi',
-          saveAddressForFuture: true
-        }
-      ];
-      localStorage.setItem('craftoria_saved_addresses', JSON.stringify(loadedAddresses));
-    }
-    
-    setAddresses(loadedAddresses);
-    if (loadedAddresses.length > 0) {
-      setSelectedAddressId(loadedAddresses[0].id);
+    // Normalize address structure
+    const normalized = (loadedAddresses || []).map(a => ({
+      ...a,
+      fullName: a.fullName || a.recipientName || user?.name || '',
+      phone: a.phone || user?.phone || '',
+      stateName: a.stateName || a.state || '',
+      building: a.building || a.address || '',
+      street: a.street || '',
+      landmark: a.landmark || '',
+      city: a.city || '',
+      pinCode: a.pinCode || '',
+    }));
+
+    setAddresses(normalized);
+    if (normalized.length > 0) {
+      setSelectedAddressId(normalized[0].id);
+      setShowNewAddressForm(false);
+    } else {
+      setSelectedAddressId(null);
+      setShowNewAddressForm(true);
+      if (user?.name) setFullName(user.name);
+      if (user?.phone) setPhone(user.phone);
     }
   }, [user]);
 
@@ -249,6 +253,9 @@ const Checkout = () => {
     setSelectedAddressId(newAddr.id);
     
     if (saveAddressForFuture) {
+      if (user?.email) {
+        localStorage.setItem(`craftoria_addresses_${user.email}`, JSON.stringify(updated));
+      }
       localStorage.setItem('craftoria_saved_addresses', JSON.stringify(updated));
     }
 
@@ -268,9 +275,15 @@ const Checkout = () => {
     e.stopPropagation(); // prevent selection click
     const filtered = addresses.filter(a => a.id !== id);
     setAddresses(filtered);
+    if (user?.email) {
+      localStorage.setItem(`craftoria_addresses_${user.email}`, JSON.stringify(filtered));
+    }
     localStorage.setItem('craftoria_saved_addresses', JSON.stringify(filtered));
     if (selectedAddressId === id) {
       setSelectedAddressId(filtered[0]?.id || null);
+    }
+    if (filtered.length === 0) {
+      setShowNewAddressForm(true);
     }
   };
 

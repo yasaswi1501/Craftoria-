@@ -39,6 +39,19 @@ const AuthModal = ({ isOpen, onClose }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
+  // Address Onboarding state (shown immediately after signup)
+  const [addressRecipientName, setAddressRecipientName] = useState('');
+  const [addressPhone, setAddressPhone] = useState('');
+  const [addressBuilding, setAddressBuilding] = useState('');
+  const [addressStreet, setAddressStreet] = useState('');
+  const [addressLandmark, setAddressLandmark] = useState('');
+  const [addressCity, setAddressCity] = useState('');
+  const [addressState, setAddressState] = useState('');
+  const [addressPinCode, setAddressPinCode] = useState('');
+  const [addressType, setAddressType] = useState('Home'); // 'Home' | 'Work' | 'Other'
+  const [addressErrors, setAddressErrors] = useState({});
+  const [addressSavedSuccess, setAddressSavedSuccess] = useState(false);
+
   // Load password strength checks
   useEffect(() => {
     if (!password) {
@@ -164,12 +177,76 @@ const AuthModal = ({ isOpen, onClose }) => {
       if (res.needsConfirmation) {
         setSuccessMessage(res.message);
       } else {
-        clearFields();
-        onClose();
+        // Pre-fill address onboarding with the user's name & phone from signup
+        setAddressRecipientName(name.trim());
+        setAddressPhone(phone.trim());
+        setAddressErrors({});
+        setAddressSavedSuccess(false);
+        setView('address_onboarding');
       }
     } else {
       setGeneralError(res.message);
     }
+  };
+
+  const handleSaveAddressOnboarding = (e) => {
+    e.preventDefault();
+    setAddressErrors({});
+
+    const errs = {};
+    if (!addressRecipientName.trim()) errs.name = 'Recipient name is required.';
+    if (!addressPhone.trim() || !/^[6-9]\d{9}$/.test(addressPhone.trim().replace(/\D/g, '').slice(-10))) {
+      errs.phone = 'Enter a valid 10-digit mobile number.';
+    }
+    if (!addressBuilding.trim()) errs.building = 'Building / Flat / House details are required.';
+    if (!addressStreet.trim()) errs.street = 'Street / Area details are required.';
+    if (!addressCity.trim()) errs.city = 'City is required.';
+    if (!addressPinCode.trim() || !/^\d{6}$/.test(addressPinCode.trim())) {
+      errs.pinCode = 'Enter a valid 6-digit PIN code.';
+    }
+
+    if (Object.keys(errs).length > 0) {
+      setAddressErrors(errs);
+      return;
+    }
+
+    const cleanPhone = addressPhone.trim().replace(/\D/g, '').slice(-10);
+
+    const newAddress = {
+      id: 'addr_' + Date.now(),
+      type: addressType,
+      recipientName: addressRecipientName.trim(),
+      fullName: addressRecipientName.trim(),
+      phone: cleanPhone,
+      building: addressBuilding.trim(),
+      street: addressStreet.trim(),
+      landmark: addressLandmark.trim(),
+      city: addressCity.trim(),
+      state: addressState.trim() || 'Telangana',
+      stateName: addressState.trim() || 'Telangana',
+      pinCode: addressPinCode.trim(),
+      saveAddressForFuture: true,
+    };
+
+    try {
+      if (email) {
+        localStorage.setItem(`craftoria_addresses_${email}`, JSON.stringify([newAddress]));
+      }
+      localStorage.setItem('craftoria_saved_addresses', JSON.stringify([newAddress]));
+    } catch (err) {
+      console.error('Failed to save address:', err);
+    }
+
+    setAddressSavedSuccess(true);
+    setTimeout(() => {
+      clearFields();
+      onClose();
+    }, 1100);
+  };
+
+  const handleSkipAddressOnboarding = () => {
+    clearFields();
+    onClose();
   };
 
   const handleForgotSubmit = async (e) => {
@@ -209,6 +286,19 @@ const AuthModal = ({ isOpen, onClose }) => {
     setShowConfirmPassword(false);
     setIsSubmitting(false);
     setIsGoogleLoading(false);
+    
+    // Reset address onboarding fields
+    setAddressRecipientName('');
+    setAddressPhone('');
+    setAddressBuilding('');
+    setAddressStreet('');
+    setAddressLandmark('');
+    setAddressCity('');
+    setAddressState('');
+    setAddressPinCode('');
+    setAddressType('Home');
+    setAddressErrors({});
+    setAddressSavedSuccess(false);
   };
 
   const handleViewChange = (newView) => {
@@ -706,6 +796,161 @@ const AuthModal = ({ isOpen, onClose }) => {
                   <span>Send Reset Link</span>
                 )}
               </button>
+            </form>
+          </div>
+        )}
+
+        {/* VIEW: ADDRESS ONBOARDING (Optional / Skip allowed) */}
+        {view === 'address_onboarding' && (
+          <div className="text-left">
+            <div className="text-center mb-4">
+              <div className="w-11 h-11 rounded-full bg-brand-purple/15 text-brand-plum flex items-center justify-center mx-auto mb-2 text-base">
+                🌸
+              </div>
+              <h2 className="font-serif text-xl sm:text-2xl font-bold text-brand-dark">
+                Welcome to Craftoria!
+              </h2>
+              <p className="text-xs text-brand-dark/70 mt-1 max-w-xs mx-auto">
+                Add your delivery address for 1-click orders, or skip to start exploring now.
+              </p>
+            </div>
+
+            {addressSavedSuccess && (
+              <div className="mb-4 p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center gap-2">
+                <CheckCircle2 className="w-4.5 h-4.5 text-emerald-600 flex-shrink-0" />
+                <span>Address saved successfully! Welcome to Craftoria ✨</span>
+              </div>
+            )}
+
+            <form onSubmit={handleSaveAddressOnboarding} className="space-y-3">
+              {/* Address Type Selector */}
+              <div className="flex items-center justify-between pb-2 border-b border-brand-purple/10">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-brand-plum font-mono">Address Type</span>
+                <div className="flex gap-1.5">
+                  {['Home', 'Work', 'Other'].map((t) => (
+                    <button
+                      key={t}
+                      type="button"
+                      onClick={() => setAddressType(t)}
+                      className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all cursor-pointer ${
+                        addressType === t
+                          ? 'bg-brand-plum text-white shadow-xs'
+                          : 'bg-brand-purple/10 text-brand-plum hover:bg-brand-purple/20'
+                      }`}
+                    >
+                      {t}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Recipient Name & Phone */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-brand-dark/80 block">Recipient Name</label>
+                  <input
+                    type="text"
+                    value={addressRecipientName}
+                    onChange={(e) => setAddressRecipientName(e.target.value)}
+                    placeholder="Full Name"
+                    className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-brand-purple/20 bg-white focus:outline-none focus:border-brand-purple font-medium"
+                  />
+                  {addressErrors.name && <span className="text-[10px] text-red-500 font-semibold">{addressErrors.name}</span>}
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-brand-dark/80 block">Mobile Number</label>
+                  <input
+                    type="tel"
+                    value={addressPhone}
+                    onChange={(e) => setAddressPhone(e.target.value)}
+                    placeholder="10-digit number"
+                    className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-brand-purple/20 bg-white focus:outline-none focus:border-brand-purple font-medium"
+                  />
+                  {addressErrors.phone && <span className="text-[10px] text-red-500 font-semibold">{addressErrors.phone}</span>}
+                </div>
+              </div>
+
+              {/* Building Details */}
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-brand-dark/80 block">Flat / House No. / Building / Society</label>
+                <input
+                  type="text"
+                  value={addressBuilding}
+                  onChange={(e) => setAddressBuilding(e.target.value)}
+                  placeholder="e.g. Flat 302, Lavender Residency"
+                  className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-brand-purple/20 bg-white focus:outline-none focus:border-brand-purple font-medium"
+                />
+                {addressErrors.building && <span className="text-[10px] text-red-500 font-semibold">{addressErrors.building}</span>}
+              </div>
+
+              {/* Street / Area / Landmark */}
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-brand-dark/80 block">Street / Colony / Area / Landmark</label>
+                <input
+                  type="text"
+                  value={addressStreet}
+                  onChange={(e) => setAddressStreet(e.target.value)}
+                  placeholder="e.g. Main Road, Near Central Park"
+                  className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-brand-purple/20 bg-white focus:outline-none focus:border-brand-purple font-medium"
+                />
+                {addressErrors.street && <span className="text-[10px] text-red-500 font-semibold">{addressErrors.street}</span>}
+              </div>
+
+              {/* City, State & PIN Code */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-brand-dark/80 block">City</label>
+                  <input
+                    type="text"
+                    value={addressCity}
+                    onChange={(e) => setAddressCity(e.target.value)}
+                    placeholder="City"
+                    className="w-full text-xs px-3 py-2 rounded-xl border border-brand-purple/20 bg-white focus:outline-none focus:border-brand-purple font-medium"
+                  />
+                  {addressErrors.city && <span className="text-[10px] text-red-500 font-semibold">{addressErrors.city}</span>}
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-brand-dark/80 block">State</label>
+                  <input
+                    type="text"
+                    value={addressState}
+                    onChange={(e) => setAddressState(e.target.value)}
+                    placeholder="State"
+                    className="w-full text-xs px-3 py-2 rounded-xl border border-brand-purple/20 bg-white focus:outline-none focus:border-brand-purple font-medium"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-brand-dark/80 block">PIN Code</label>
+                  <input
+                    type="text"
+                    value={addressPinCode}
+                    onChange={(e) => setAddressPinCode(e.target.value)}
+                    placeholder="6 digits"
+                    className="w-full text-xs px-3 py-2 rounded-xl border border-brand-purple/20 bg-white focus:outline-none focus:border-brand-purple font-medium"
+                  />
+                  {addressErrors.pinCode && <span className="text-[10px] text-red-500 font-semibold">{addressErrors.pinCode}</span>}
+                </div>
+              </div>
+
+              {/* Action Buttons: Save Address + Skip Button */}
+              <div className="flex flex-col gap-2 pt-3">
+                <button
+                  type="submit"
+                  disabled={addressSavedSuccess}
+                  className="w-full py-3 px-6 rounded-full bg-brand-plum hover:bg-brand-violet text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md cursor-pointer flex items-center justify-center gap-2"
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>Save Delivery Address</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleSkipAddressOnboarding}
+                  className="w-full py-2.5 px-4 text-xs font-bold text-brand-dark/65 hover:text-brand-plum transition-colors cursor-pointer text-center"
+                >
+                  Skip for Now & Start Exploring &rarr;
+                </button>
+              </div>
             </form>
           </div>
         )}
