@@ -1,8 +1,7 @@
 import { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, X, AlertCircle, ShoppingBag } from 'lucide-react';
+import { Check, X, AlertCircle } from 'lucide-react';
 import { useAuth } from './AuthContext';
-import { supabase } from '../lib/supabase';
 
 const CartContext = createContext();
 
@@ -58,12 +57,10 @@ const ToastNotification = ({ title, message, type = 'success', onClose, onViewCa
 };
 
 export const CartProvider = ({ children }) => {
-  const { user, isLoggedIn } = useAuth();
-
-  const variantMapRef = useRef(null);
+  const { user } = useAuth();
   const mergedUserIdRef = useRef(null);
 
-  // Initialize cart state directly from storage on first render to prevent asynchronous stale resets
+  // Initialize cart state directly from localStorage
   const [cart, setCart] = useState(() => {
     try {
       const saved = localStorage.getItem('craftoria_cart');
@@ -84,9 +81,9 @@ export const CartProvider = ({ children }) => {
   });
 
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [toast, setToast] = useState(null); // { id: number, title: string, message: string, type: string }
+  const [toast, setToast] = useState(null);
 
-  // Sync cart to localStorage
+  // Sync cart to state and localStorage
   const saveCartToStorage = (updatedCart) => {
     setCart(updatedCart);
     try {
@@ -99,7 +96,7 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  // Sync saved for later to localStorage
+  // Sync saved for later to state and localStorage
   const saveSaveLaterToStorage = (updatedList) => {
     setSaveForLaterList(updatedList);
     try {
@@ -112,49 +109,74 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  const getVariantMap = async () => {
-    if (variantMapRef.current) return variantMapRef.current;
-    try {
-      const { data, error } = await supabase.from('product_variants').select('id, sku');
-      if (error || !data) {
-        return new Map();
-      }
-      variantMapRef.current = new Map(data.map((v) => [v.sku, v.id]));
-      return variantMapRef.current;
-    } catch (err) {
-      return new Map();
+  // Handle user authentication transition without duplicating/multiplying quantities
+  useEffect(() => {
+    if (!user) {
+      mergedUserIdRef.current = null;
+      return;
     }
-  };
+    if (mergedUserIdRef.current === user.id) return;
+    mergedUserIdRef.current = user.id;
 
-  const mapDbCartToLocalShape = (summary) =>
-    (summary?.items || []).map((line) => ({
-      id: line.sku,
-      name: line.product_name,
-      price: Number(line.unit_price),
-      desc: line.product_description || '',
-      quantity: line.quantity,
-      image: '',
-      isAvailable: line.is_available,
-      availableQuantity: line.available_quantity,
-    }));
-
-  const fetchDbCart = async () => {
     try {
-      const { data, error } = await supabase.rpc('get_cart_summary');
-      if (error || !data) return null;
-      if (data.items && data.items.length > 0) {
-        const localShape = mapDbCartToLocalShape(data);
-        saveCartToStorage(localShape);
-        return localShape;
-      }
-      return null;
-    } catch (err) {
-      return null;
-    }
-  };
+      const userCartKey = `craftoria_cart_${user.email}`;
+      const savedUserRaw = localStorage.getItem(userCartKey);
+      const userSavedCart = savedUserRaw ? JSON.parse(savedUserRaw) : [];
 
-  // Core add-to-cart operation with multi-tier storage and guaranteed offline/local fallback
-  const addItemQuantity = async (product, addQty) => {
+      const currentActiveRaw = localStorage.getItem('craftoria_cart');
+      const currentActiveCart = currentActiveRaw ? JSON.parse(currentActiveRaw) : [];
+
+      if (currentActiveCart.length === 0 && userSavedCart.length > 0) {
+        // Restore user's previous saved cart
+        saveCartToStorage(userSavedCart);
+      } else if (currentActiveCart.length > 0 && userSavedCart.length > 0) {
+        // Merge without summing quantities if same items exist
+        const cartMap = new Map();
+        userSavedCart.forEach((item) => {
+          if (item && item.id) cartMap.set(item.id, { ...item });
+        });
+        currentActiveCart.forEach((item) => {
+          if (item && item.id) {
+            // Overwrite or preserve active cart item instead of doubling
+            cartMap.set(item.id, { ...item });
+          }
+        });
+        const merged = Array.from(cartMap.values());
+        saveCartToStorage(merged);
+      } else if (currentActiveCart.length > 0) {
+        // Save current active cart to user key
+        localStorage.setItem(userCartKey, JSON.stringify(currentActiveCart));
+      }
+    } catch (err) {
+      console.warn('Error synchronizing user cart storage:', err);
+    }
+
+    // Save for Later merge
+    if (user.email) {
+      try {
+        const userSaveLaterKey = `craftoria_save_later_${user.email}`;
+        const savedLaterRaw = localStorage.getItem(userSaveLaterKey);
+        const userSavedLater = savedLaterRaw ? JSON.parse(savedLaterRaw) : [];
+
+        const saveLaterMap = new Map();
+        saveForLaterList.forEach((item) => {
+          if (item && item.id) saveLaterMap.set(item.id, { ...item });
+        });
+        userSavedLater.forEach((savedItem) => {
+          if (savedItem && savedItem.id) {
+            saveLaterMap.set(savedItem.id, { ...savedItem });
+          }
+        });
+        const mergedSaveLater = Array.from(saveLaterMap.values());
+        setSaveForLaterList(mergedSaveLater);
+        localStorage.setItem('craftoria_save_later', JSON.stringify(mergedSaveLater));
+        localStorage.setItem(userSaveLaterKey, JSON.stringify(mergedSaveLater));
+      } catch (e) {}
+    }
+  }, [user]);
+
+  // Core add-to-cart operation
+  const addItemQuantity = (product, addQty) => {
     const productPrice = product.price || 249;
     const productName = product.name || product.title || 'Product';
     const productDesc = product.desc || product.description || '';
@@ -176,7 +198,6 @@ export const CartProvider = ({ children }) => {
       return textMatch && occMatch && noteMatch && packMatch && specMatch;
     };
 
-    // 1. Update local cart state & storage immediately (Optimistic / Always-Available)
     let isNewItem = false;
     setCart((prevCart) => {
       const existingIndex = prevCart.findIndex(isMatchingItem);
@@ -217,125 +238,14 @@ export const CartProvider = ({ children }) => {
       return updated;
     });
 
-    // 2. If logged in, attempt background sync with Supabase (graceful enhancement)
-    if (isLoggedIn) {
-      try {
-        const variantMap = await getVariantMap();
-        const variantId = variantMap.get(rawProductId);
-        if (variantId) {
-          await supabase.rpc('cart_add_item', {
-            p_variant_id: variantId,
-            p_quantity: addQty,
-          });
-        }
-      } catch (e) {
-        console.warn('Background Supabase cart sync notice:', e);
-      }
-    }
-
     return { success: true, isNewItem };
   };
 
-  // Merge guest cart with user cart on login
-  useEffect(() => {
-    if (!user) {
-      mergedUserIdRef.current = null;
-      return;
-    }
-    if (mergedUserIdRef.current === user.id) return;
-    mergedUserIdRef.current = user.id;
-
-    (async () => {
-      let guestItems = [];
-      let userSavedCart = [];
-      const userCartKey = `craftoria_cart_${user.email}`;
-
-      try {
-        const savedGuest = localStorage.getItem('craftoria_cart');
-        guestItems = savedGuest ? JSON.parse(savedGuest) : [];
-      } catch (e) {}
-
-      try {
-        const savedUser = localStorage.getItem(userCartKey);
-        userSavedCart = savedUser ? JSON.parse(savedUser) : [];
-      } catch (e) {}
-
-      // Combine local carts
-      const cartMap = new Map();
-      userSavedCart.forEach((item) => {
-        if (item && item.id) cartMap.set(item.id, { ...item });
-      });
-      guestItems.forEach((item) => {
-        if (item && item.id) {
-          const existing = cartMap.get(item.id);
-          if (existing) {
-            cartMap.set(item.id, { ...existing, quantity: existing.quantity + item.quantity });
-          } else {
-            cartMap.set(item.id, { ...item });
-          }
-        }
-      });
-
-      const mergedCart = Array.from(cartMap.values());
-      if (mergedCart.length > 0) {
-        saveCartToStorage(mergedCart);
-      }
-
-      // Background DB sync if available
-      try {
-        const variantMap = await getVariantMap();
-        for (const item of mergedCart) {
-          const variantId = variantMap.get(item.id);
-          if (variantId) {
-            await supabase.rpc('cart_add_item', {
-              p_variant_id: variantId,
-              p_quantity: item.quantity,
-            });
-          }
-        }
-        const dbItems = await fetchDbCart();
-        if (dbItems && dbItems.length > 0) {
-          saveCartToStorage(dbItems);
-        }
-      } catch (err) {
-        console.warn('Supabase login cart merge notice:', err);
-      }
-    })();
-
-    // Save for Later merge
-    if (user.email) {
-      const userSaveLaterKey = `craftoria_save_later_${user.email}`;
-      let userSavedLater = [];
-      try {
-        const saved = localStorage.getItem(userSaveLaterKey);
-        userSavedLater = saved ? JSON.parse(saved) : [];
-      } catch (e) {
-        userSavedLater = [];
-      }
-
-      const saveLaterMap = new Map();
-      saveForLaterList.forEach((item) => {
-        if (item && item.id) saveLaterMap.set(item.id, { ...item });
-      });
-      userSavedLater.forEach((savedItem) => {
-        if (savedItem && savedItem.id) {
-          saveLaterMap.set(savedItem.id, { ...savedItem });
-        }
-      });
-      const mergedSaveLater = Array.from(saveLaterMap.values());
-      setSaveForLaterList(mergedSaveLater);
-      try {
-        localStorage.setItem('craftoria_save_later', JSON.stringify(mergedSaveLater));
-        localStorage.setItem(userSaveLaterKey, JSON.stringify(mergedSaveLater));
-      } catch (e) {}
-    }
-  }, [user]);
-
-  const addToCart = async (product, quantity = 1) => {
-    if (!product || !product.id) return;
+  const addToCart = (product, quantity = 1) => {
+    if (!product || (!product.id && !product.productId)) return;
 
     const addQty = Math.max(1, parseInt(product.qty ?? quantity, 10) || 1);
-    const result = await addItemQuantity(product, addQty);
+    const result = addItemQuantity(product, addQty);
     const productName = product.name || product.title || 'Item';
 
     if (!result.success) {
@@ -356,72 +266,34 @@ export const CartProvider = ({ children }) => {
     });
   };
 
-  const removeFromCart = async (lineItemId) => {
-    const targetItem = cart.find((item) => item.id === lineItemId);
+  const removeFromCart = (lineItemId) => {
     const updated = cart.filter((item) => item.id !== lineItemId);
     saveCartToStorage(updated);
-
-    if (isLoggedIn) {
-      try {
-        const rawId = targetItem?.productId || lineItemId;
-        const variantMap = await getVariantMap();
-        const variantId = variantMap.get(rawId);
-        if (variantId) {
-          await supabase.rpc('cart_remove_item', { p_variant_id: variantId });
-        }
-      } catch (e) {
-        console.warn('DB cart remove warning:', e);
-      }
-    }
   };
 
-  const updateQuantity = async (lineItemId, newQuantity) => {
+  const updateQuantity = (lineItemId, newQuantity) => {
     const parsedQty = parseInt(newQuantity, 10);
     if (isNaN(parsedQty) || parsedQty <= 0) {
       removeFromCart(lineItemId);
       return;
     }
 
-    const targetItem = cart.find((item) => item.id === lineItemId);
     const updated = cart.map((item) =>
       item.id === lineItemId ? { ...item, quantity: parsedQty } : item
     );
     saveCartToStorage(updated);
-
-    if (isLoggedIn) {
-      try {
-        const rawId = targetItem?.productId || lineItemId;
-        const variantMap = await getVariantMap();
-        const variantId = variantMap.get(rawId);
-        if (variantId) {
-          await supabase.rpc('cart_set_item_quantity', {
-            p_variant_id: variantId,
-            p_quantity: parsedQty,
-          });
-        }
-      } catch (e) {
-        console.warn('DB cart update quantity warning:', e);
-      }
-    }
   };
 
-  const clearCart = async () => {
+  const clearCart = () => {
     saveCartToStorage([]);
-    if (isLoggedIn) {
-      try {
-        await supabase.rpc('cart_clear');
-      } catch (e) {
-        console.warn('DB cart clear warning:', e);
-      }
-    }
   };
 
   // Save for Later Actions
-  const saveForLater = async (productId) => {
+  const saveForLater = (productId) => {
     const itemToSave = cart.find((item) => item.id === productId);
     if (!itemToSave) return;
 
-    await removeFromCart(productId);
+    removeFromCart(productId);
 
     const exists = saveForLaterList.some((item) => item.id === productId);
     if (!exists) {
@@ -429,12 +301,12 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  const moveToCart = async (productId) => {
+  const moveToCart = (productId) => {
     const itemToMove = saveForLaterList.find((item) => item.id === productId);
     if (!itemToMove) return;
 
     saveSaveLaterToStorage(saveForLaterList.filter((item) => item.id !== productId));
-    await addItemQuantity(itemToMove, itemToMove.quantity || 1);
+    addItemQuantity(itemToMove, itemToMove.quantity || 1);
   };
 
   const removeFromSaveForLater = (productId) => {
@@ -481,4 +353,3 @@ export const CartProvider = ({ children }) => {
 };
 
 export const useCart = () => useContext(CartContext);
-
