@@ -402,7 +402,7 @@ const AccountMenu = ({ isOpen, onClose, initialTab = 'menu' }) => {
                       type="tel"
                       value={profilePhone}
                       onChange={(e) => setProfilePhone(e.target.value)}
-                      placeholder="+91 98765 43210"
+                      placeholder="Enter 10-digit mobile number"
                       className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-brand-purple/20 bg-white focus:outline-none focus:border-brand-purple font-medium"
                     />
                   </div>
@@ -646,7 +646,7 @@ const AccountMenu = ({ isOpen, onClose, initialTab = 'menu' }) => {
                         type="tel"
                         value={addressForm.phone}
                         onChange={(e) => setAddressForm({ ...addressForm, phone: e.target.value })}
-                        placeholder="+91 98765 43210"
+                        placeholder="10-digit mobile number"
                         required
                         className="w-full text-xs px-3 py-2 rounded-xl border border-brand-purple/20 bg-white focus:outline-none focus:border-brand-purple font-medium"
                       />
