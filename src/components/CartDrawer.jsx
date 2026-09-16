@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ShoppingBag, Plus, Minus, Trash2, ShieldCheck } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { useRouter } from '../context/RouterContext';
 
 import sellerMemoryCanvas from '../assets/seller-memory-canvas.png';
 import sellerEmbroideryHoop from '../assets/seller-embroidery-hoop.png';
@@ -23,6 +24,7 @@ const CartDrawer = () => {
     moveToCart,
     removeFromSaveForLater
   } = useCart();
+  const { navigate } = useRouter();
 
   const [showClearConfirm, setShowClearConfirm] = useState(false);
 
@@ -48,7 +50,7 @@ const CartDrawer = () => {
 
   const handleProceedToCheckout = () => {
     setIsCartOpen(false);
-    window.location.pathname = '/checkout';
+    navigate('/checkout');
   };
 
   return (

@@ -54,10 +54,10 @@ const WhyChoose = () => {
           
           {/* Left Column: Heading Block (span 3) */}
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
+            initial={{ opacity: 0, x: -35 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
+            viewport={{ once: true, margin: "-40px" }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
             className="lg:col-span-3 text-left space-y-3"
           >
             <h2 className="font-serif text-3xl sm:text-4xl font-bold leading-tight text-brand-dark">
@@ -72,14 +72,15 @@ const WhyChoose = () => {
             {features.map((feat, idx) => (
               <motion.div
                 key={feat.title}
-                initial={{ opacity: 0, y: 15 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: idx * 0.1 }}
-                className="flex flex-col items-start text-left p-5 glass-card rounded-2xl border border-brand-purple/10 h-full"
+                initial={{ opacity: 0, scale: 0.94, y: 35 }}
+                whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                viewport={{ once: true, margin: "-40px" }}
+                transition={{ duration: 0.65, delay: idx * 0.1, ease: [0.22, 1, 0.36, 1] }}
+                whileHover={{ y: -6, scale: 1.02, transition: { duration: 0.25 } }}
+                className="flex flex-col items-start text-left p-5 glass-card rounded-2xl border border-brand-purple/10 hover:border-brand-purple/30 hover:shadow-lg transition-shadow duration-300 h-full"
               >
                 {/* Icon Container */}
-                <div className={`w-9 h-9 rounded-xl ${feat.bg} flex items-center justify-center mb-4 border border-brand-purple/10`}>
+                <div className={`w-9 h-9 rounded-xl ${feat.bg} flex items-center justify-center mb-4 border border-brand-purple/10 group-hover:scale-105 transition-transform duration-200`}>
                   {feat.icon}
                 </div>
 

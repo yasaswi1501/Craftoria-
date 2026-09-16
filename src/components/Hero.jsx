@@ -23,17 +23,12 @@ const Hero = () => {
 
       <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
         {/* Left Content Column */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: 'easeOut' }}
-          className="lg:col-span-7 flex flex-col items-start text-left"
-        >
+        <div className="lg:col-span-7 flex flex-col items-start text-left">
           {/* Badge */}
           <motion.div
-            initial={{ scale: 0.95, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
+            initial={{ scale: 0.9, opacity: 0, y: 15 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            transition={{ delay: 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-cream/80 border border-brand-purple/20 shadow-sm text-xs font-semibold tracking-wider text-brand-plum mb-6"
           >
             <span className="text-[10px] uppercase font-serif tracking-widest flex items-center gap-1.5">
@@ -42,21 +37,36 @@ const Hero = () => {
           </motion.div>
 
           {/* Heading */}
-          <h1 className="font-serif text-4xl sm:text-5xl md:text-6.5xl font-bold leading-[1.1] text-brand-dark mb-6 tracking-tight">
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            className="font-serif text-4xl sm:text-5xl md:text-6.5xl font-bold leading-[1.1] text-brand-dark mb-6 tracking-tight"
+          >
             Handmade Happiness, <br />
             <span className="text-brand-plum italic font-normal">from Our Hands to</span> <br />
             <span className="text-brand-plum italic font-normal">Your Heart</span>
-          </h1>
+          </motion.h1>
 
           {/* Subtitle */}
-          <p className="text-sm sm:text-base md:text-lg text-brand-dark/80 font-normal leading-relaxed mb-8 max-w-lg">
+          <motion.p
+            initial={{ opacity: 0, y: 25 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.35, duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
+            className="text-sm sm:text-base md:text-lg text-brand-dark/80 font-normal leading-relaxed mb-8 max-w-lg"
+          >
             Discover unique handmade creations designed with passion, detail, and timeless beauty. Bring warmth and personality into your space.
-          </p>
+          </motion.p>
 
           {/* Buttons */}
-          <div className="flex flex-wrap items-center gap-4 mb-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            className="flex flex-wrap items-center gap-4 mb-8"
+          >
             <button
-              onClick={() => handleScroll('collections')}
+              onClick={() => handleScroll('bestsellers')}
               className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-brand-plum text-white font-semibold hover:bg-brand-violet hover:translate-y-[-2px] transition-all duration-300 shadow-md hover:shadow-lg text-xs uppercase tracking-wider cursor-pointer"
             >
               <span>Explore Collection</span>
@@ -69,10 +79,15 @@ const Hero = () => {
               <Paintbrush className="w-4 h-4 text-brand-purple" />
               <span>Custom Orders</span>
             </button>
-          </div>
+          </motion.div>
 
           {/* Happy Customers Social Proof */}
-          <div className="flex items-center gap-3 pt-2 border-t border-brand-purple/10 w-full sm:w-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.65, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            className="flex items-center gap-3 pt-2 border-t border-brand-purple/10 w-full sm:w-auto"
+          >
             {/* Overlapping Avatars */}
             <div className="flex -space-x-3">
               <div className="w-9 h-9 rounded-full border border-white bg-gradient-to-tr from-brand-pink to-brand-purple flex items-center justify-center text-[10px] font-bold text-white shadow-sm">
@@ -88,16 +103,16 @@ const Hero = () => {
             <span className="text-xs text-brand-dark/70 font-medium">
               Loved by <span className="font-bold text-brand-plum">2,000+</span> happy customers
             </span>
-          </div>
-        </motion.div>
+          </motion.div>
+        </div>
 
         {/* Right Content Column (Artistic Mockup Representation) */}
         <div className="lg:col-span-5 relative w-full h-[400px] sm:h-[500px] flex items-center justify-center">
           {/* Main Watercolor Backdrop Frame */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
+            initial={{ opacity: 0, scale: 0.92, y: 30 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.9, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
             className="w-full h-full glass-card rounded-[40px] overflow-hidden p-6 flex items-center justify-center relative border border-brand-purple/15 shadow-[0_24px_70px_rgba(75,46,93,0.08)]"
           >
             {/* Main visual focus: actual uploaded craft image (contain, not cover, no cropping) */}
@@ -117,6 +132,9 @@ const Hero = () => {
                   src={heroCraftShowcase} 
                   alt="Handmade pipe cleaner and crochet craft ornaments" 
                   className="w-full h-full object-contain object-center rounded-[24px]"
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="async"
                 />
               </div>
             </div>
@@ -124,17 +142,25 @@ const Hero = () => {
 
           {/* Floating badge details */}
           <motion.div
-            animate={{ y: [0, -6, 0] }}
-            transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute left-[-25px] bottom-10 glass-card px-4 py-2.5 rounded-2xl border border-brand-purple/20 shadow-md flex items-center gap-2.5 z-20"
+            initial={{ opacity: 0, scale: 0.8, x: -20 }}
+            animate={{ opacity: 1, scale: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            className="absolute left-[-25px] bottom-10 z-20"
           >
-            <div className="w-6 h-6 rounded-full bg-brand-pink/40 flex items-center justify-center">
-              <Sparkles className="w-3.5 h-3.5 text-brand-plum" />
-            </div>
-            <div className="flex flex-col text-left">
-              <span className="text-[9px] font-bold uppercase tracking-wider text-brand-plum">Handcrafted</span>
-              <span className="text-[8px] text-brand-dark/70 font-medium">Made with chenille stems</span>
-            </div>
+            <motion.div
+              animate={{ y: [0, -8, 0] }}
+              transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+              style={{ willChange: 'transform' }}
+              className="glass-card px-4 py-2.5 rounded-2xl border border-brand-purple/20 shadow-md flex items-center gap-2.5"
+            >
+              <div className="w-6 h-6 rounded-full bg-brand-pink/40 flex items-center justify-center">
+                <Sparkles className="w-3.5 h-3.5 text-brand-plum" />
+              </div>
+              <div className="flex flex-col text-left">
+                <span className="text-[9px] font-bold uppercase tracking-wider text-brand-plum">Handcrafted</span>
+                <span className="text-[8px] text-brand-dark/70 font-medium">Made with chenille stems</span>
+              </div>
+            </motion.div>
           </motion.div>
         </div>
       </div>

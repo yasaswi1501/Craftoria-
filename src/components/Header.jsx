@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Sparkles, Heart, ShoppingBag, User } from 'lucide-react';
+import { Menu, X, Sparkles, Heart, ShoppingBag, User, Phone, Mail, ChevronRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
@@ -12,6 +12,7 @@ import { useRouter } from '../context/RouterContext';
 const Header = () => {
   const { isLoggedIn, user, isAuthModalOpen, setIsAuthModalOpen } = useAuth();
   const { cart, setIsCartOpen } = useCart();
+  const { wishlist } = useWishlist();
   const { navigate } = useRouter();
   
   const [isNavOpen, setIsNavOpen] = useState(false);
@@ -19,51 +20,53 @@ const Header = () => {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('#home');
 
+  // Combined, rAF-throttled passive scroll listener
   useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 20) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    let ticking = false;
 
-  // Track active page sections based on scroll offset or current pathname
-  useEffect(() => {
-    const handleSectionTracking = () => {
-      const currentPath = window.location.pathname;
-      if (currentPath !== '/') {
-        if (currentPath.startsWith('/collections')) {
-          setActiveSection('#bestsellers');
-        } else {
-          setActiveSection('');
-        }
-        return;
-      }
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrollY = window.scrollY;
+          
+          // 1. Scrolled state check
+          const isScrolled = scrollY > 20;
+          setScrolled(prev => (prev !== isScrolled ? isScrolled : prev));
 
-      const sections = ['home', 'about', 'bestsellers', 'gallery', 'contact'];
-      const scrollPosition = window.scrollY + 200; // offset threshold
+          // 2. Active section tracking on homepage
+          const currentPath = window.location.pathname;
+          if (currentPath !== '/') {
+            const targetSection = currentPath.startsWith('/collections') ? '#bestsellers' : '';
+            setActiveSection(prev => (prev !== targetSection ? targetSection : prev));
+          } else {
+            const sections = ['home', 'about', 'bestsellers', 'gallery', 'contact'];
+            const scrollPosition = scrollY + 200;
 
-      for (const section of sections) {
-        const el = document.getElementById(section);
-        if (el) {
-          const top = el.offsetTop;
-          const height = el.offsetHeight;
-          if (scrollPosition >= top && scrollPosition < top + height) {
-            setActiveSection(`#${section}`);
-            break;
+            for (const section of sections) {
+              const el = document.getElementById(section);
+              if (el) {
+                const top = el.offsetTop;
+                const height = el.offsetHeight;
+                if (scrollPosition >= top && scrollPosition < top + height) {
+                  const newSection = `#${section}`;
+                  setActiveSection(prev => (prev !== newSection ? newSection : prev));
+                  break;
+                }
+              }
+            }
           }
-        }
+          ticking = false;
+        });
+        ticking = true;
       }
     };
 
-    window.addEventListener('scroll', handleSectionTracking);
-    handleSectionTracking(); // Check initial state
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
 
-    return () => window.removeEventListener('scroll', handleSectionTracking);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+    };
   }, [window.location.pathname]);
 
   // Prevent scroll when mobile nav is open
@@ -106,6 +109,7 @@ const Header = () => {
   };
 
   const handleAccountClick = () => {
+    setIsNavOpen(false);
     if (isLoggedIn) {
       setIsAccountOpen(true);
     } else {
@@ -113,7 +117,17 @@ const Header = () => {
     }
   };
 
-  const { wishlist } = useWishlist();
+  const handleWishlistClick = (e) => {
+    e.preventDefault();
+    setIsNavOpen(false);
+    navigate('/wishlist');
+  };
+
+  const handleCartClick = () => {
+    setIsNavOpen(false);
+    setIsCartOpen(true);
+  };
+
   const cartItemsCount = cart.reduce((total, item) => total + item.quantity, 0);
   const wishlistItemsCount = wishlist.length;
 
@@ -190,8 +204,8 @@ const Header = () => {
             </button>
 
             {/* Wishlist Button */}
-            <a
-              href="/wishlist"
+            <button
+              onClick={handleWishlistClick}
               className="inline-flex items-center justify-center w-11 h-11 rounded-full hover:bg-brand-purple/10 text-brand-dark transition-colors duration-200 relative cursor-pointer"
               aria-label="Wishlist"
             >
@@ -201,11 +215,11 @@ const Header = () => {
                   {wishlistItemsCount}
                 </span>
               )}
-            </a>
+            </button>
 
             {/* Cart Button */}
             <button
-              onClick={() => setIsCartOpen(true)}
+              onClick={handleCartClick}
               className="inline-flex items-center justify-center w-11 h-11 rounded-full hover:bg-brand-purple/10 text-brand-dark transition-colors duration-200 relative cursor-pointer"
               aria-label="Shopping bag"
             >
@@ -240,13 +254,20 @@ const Header = () => {
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 220 }}
-              className="relative w-72 max-w-xs h-full bg-[#FCF8FC] border-r border-brand-purple/20 shadow-[0_0_40px_rgba(75,46,93,0.15)] flex flex-col z-10 text-brand-dark p-6"
+              className="relative w-80 max-w-[85vw] h-full bg-[#FCF8FC] border-r border-brand-purple/20 shadow-[0_0_40px_rgba(75,46,93,0.15)] flex flex-col z-10 text-brand-dark p-6 overflow-y-auto"
             >
-              {/* Close Drawer Button */}
-              <div className="flex justify-end mb-8">
+              {/* Drawer Top Row */}
+              <div className="flex items-center justify-between mb-6 pb-4 border-b border-brand-purple/10">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-brand-purple/15 flex items-center justify-center">
+                    <Sparkles className="w-4 h-4 text-brand-plum" />
+                  </div>
+                  <span className="font-serif text-lg font-bold text-brand-dark">Craftoria</span>
+                </div>
+                
                 <button
                   onClick={() => setIsNavOpen(false)}
-                  className="w-11 h-11 rounded-full bg-brand-lavender/35 hover:bg-brand-lavender flex items-center justify-center cursor-pointer transition-all focus:outline-none"
+                  className="w-10 h-10 rounded-full bg-brand-lavender/40 hover:bg-brand-lavender flex items-center justify-center cursor-pointer transition-all focus:outline-none"
                   aria-label="Close navigation menu"
                 >
                   <X className="w-5 h-5 text-brand-plum" />
@@ -254,25 +275,83 @@ const Header = () => {
               </div>
 
               {/* Navigation Links */}
-              <nav className="flex flex-col gap-5 text-left">
+              <nav className="flex flex-col gap-1 text-left mb-6">
                 {navLinks.map((link) => (
                   <a
                     key={link.name}
                     href={link.href}
                     onClick={(e) => handleLinkClick(e, link.href)}
-                    className={`text-sm font-bold uppercase tracking-widest transition-colors duration-200 py-2.5 border-b border-brand-purple/5 ${
-                      activeSection === link.href ? 'text-brand-plum font-bold' : 'text-brand-dark hover:text-brand-violet'
+                    className={`text-sm font-bold uppercase tracking-wider transition-colors duration-200 py-3 px-3 rounded-xl flex items-center justify-between ${
+                      activeSection === link.href ? 'text-brand-plum bg-brand-purple/15' : 'text-brand-dark hover:bg-brand-purple/5'
                     }`}
                   >
-                    {link.name}
+                    <span>{link.name}</span>
+                    <ChevronRight className="w-4 h-4 opacity-40" />
                   </a>
                 ))}
               </nav>
+
+              {/* Account & Shop Shortcut Actions */}
+              <div className="flex flex-col gap-2 pt-4 border-t border-brand-purple/10 mb-6 text-left">
+                <button
+                  onClick={handleAccountClick}
+                  className="flex items-center justify-between p-3 rounded-xl bg-white/60 border border-brand-purple/15 text-xs font-bold text-brand-dark hover:bg-brand-purple/10 transition-colors"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <User className="w-4 h-4 text-brand-plum" />
+                    <span>{isLoggedIn ? (user?.email || 'My Account') : 'Login / Sign Up'}</span>
+                  </div>
+                  <ChevronRight className="w-4 h-4 opacity-40" />
+                </button>
+
+                <button
+                  onClick={handleWishlistClick}
+                  className="flex items-center justify-between p-3 rounded-xl bg-white/60 border border-brand-purple/15 text-xs font-bold text-brand-dark hover:bg-brand-purple/10 transition-colors"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <Heart className="w-4 h-4 text-brand-plum" />
+                    <span>My Wishlist</span>
+                  </div>
+                  {wishlistItemsCount > 0 && (
+                    <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                      {wishlistItemsCount}
+                    </span>
+                  )}
+                </button>
+
+                <button
+                  onClick={handleCartClick}
+                  className="flex items-center justify-between p-3 rounded-xl bg-white/60 border border-brand-purple/15 text-xs font-bold text-brand-dark hover:bg-brand-purple/10 transition-colors"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <ShoppingBag className="w-4 h-4 text-brand-plum" />
+                    <span>Shopping Bag</span>
+                  </div>
+                  {cartItemsCount > 0 && (
+                    <span className="bg-brand-plum text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                      {cartItemsCount}
+                    </span>
+                  )}
+                </button>
+              </div>
               
-              {/* Tagline footer in mobile drawer */}
-              <div className="mt-auto text-left pt-6 border-t border-brand-purple/10">
-                <span className="font-serif text-sm font-bold text-brand-plum">Craftoria</span>
-                <span className="text-[9px] uppercase font-semibold text-brand-dark/50 block mt-1 tracking-wider">Handmade With Love</span>
+              {/* Clickable Direct Support Links in Mobile Drawer */}
+              <div className="mt-auto pt-4 border-t border-brand-purple/10 text-left space-y-2">
+                <span className="text-[9px] uppercase font-bold text-brand-plum/80 tracking-widest block">Customer Support</span>
+                <a
+                  href="tel:+919876543210"
+                  className="flex items-center gap-2 text-xs font-semibold text-brand-dark hover:text-brand-plum transition-colors py-1"
+                >
+                  <Phone className="w-3.5 h-3.5 text-brand-plum" />
+                  <span>+91 98765 43210</span>
+                </a>
+                <a
+                  href="mailto:contact@craftoria.com"
+                  className="flex items-center gap-2 text-xs font-semibold text-brand-dark hover:text-brand-plum transition-colors py-1"
+                >
+                  <Mail className="w-3.5 h-3.5 text-brand-plum" />
+                  <span>contact@craftoria.com</span>
+                </a>
               </div>
             </motion.div>
           </div>

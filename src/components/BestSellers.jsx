@@ -69,21 +69,22 @@ const BestSellers = () => {
   const renderCard = (col, idx) => (
     <motion.div
       key={col.id}
-      initial={{ opacity: 0, scale: 0.98, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5, delay: idx * 0.08 }}
-      whileHover={{ y: -6, transition: { duration: 0.2 } }}
+      initial={{ opacity: 0, scale: 0.94, y: 45 }}
+      whileInView={{ opacity: 1, scale: 1, y: 0 }}
+      viewport={{ once: true, margin: '-40px' }}
+      transition={{ duration: 0.7, delay: idx * 0.08, ease: [0.22, 1, 0.36, 1] }}
+      whileHover={{ y: -8, scale: 1.02, transition: { duration: 0.25 } }}
       onClick={() => navigate(`/collections/${col.id}`)}
-      className="flex flex-col w-full h-full bg-white/70 rounded-3xl border border-brand-purple/15 shadow-sm overflow-hidden group cursor-pointer"
+      className="flex flex-col w-full h-full bg-white/75 rounded-3xl border border-brand-purple/15 shadow-sm hover:shadow-xl hover:border-brand-purple/35 overflow-hidden group cursor-pointer transition-shadow duration-300"
     >
       {/* Top: Collection Image */}
       <div className="w-full relative pb-[75%] h-0 overflow-hidden border-b border-brand-purple/5">
         <img
           src={col.image}
           alt={col.name}
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-108"
           loading="lazy"
+          decoding="async"
         />
       </div>
 
@@ -108,7 +109,7 @@ const BestSellers = () => {
             e.stopPropagation();
             navigate(`/collections/${col.id}`);
           }}
-          className="inline-flex items-center justify-center py-2.5 px-5 rounded-full bg-[#4F3060] hover:bg-[#683b8a] text-white font-semibold text-[10px] sm:text-xs uppercase tracking-wider transition-colors duration-200 cursor-pointer w-fit mt-4 focus:outline-none"
+          className="inline-flex items-center justify-center py-2.5 px-5 rounded-full bg-[#4F3060] hover:bg-[#683b8a] text-white font-semibold text-[10px] sm:text-xs uppercase tracking-wider transition-colors duration-200 cursor-pointer w-fit mt-4 focus:outline-none shadow-xs hover:shadow-md"
         >
           EXPLORE COLLECTION
         </button>
@@ -128,8 +129,14 @@ const BestSellers = () => {
       </div>
 
       <div className="max-w-[1250px] mx-auto relative z-10">
-        {/* Section Heading Banner */}
-        <div className="text-center mb-16">
+        {/* Section Heading Banner with subtle entrance */}
+        <motion.div 
+          initial={{ opacity: 0, y: 25 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="text-center mb-16"
+        >
           <span className="text-[10px] sm:text-xs font-bold text-brand-plum/85 uppercase tracking-[0.18em] block mb-2 font-mono">
             ARTISAN CATALOG
           </span>
@@ -137,9 +144,9 @@ const BestSellers = () => {
             Explore Our Collections
           </h2>
           <div className="w-16 h-0.5 bg-brand-purple/40 mx-auto mt-5" />
-        </div>
+        </motion.div>
 
-        {/* Categories Grid (Row 1 & Row 2) */}
+        {/* Categories Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
           {collections.map((col, idx) => renderCard(col, idx))}
         </div>

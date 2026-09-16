@@ -1,35 +1,76 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, CheckCircle2, Sparkles } from 'lucide-react';
+import { Send, CheckCircle2, Sparkles, Mail, Phone, AlertCircle } from 'lucide-react';
 import { HibiscusFlower, WatercolorWash } from './PremiumBackground';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    productType: 'Resin Art',
+    phone: '',
+    productType: 'Craftoria Bloom Bouquets',
     message: '',
   });
+  const [errors, setErrors] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const validateEmail = (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+
+  const validateForm = () => {
+    const errs = {};
+    if (!formData.name.trim()) {
+      errs.name = 'Please enter your name.';
+    } else if (formData.name.trim().length < 2) {
+      errs.name = 'Name must be at least 2 characters.';
+    }
+
+    if (!formData.email.trim()) {
+      errs.email = 'Please enter your email address.';
+    } else if (!validateEmail(formData.email.trim())) {
+      errs.email = 'Please enter a valid email address (e.g., name@example.com).';
+    }
+
+    if (formData.phone.trim() && !/^\d{10}$/.test(formData.phone.trim())) {
+      errs.phone = 'Phone number should be 10 digits if provided.';
+    }
+
+    if (!formData.message.trim()) {
+      errs.message = 'Please describe your custom order requirements.';
+    } else if (formData.message.trim().length < 10) {
+      errs.message = 'Please provide a little more detail (at least 10 characters).';
+    }
+
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!formData.name || !formData.email || !formData.message) {
-      alert('Please fill out all fields.');
-      return;
-    }
-    setIsSubmitted(true);
-    setFormData({
-      name: '',
-      email: '',
-      productType: 'Resin Art',
-      message: '',
-    });
+    if (!validateForm()) return;
+
+    setIsSubmitting(true);
+    // Simulate brief network submission
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setIsSubmitted(true);
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        productType: 'Craftoria Bloom Bouquets',
+        message: '',
+      });
+      setErrors({});
+    }, 400);
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: '' }));
+    }
   };
 
   return (
@@ -38,7 +79,7 @@ const Contact = () => {
       <WatercolorWash
         className="w-[500px] h-[500px] -left-16 bottom-[-5%]"
         gradientId="wash-contact-left"
-        fromColor1="rgba(190, 154, 205, 0.20)" // stronger watercolor purple
+        fromColor1="rgba(190, 154, 205, 0.20)"
         fromColor2="rgba(214, 185, 225, 0.16)"
         fromColor3="rgba(233, 207, 228, 0.10)"
       />
@@ -50,7 +91,7 @@ const Contact = () => {
         fromColor3="transparent"
       />
 
-      {/* Delicate floral/stem illustration framing the form area */}
+      {/* Delicate floral/stem illustration */}
       <HibiscusFlower
         className="w-[320px] h-[320px] right-[-40px] bottom-[15%]"
         stroke="#76558F"
@@ -67,15 +108,15 @@ const Contact = () => {
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           
-          {/* Left Column: Heading and Lavender Illustration (span 5) */}
+          {/* Left Column: Heading, Details & Direct Contacts */}
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
+            initial={{ opacity: 0, x: -35 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
+            viewport={{ once: true, margin: "-40px" }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
             className="lg:col-span-5 text-left space-y-6 flex flex-col items-start"
           >
-            <span className="text-xs font-semibold tracking-widest text-brand-plum uppercase">
+            <span className="text-xs font-semibold tracking-widest text-brand-plum uppercase font-mono">
               Bespoke Commission
             </span>
             <h2 className="font-serif text-3xl sm:text-4.5xl font-bold leading-tight text-brand-dark">
@@ -83,26 +124,38 @@ const Contact = () => {
               Idea in Mind?
             </h2>
             <p className="text-xs sm:text-sm text-brand-dark/80 leading-relaxed font-normal max-w-sm">
-              We'll craft a creation that matches your love, detail, and passion. Pick your colors, shapes, and personalized name plates.
+              We'll handcraft a personalized piece that matches your imagination. Pick your colors, shapes, personalized names, and special celebration themes.
             </p>
             
-            <button
-              onClick={() => {
-                const inputEl = document.getElementById('form-name');
-                if (inputEl) inputEl.focus();
-              }}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-brand-purple text-brand-plum text-xs font-semibold hover:bg-brand-purple hover:text-white transition-all duration-300 shadow-sm"
-            >
-              Request a Custom Order
-            </button>
+            {/* Direct Clickable Contact Cards */}
+            <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto pt-2">
+              <a
+                href="mailto:contact@craftoria.com"
+                className="inline-flex items-center gap-2.5 px-4.5 py-2.5 rounded-2xl bg-white/70 hover:bg-white border border-brand-purple/20 text-brand-plum text-xs font-semibold shadow-xs transition-all duration-200"
+              >
+                <div className="w-6 h-6 rounded-full bg-brand-purple/15 flex items-center justify-center">
+                  <Mail className="w-3.5 h-3.5 text-brand-plum" />
+                </div>
+                <span>contact@craftoria.com</span>
+              </a>
+
+              <a
+                href="tel:+919876543210"
+                className="inline-flex items-center gap-2.5 px-4.5 py-2.5 rounded-2xl bg-white/70 hover:bg-white border border-brand-purple/20 text-brand-plum text-xs font-semibold shadow-xs transition-all duration-200"
+              >
+                <div className="w-6 h-6 rounded-full bg-brand-purple/15 flex items-center justify-center">
+                  <Phone className="w-3.5 h-3.5 text-brand-plum" />
+                </div>
+                <span>+91 98765 43210</span>
+              </a>
+            </div>
 
             {/* Hand-drawn lavender stems vector graphic representation */}
-            <div className="pt-4 self-center lg:self-start opacity-70">
-              <svg className="w-44 h-44 text-brand-purple" viewBox="0 0 120 120" fill="none">
+            <div className="pt-2 self-center lg:self-start opacity-70">
+              <svg className="w-40 h-40 text-brand-purple" viewBox="0 0 120 120" fill="none">
                 <path d="M40,110 C50,80 45,50 35,25" stroke="currentColor" strokeWidth="1" strokeDasharray="3 3" />
                 <path d="M60,110 C60,75 55,40 50,15" stroke="currentColor" strokeWidth="1.2" />
                 <path d="M80,110 C70,80 75,55 85,30" stroke="currentColor" strokeWidth="1" strokeDasharray="3 3" />
-                {/* Petals */}
                 <circle cx="35" cy="25" r="2.5" fill="currentColor" />
                 <circle cx="33" cy="35" r="2.5" fill="currentColor" />
                 <circle cx="38" cy="45" r="2" fill="currentColor" />
@@ -116,15 +169,15 @@ const Contact = () => {
             </div>
           </motion.div>
 
-          {/* Right Column: Form (span 7) */}
+          {/* Right Column: Form with Validation & Feedback */}
           <motion.div
-            initial={{ opacity: 0, x: 30 }}
+            initial={{ opacity: 0, x: 35 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
+            viewport={{ once: true, margin: "-40px" }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
             className="lg:col-span-7"
           >
-            <div className="glass-card p-8 sm:p-10 rounded-[32px] relative overflow-hidden border border-brand-purple/20 shadow-md">
+            <div className="glass-card p-6 sm:p-10 rounded-[32px] relative overflow-hidden border border-brand-purple/20 shadow-md">
               <AnimatePresence mode="wait">
                 {!isSubmitted ? (
                   <motion.form
@@ -132,15 +185,16 @@ const Contact = () => {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    transition={{ duration: 0.4 }}
+                    transition={{ duration: 0.3 }}
                     onSubmit={handleSubmit}
-                    className="space-y-5 text-left"
+                    noValidate
+                    className="space-y-4 sm:space-y-5 text-left"
                   >
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                       {/* Name Input */}
                       <div className="flex flex-col">
-                        <label htmlFor="form-name" className="text-[10px] font-semibold text-brand-dark/70 uppercase tracking-wider mb-2">
-                          Your Name
+                        <label htmlFor="form-name" className="text-[10px] font-bold text-brand-dark/75 uppercase tracking-wider mb-1.5">
+                          Your Name <span className="text-brand-plum">*</span>
                         </label>
                         <input
                           type="text"
@@ -148,16 +202,22 @@ const Contact = () => {
                           name="name"
                           value={formData.name}
                           onChange={handleChange}
-                          placeholder="Enter your name"
-                          className="glass-input px-4.5 py-3 rounded-xl text-xs transition-all duration-300 w-full"
-                          required
+                          placeholder="e.g. Ananya Sharma"
+                          className={`glass-input px-4 py-3 rounded-xl text-xs sm:text-sm transition-all duration-200 w-full ${
+                            errors.name ? 'border-red-400 bg-red-50/40 focus:border-red-500' : ''
+                          }`}
                         />
+                        {errors.name && (
+                          <span className="inline-flex items-center gap-1 text-[10px] text-red-600 font-semibold mt-1">
+                            <AlertCircle className="w-3 h-3" /> {errors.name}
+                          </span>
+                        )}
                       </div>
 
                       {/* Email Input */}
                       <div className="flex flex-col">
-                        <label htmlFor="form-email" className="text-[10px] font-semibold text-brand-dark/70 uppercase tracking-wider mb-2">
-                          Email Address
+                        <label htmlFor="form-email" className="text-[10px] font-bold text-brand-dark/75 uppercase tracking-wider mb-1.5">
+                          Email Address <span className="text-brand-plum">*</span>
                         </label>
                         <input
                           type="email"
@@ -165,41 +225,76 @@ const Contact = () => {
                           name="email"
                           value={formData.email}
                           onChange={handleChange}
-                          placeholder="Enter your email"
-                          className="glass-input px-4.5 py-3 rounded-xl text-xs transition-all duration-300 w-full"
-                          required
+                          placeholder="e.g. ananya@example.com"
+                          className={`glass-input px-4 py-3 rounded-xl text-xs sm:text-sm transition-all duration-200 w-full ${
+                            errors.email ? 'border-red-400 bg-red-50/40 focus:border-red-500' : ''
+                          }`}
                         />
+                        {errors.email && (
+                          <span className="inline-flex items-center gap-1 text-[10px] text-red-600 font-semibold mt-1">
+                            <AlertCircle className="w-3 h-3" /> {errors.email}
+                          </span>
+                        )}
                       </div>
                     </div>
 
-                    {/* Product Type Select */}
-                    <div className="flex flex-col">
-                      <label htmlFor="form-productType" className="text-[10px] font-semibold text-brand-dark/70 uppercase tracking-wider mb-2">
-                        Product Type
-                      </label>
-                      <div className="relative">
-                        <select
-                          id="form-productType"
-                          name="productType"
-                          value={formData.productType}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+                      {/* Phone Input (Optional) */}
+                      <div className="flex flex-col">
+                        <label htmlFor="form-phone" className="text-[10px] font-bold text-brand-dark/75 uppercase tracking-wider mb-1.5">
+                          Mobile Number <span className="text-brand-dark/40 font-normal">(Optional)</span>
+                        </label>
+                        <input
+                          type="tel"
+                          id="form-phone"
+                          name="phone"
+                          value={formData.phone}
                           onChange={handleChange}
-                          className="glass-input px-4.5 py-3 rounded-xl text-xs transition-all duration-300 w-full appearance-none pr-10 cursor-pointer"
-                        >
-                          <option value="Resin Art">Resin Art (Serving Trays, Coasters, Clocks)</option>
-                          <option value="Handmade Decor">Handmade Decor (Macrame, Botanical Frames)</option>
-                          <option value="Clay Crafts">Clay Crafts (Earrings, Planters, Ornaments)</option>
-                          <option value="Custom Gifts">Custom Gift Hampers & Personal Boxes</option>
-                        </select>
-                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-brand-purple/70 text-[9px]">
-                          ▼
+                          placeholder="10-digit mobile number"
+                          className={`glass-input px-4 py-3 rounded-xl text-xs sm:text-sm transition-all duration-200 w-full ${
+                            errors.phone ? 'border-red-400 bg-red-50/40' : ''
+                          }`}
+                        />
+                        {errors.phone && (
+                          <span className="inline-flex items-center gap-1 text-[10px] text-red-600 font-semibold mt-1">
+                            <AlertCircle className="w-3 h-3" /> {errors.phone}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Product Type Select */}
+                      <div className="flex flex-col">
+                        <label htmlFor="form-productType" className="text-[10px] font-bold text-brand-dark/75 uppercase tracking-wider mb-1.5">
+                          Craft Category
+                        </label>
+                        <div className="relative">
+                          <select
+                            id="form-productType"
+                            name="productType"
+                            value={formData.productType}
+                            onChange={handleChange}
+                            className="glass-input px-4 py-3 rounded-xl text-xs sm:text-sm transition-all duration-200 w-full appearance-none pr-10 cursor-pointer"
+                          >
+                            <option value="Craftoria Bloom Bouquets">Craftoria Bloom Bouquets (Chenille Stem Flowers)</option>
+                            <option value="Embroidery">Embroidery Hoops (Couples, Names, Floral)</option>
+                            <option value="Photo Frames">Handmade Photo Frames</option>
+                            <option value="Keychains">Keychains & Bag Charms</option>
+                            <option value="Polaroids">Aesthetic Polaroids</option>
+                            <option value="Home Decor">Home Decor & Wall Hangings</option>
+                            <option value="Clips & Rubber Bands">Clips & Hair Accessories</option>
+                            <option value="Custom Gifts">Personalized Gift Boxes</option>
+                          </select>
+                          <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-brand-plum text-[10px]">
+                            ▼
+                          </div>
                         </div>
                       </div>
                     </div>
 
                     {/* Message Input */}
                     <div className="flex flex-col">
-                      <label htmlFor="form-message" className="text-[10px] font-semibold text-brand-dark/70 uppercase tracking-wider mb-2">
-                        Message
+                      <label htmlFor="form-message" className="text-[10px] font-bold text-brand-dark/75 uppercase tracking-wider mb-1.5">
+                        Design Details & Requirements <span className="text-brand-plum">*</span>
                       </label>
                       <textarea
                         id="form-message"
@@ -207,20 +302,33 @@ const Contact = () => {
                         rows="4"
                         value={formData.message}
                         onChange={handleChange}
-                        placeholder="Describe your design idea, color requirements, or preferred delivery date..."
-                        className="glass-input px-4.5 py-3 rounded-xl text-xs transition-all duration-300 w-full resize-none"
-                        required
+                        placeholder="Describe your desired colors, custom names, event date, or reference ideas..."
+                        className={`glass-input px-4 py-3 rounded-xl text-xs sm:text-sm transition-all duration-200 w-full resize-none ${
+                          errors.message ? 'border-red-400 bg-red-50/40 focus:border-red-500' : ''
+                        }`}
                       />
+                      {errors.message && (
+                        <span className="inline-flex items-center gap-1 text-[10px] text-red-600 font-semibold mt-1">
+                          <AlertCircle className="w-3 h-3" /> {errors.message}
+                        </span>
+                      )}
                     </div>
 
                     {/* Submit button */}
                     <div className="pt-2 text-right">
                       <button
                         type="submit"
-                        className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-brand-plum text-white font-semibold text-xs uppercase tracking-wider hover:bg-brand-violet hover:translate-y-[-1px] transition-all duration-300 shadow-md hover:shadow-lg w-full sm:w-auto cursor-pointer"
+                        disabled={isSubmitting}
+                        className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-brand-plum text-white font-semibold text-xs uppercase tracking-wider hover:bg-brand-violet hover:translate-y-[-1px] transition-all duration-300 shadow-md hover:shadow-lg w-full sm:w-auto cursor-pointer disabled:opacity-50"
                       >
-                        <span>Send Message</span>
-                        <Send className="w-3.5 h-3.5" />
+                        {isSubmitting ? (
+                          <span>Sending Request...</span>
+                        ) : (
+                          <>
+                            <span>Send Custom Request</span>
+                            <Send className="w-3.5 h-3.5" />
+                          </>
+                        )}
                       </button>
                     </div>
                   </motion.form>
@@ -231,31 +339,33 @@ const Contact = () => {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.96 }}
                     transition={{ duration: 0.4 }}
-                    className="py-10 flex flex-col items-center justify-center text-center space-y-5"
+                    className="py-8 sm:py-10 flex flex-col items-center justify-center text-center space-y-4"
                   >
-                    <div className="w-16 h-16 rounded-full bg-brand-pink/30 flex items-center justify-center border border-brand-purple/15">
-                      <CheckCircle2 className="w-8 h-8 text-brand-plum" />
+                    <div className="w-14 h-14 rounded-full bg-emerald-100 flex items-center justify-center border border-emerald-200 shadow-xs">
+                      <CheckCircle2 className="w-7 h-7 text-emerald-600" />
                     </div>
 
-                    <h3 className="font-serif text-xl sm:text-2xl font-bold text-brand-dark">
-                      Thank You!
+                    <h3 className="font-serif text-2xl font-bold text-brand-dark">
+                      Request Received!
                     </h3>
 
-                    <p className="text-xs sm:text-sm text-brand-dark/80 max-w-sm leading-relaxed">
-                      Your request has been noted. Craftoria will contact you soon.
+                    <p className="text-xs sm:text-sm text-brand-dark/80 max-w-md leading-relaxed">
+                      Thank you for sharing your bespoke idea. Our artisan team will review your requirements and reach out via email within 24 hours.
                     </p>
 
-                    <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-brand-cream/80 border border-brand-purple/15 text-[10px] font-semibold text-brand-plum">
-                      <Sparkles className="w-3 h-3 text-brand-purple" />
-                      <span>We will reach out to you via email in 24 hours</span>
+                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-cream border border-brand-purple/20 text-xs font-semibold text-brand-plum">
+                      <Sparkles className="w-3.5 h-3.5 text-brand-purple" />
+                      <span>Artisan Commission Assigned</span>
                     </div>
 
-                    <button
-                      onClick={() => setIsSubmitted(false)}
-                      className="mt-4 px-5 py-2 rounded-full border border-brand-purple/35 text-brand-plum text-[10px] uppercase tracking-wider font-bold hover:bg-brand-purple/10 transition-all duration-300"
-                    >
-                      Send Another Request
-                    </button>
+                    <div className="pt-3">
+                      <button
+                        onClick={() => setIsSubmitted(false)}
+                        className="px-6 py-2.5 rounded-full border border-brand-purple/40 text-brand-plum text-xs uppercase tracking-wider font-bold hover:bg-brand-purple/10 transition-all duration-200 cursor-pointer"
+                      >
+                        Submit Another Request
+                      </button>
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>

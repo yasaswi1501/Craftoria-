@@ -56,23 +56,38 @@ const Testimonials = () => {
 
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <span className="text-xs font-semibold tracking-widest text-brand-plum uppercase block mb-2">
+        <motion.div 
+          initial={{ opacity: 0, y: 25 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="text-center max-w-3xl mx-auto mb-16"
+        >
+          <span className="text-xs font-semibold tracking-widest text-brand-plum uppercase block mb-2 font-mono">
             What Our Customers Say
           </span>
+          <h2 className="font-serif text-3xl sm:text-4xl font-bold text-brand-dark tracking-wide">
+            Loved Across Homes
+          </h2>
           <div className="w-12 h-0.5 bg-brand-purple mx-auto mt-4" />
-        </div>
+        </motion.div>
 
         {/* Testimonials Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {testimonials.map((test, idx) => (
             <motion.div
               key={test.name}
-              initial={{ opacity: 0, scale: 0.98, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: idx * 0.12 }}
-              className="glass-card p-7 rounded-3xl relative flex flex-col justify-between h-full border border-brand-purple/15 text-left"
+              initial={{ opacity: 0, scale: 0.92, y: 40 }}
+              whileInView={{ opacity: 1, scale: 1, y: 0 }}
+              viewport={{ once: true, margin: "-40px" }}
+              transition={{ duration: 0.7, delay: idx * 0.14, ease: [0.22, 1, 0.36, 1] }}
+              whileHover={{ 
+                y: -6, 
+                scale: 1.02, 
+                boxShadow: "0 20px 35px -10px rgba(75, 46, 93, 0.16)",
+                transition: { duration: 0.25 } 
+              }}
+              className="glass-card p-7 rounded-3xl relative flex flex-col justify-between h-full border border-brand-purple/15 text-left hover:border-brand-purple/35 transition-all duration-300"
             >
               {/* Quote Mark */}
               <div className="absolute top-6 left-6 text-brand-purple/15">

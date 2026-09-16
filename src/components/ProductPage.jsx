@@ -160,6 +160,7 @@ const ProductPage = ({ productSlug }) => {
               animate={{ opacity: 1 }}
               src={getGalleryImageSrc(product.galleryImages[activeImage] || product.thumbnail)}
               alt={product.title}
+              decoding="async"
               style={{
                 objectFit: 'contain',
                 objectPosition: 'center',
@@ -189,6 +190,8 @@ const ProductPage = ({ productSlug }) => {
                   <img
                     src={getGalleryImageSrc(img)}
                     alt={`${product.title} view ${idx + 1}`}
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-contain pointer-events-none"
                   />
                 </button>

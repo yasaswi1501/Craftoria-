@@ -92,26 +92,33 @@ const Gallery = () => {
 
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-12">
+        <motion.div 
+          initial={{ opacity: 0, y: 25 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="text-center max-w-3xl mx-auto mb-12"
+        >
           <span className="text-xs font-semibold tracking-widest text-brand-plum uppercase block mb-2">
             A Glimpse of Our Craft
           </span>
           <div className="w-12 h-0.5 bg-brand-purple mx-auto mt-4" />
-        </div>
+        </motion.div>
 
         {/* 7 Card Gallery Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 md:gap-5 lg:gap-6">
           {items.map((item, idx) => (
             <motion.div
               key={item.id}
-              initial={{ opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: idx * 0.08 }}
+              initial={{ opacity: 0, scale: 0.92, y: 35 }}
+              whileInView={{ opacity: 1, scale: 1, y: 0 }}
+              viewport={{ once: true, margin: '-40px' }}
+              transition={{ duration: 0.65, delay: idx * 0.08, ease: [0.22, 1, 0.36, 1] }}
               whileHover={{ 
-                y: -5, 
-                scale: 1.02,
-                boxShadow: "0 12px 24px -10px rgba(118, 85, 143, 0.25)"
+                y: -8, 
+                scale: 1.04,
+                boxShadow: "0 20px 35px -10px rgba(118, 85, 143, 0.32)",
+                transition: { duration: 0.25 }
               }}
               className={`relative rounded-[22px] overflow-hidden group border border-brand-purple/15 shadow-sm transition-all duration-300 ease-out cursor-pointer ${
                 idx === 6 
@@ -124,7 +131,8 @@ const Gallery = () => {
                 src={item.src}
                 alt={item.alt}
                 loading="lazy"
-                className="w-full h-full select-none pointer-events-none transition-transform duration-500 ease-out"
+                decoding="async"
+                className="w-full h-full select-none pointer-events-none transition-transform duration-700 ease-out group-hover:scale-110"
                 style={{
                   objectFit: item.objectFit,
                   objectPosition: item.objectPosition,

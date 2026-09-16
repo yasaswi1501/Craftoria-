@@ -1,7 +1,10 @@
 import { motion } from 'framer-motion';
 import { Heart, Leaf, Users, ArrowRight } from 'lucide-react';
+import { useRouter } from '../context/RouterContext';
 
 const About = () => {
+  const { navigate } = useRouter();
+
   const highlights = [
     {
       title: 'Made with Love',
@@ -30,21 +33,21 @@ const About = () => {
           
           {/* Left Column: Vertical Oval Craft Graphic */}
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
+            initial={{ opacity: 0, scale: 0.92, x: -40 }}
+            whileInView={{ opacity: 1, scale: 1, x: 0 }}
+            viewport={{ once: true, margin: '-40px' }}
+            transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
             className="lg:col-span-5 flex justify-center"
           >
             {/* Vertical Oval Window */}
-            <div className="w-full max-w-[340px] h-[450px] rounded-[180px] bg-gradient-to-tr from-brand-pink/45 via-brand-purple/20 to-brand-cream/60 border border-brand-purple/25 shadow-lg overflow-hidden relative flex items-center justify-center">
+            <div className="w-full max-w-[340px] h-[450px] rounded-[180px] bg-gradient-to-tr from-brand-pink/45 via-brand-purple/20 to-brand-cream/60 border border-brand-purple/25 shadow-xl overflow-hidden relative flex items-center justify-center group">
               {/* Soft background glows inside oval */}
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,249,243,0.35)_0%,_transparent_70%)]" />
               
               {/* potter's wheel design (SVG/CSS illustration) */}
               <div className="relative flex flex-col items-center justify-center">
                 {/* Rotating wheel representer */}
-                <div className="w-48 h-10 bg-brand-dark/15 border-t border-brand-dark/25 rounded-[100%] shadow-inner flex items-center justify-center animate-[spin_10s_linear_infinite]">
+                <div className="w-48 h-10 bg-brand-dark/15 border-t border-brand-dark/25 rounded-[100%] shadow-inner flex items-center justify-center animate-[spin_12s_linear_infinite]">
                   <div className="w-36 h-6 border border-brand-dark/20 rounded-[100%]" />
                 </div>
                 {/* Clay pot being molded on the wheel */}
@@ -54,11 +57,9 @@ const About = () => {
                 </div>
                 {/* Hands molding clay (vector representation) */}
                 <div className="absolute -top-4 w-28 h-16 flex justify-between items-center opacity-75">
-                  {/* Left hand */}
                   <svg className="w-10 h-10 text-brand-plum fill-current transform -rotate-12" viewBox="0 0 24 24">
                     <path d="M12,2A10,10 0 0,0 2,12C2,16.4 4.9,20.1 9,21.4V19.3C6.1,18.1 4,15.3 4,12A8,8 0 0,1 12,4A8,8 0 0,1 20,12C20,15.3 17.9,18.1 15,19.3V21.4C19.1,20.1 22,16.4 22,12A10,10 0 0,0 12,2Z" />
                   </svg>
-                  {/* Right hand */}
                   <svg className="w-10 h-10 text-brand-plum fill-current transform rotate-12" viewBox="0 0 24 24">
                     <path d="M12,2C6.5,2 2,6.5 2,12c0,4.4 2.9,8.1 7,9.4v-2.1C6.1,18.1 4,15.3 4,12c0-4.4 3.6-8 8-8s8,3.6 8,8c0,3.3-2.1,6.1-5,7.3v2.1c4.1-1.3 7-5 7-9.4C22,6.5 17.5,2 12,2z" />
                   </svg>
@@ -79,10 +80,10 @@ const About = () => {
 
           {/* Right Column: Story Text & Values List */}
           <motion.div
-            initial={{ opacity: 0, x: 30 }}
+            initial={{ opacity: 0, x: 35 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
+            viewport={{ once: true, margin: '-40px' }}
+            transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
             className="lg:col-span-7 grid grid-cols-1 md:grid-cols-12 gap-8 items-start text-left"
           >
             {/* Story block (span 7) */}
@@ -100,26 +101,30 @@ const About = () => {
               
               <div className="pt-4">
                 <button
-                  onClick={() => {
-                    const el = document.getElementById('collections');
-                    if (el) el.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-brand-plum text-white font-semibold text-xs tracking-wider uppercase hover:bg-brand-violet hover:translate-y-[-2px] transition-all duration-300 shadow-md cursor-pointer"
+                  onClick={() => navigate('/#bestsellers')}
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-brand-plum text-white font-semibold text-xs tracking-wider uppercase hover:bg-brand-violet hover:translate-y-[-2px] transition-all duration-300 shadow-md hover:shadow-lg cursor-pointer"
                 >
-                  <span>Read Our Story</span>
+                  <span>Explore Collections</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
             </div>
 
-            {/* Vertical separator (hidden on mobile, visible on desktop) */}
+            {/* Vertical separator */}
             <div className="hidden md:block md:col-span-1 h-44 w-[1px] bg-brand-purple/20 self-center justify-self-center" />
 
-            {/* Values Stack (span 4) */}
+            {/* Values Stack with staggered reveal */}
             <div className="md:col-span-4 flex flex-col gap-6 pt-4 md:pt-0">
-              {highlights.map((item) => (
-                <div key={item.title} className="flex gap-3">
-                  <div className={`w-9 h-9 rounded-xl ${item.bg} flex items-center justify-center shrink-0 border border-brand-purple/10 shadow-sm`}>
+              {highlights.map((item, idx) => (
+                <motion.div 
+                  key={item.title} 
+                  initial={{ opacity: 0, y: 15 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-40px' }}
+                  transition={{ duration: 0.5, delay: 0.2 + idx * 0.12, ease: [0.22, 1, 0.36, 1] }}
+                  className="flex gap-3 group"
+                >
+                  <div className={`w-9 h-9 rounded-xl ${item.bg} flex items-center justify-center shrink-0 border border-brand-purple/10 shadow-sm group-hover:scale-105 transition-transform duration-200`}>
                     {item.icon}
                   </div>
                   <div className="flex flex-col">
@@ -130,7 +135,7 @@ const About = () => {
                       {item.desc}
                     </p>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
 

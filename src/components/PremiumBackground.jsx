@@ -1,5 +1,3 @@
-import { motion } from 'framer-motion';
-
 // Hand-drawn botanical line art blossom (5 broad organic petals + stamen + vein details + leaves)
 export const HibiscusFlower = ({ className, stroke = "#76558F", opacity = 1, style = {} }) => (
   <svg
@@ -10,7 +8,7 @@ export const HibiscusFlower = ({ className, stroke = "#76558F", opacity = 1, sty
     strokeWidth="1.2"
     strokeLinecap="round"
     strokeLinejoin="round"
-    style={{ opacity, zIndex: 2, ...style }}
+    style={{ opacity, zIndex: 2, willChange: 'transform', transform: 'translateZ(0)', ...style }}
     aria-hidden="true"
   >
     {/* Center core */}
@@ -62,7 +60,7 @@ export const HibiscusFlower = ({ className, stroke = "#76558F", opacity = 1, sty
   </svg>
 );
 
-// Organic watercolor wash composed of 3 overlapping nested shapes with offset positions & rotations
+// Organic watercolor wash composed of overlapping nested shapes with hardware acceleration
 export const WatercolorWash = ({ 
   className, 
   gradientId, 
@@ -72,7 +70,6 @@ export const WatercolorWash = ({
   color1, 
   color2, 
   color3, 
-  delay = 0, 
   scale = 1, 
   opacity,
   style = {} 
@@ -83,15 +80,19 @@ export const WatercolorWash = ({
   const targetOpacity = opacity !== undefined ? opacity : 1;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.93 * scale }}
-      animate={{ opacity: targetOpacity, scale: 1 * scale }}
-      transition={{ duration: 1.8, delay, ease: 'easeOut' }}
+    <div
       className={`absolute pointer-events-none ${className}`}
-      style={{ mixBlendMode: 'multiply', zIndex: 1, ...style }}
+      style={{
+        opacity: targetOpacity,
+        transform: `scale(${scale}) translateZ(0)`,
+        willChange: 'transform',
+        mixBlendMode: 'multiply',
+        zIndex: 1,
+        ...style
+      }}
     >
       {/* Sub-wash 1: Broad primary wash */}
-      <svg className="absolute inset-0 w-full h-full filter blur-[52px] opacity-[0.72]" viewBox="0 0 200 200">
+      <svg className="absolute inset-0 w-full h-full filter blur-[36px] sm:blur-[52px] opacity-[0.72]" viewBox="0 0 200 200">
         <defs>
           <radialGradient id={`${gradientId}-1`} cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor={c1} />
@@ -102,7 +103,7 @@ export const WatercolorWash = ({
       </svg>
 
       {/* Sub-wash 2: Offset secondary tone */}
-      <svg className="absolute inset-0 w-full h-full filter blur-[44px] opacity-[0.62] transform translate-x-6 -translate-y-3 rotate-6" viewBox="0 0 200 200">
+      <svg className="hidden sm:block absolute inset-0 w-full h-full filter blur-[44px] opacity-[0.62] transform translate-x-6 -translate-y-3 rotate-6" viewBox="0 0 200 200">
         <defs>
           <radialGradient id={`${gradientId}-2`} cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor={c2} />
@@ -113,7 +114,7 @@ export const WatercolorWash = ({
       </svg>
 
       {/* Sub-wash 3: Irregular wash highlight */}
-      <svg className="absolute inset-0 w-full h-full filter blur-[38px] opacity-[0.52] transform -translate-x-3 translate-y-6 -rotate-3" viewBox="0 0 200 200">
+      <svg className="absolute inset-0 w-full h-full filter blur-[28px] sm:blur-[38px] opacity-[0.52] transform -translate-x-3 translate-y-6 -rotate-3" viewBox="0 0 200 200">
         <defs>
           <radialGradient id={`${gradientId}-3`} cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor={c3} />
@@ -122,7 +123,7 @@ export const WatercolorWash = ({
         </defs>
         <path d="M 20,40 C 30,10 130,30 150,60 C 170,90 140,150 110,170 C 80,190 30,160 20,130 C 10,100 10,70 20,40 Z" fill={`url(#${gradientId}-3)`} />
       </svg>
-    </motion.div>
+    </div>
   );
 };
 
@@ -130,162 +131,156 @@ const PremiumBackground = () => {
   return (
     <div className="absolute inset-0 pointer-events-none select-none w-full h-full">
       
-      {/* 1. LAYER 5: PROCEDURAL PAPER ATMOSPHERE GRAIN */}
+      {/* 1. LAYER 5: PROCEDURAL PAPER ATMOSPHERE GRAIN (Rendered on desktop, excluded on mobile to avoid GPU thrashing) */}
       <div 
-        className="fixed inset-0 opacity-[0.02] pointer-events-none" 
+        className="hidden md:block fixed inset-0 opacity-[0.02] pointer-events-none" 
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
-          zIndex: 4
+          zIndex: 4,
+          transform: 'translateZ(0)'
         }}
       />
 
-      {/* 2. LAYER 2: LARGE IRREGULAR WATERCOLOR WASHES (Composited SVG paths) */}
+      {/* 2. LAYER 2: LARGE IRREGULAR WATERCOLOR WASHES */}
       
-      {/* Watercolor Wash A — Top Left (medium) */}
+      {/* Watercolor Wash A — Top Left */}
       <WatercolorWash
-        className="w-[580px] h-[580px] -left-16 -top-20"
+        className="w-[320px] h-[320px] sm:w-[580px] sm:h-[580px] -left-16 -top-20"
         gradientId="wash-a"
-        fromColor1="rgba(233, 207, 228, 0.22)" // blush
-        fromColor2="rgba(214, 185, 225, 0.18)" // lavender
-        fromColor3="rgba(190, 154, 205, 0.12)" // watercolor purple
-        delay={0.1}
+        fromColor1="rgba(233, 207, 228, 0.22)"
+        fromColor2="rgba(214, 185, 225, 0.18)"
+        fromColor3="rgba(190, 154, 205, 0.12)"
       />
 
-      {/* Watercolor Wash B — Top Center (moderately strong lavender) */}
+      {/* Watercolor Wash B — Top Center */}
       <WatercolorWash
-        className="w-[720px] h-[720px] left-[28%] -top-24"
+        className="w-[380px] h-[380px] sm:w-[720px] sm:h-[720px] left-[15%] sm:left-[28%] -top-24"
         gradientId="wash-b"
-        fromColor1="rgba(190, 154, 205, 0.22)" // watercolor purple
-        fromColor2="rgba(173, 137, 191, 0.18)" // muted-violet
-        fromColor3="rgba(214, 185, 225, 0.14)" // lavender
-        delay={0.2}
+        fromColor1="rgba(190, 154, 205, 0.22)"
+        fromColor2="rgba(173, 137, 191, 0.18)"
+        fromColor3="rgba(214, 185, 225, 0.14)"
       />
 
-      {/* Watercolor Wash C — Top Right (medium-light blush) */}
+      {/* Watercolor Wash C — Top Right */}
       <WatercolorWash
-        className="w-[520px] h-[520px] right-[-10%] -top-16"
+        className="w-[300px] h-[300px] sm:w-[520px] sm:h-[520px] right-[-10%] -top-16"
         gradientId="wash-c"
-        fromColor1="rgba(233, 207, 228, 0.16)" // blush
-        fromColor2="rgba(201, 175, 220, 0.12)" // lavender-light
-        fromColor3="rgba(255, 249, 243, 0.15)" // cream
-        delay={0.3}
+        fromColor1="rgba(233, 207, 228, 0.16)"
+        fromColor2="rgba(201, 175, 220, 0.12)"
+        fromColor3="rgba(255, 249, 243, 0.15)"
       />
 
-      {/* Watercolor Wash D — Left Middle (light-medium) */}
+      {/* Watercolor Wash D — Left Middle */}
       <WatercolorWash
-        className="w-[540px] h-[540px] -left-20 top-[26vh]"
+        className="w-[300px] h-[300px] sm:w-[540px] sm:h-[540px] -left-20 top-[26vh]"
         gradientId="wash-d"
-        fromColor1="rgba(214, 185, 225, 0.15)" // lavender
-        fromColor2="rgba(233, 207, 228, 0.12)" // blush
+        fromColor1="rgba(214, 185, 225, 0.15)"
+        fromColor2="rgba(233, 207, 228, 0.12)"
         fromColor3="rgba(201, 175, 220, 0.08)"
-        delay={0.4}
       />
 
-      {/* Watercolor Wash F — Lower Left (STRONGEST lavender concentration) */}
+      {/* Watercolor Wash F — Lower Left */}
       <WatercolorWash
-        className="w-[750px] h-[750px] -left-24 top-[60vh]"
+        className="w-[380px] h-[380px] sm:w-[750px] sm:h-[750px] -left-24 top-[60vh]"
         gradientId="wash-f"
-        fromColor1="rgba(185, 154, 205, 0.26)" // watercolor purple
-        fromColor2="rgba(169, 137, 191, 0.22)" // deep-lavender equivalent
-        fromColor3="rgba(212, 185, 225, 0.18)" // lavender
-        delay={0.5}
+        fromColor1="rgba(185, 154, 205, 0.26)"
+        fromColor2="rgba(169, 137, 191, 0.22)"
+        fromColor3="rgba(212, 185, 225, 0.18)"
       />
 
-      {/* Watercolor Wash G — Lower Center (light transition) */}
+      {/* Watercolor Wash G — Lower Center */}
       <WatercolorWash
-        className="w-[520px] h-[520px] left-[30%] top-[72vh]"
+        className="w-[300px] h-[300px] sm:w-[520px] sm:h-[520px] left-[15%] sm:left-[30%] top-[72vh]"
         gradientId="wash-g"
         fromColor1="rgba(214, 185, 225, 0.14)"
-        fromColor2="rgba(255, 248, 252, 0.15)" // pearl
+        fromColor2="rgba(255, 248, 252, 0.15)"
         fromColor3="rgba(201, 175, 220, 0.08)"
-        delay={0.6}
       />
 
-      {/* Watercolor Wash H — Lower Right (medium-light transition) */}
+      {/* Watercolor Wash H — Lower Right */}
       <WatercolorWash
-        className="w-[620px] h-[620px] right-[-10%] top-[58vh]"
+        className="w-[340px] h-[340px] sm:w-[620px] sm:h-[620px] right-[-10%] top-[58vh]"
         gradientId="wash-h"
         fromColor1="rgba(214, 185, 225, 0.16)"
         fromColor2="rgba(233, 207, 228, 0.14)"
         fromColor3="rgba(201, 175, 220, 0.10)"
-        delay={0.7}
       />
 
-      {/* 3. LAYER 3 & 9: BOTANICAL CORNER & EDGE FLORALS (Alternating Purple & White vector outlines) */}
+      {/* 3. LAYER 3 & 9: BOTANICAL CORNER & EDGE FLORALS */}
       
-      {/* Floral Cluster 1 — Upper Left: Purple blossom (Opacity: 0.58) */}
+      {/* Floral Cluster 1 — Upper Left */}
       <HibiscusFlower
-        className="w-[320px] h-[320px]"
+        className="w-[220px] h-[220px] sm:w-[320px] sm:h-[320px]"
         stroke="#76558F"
         opacity={0.58}
         style={{ left: "-60px", top: "50px", transform: "rotate(-15deg)" }}
       />
 
-      {/* Floral Cluster 2 — Upper Center-Right: White blossom (Opacity: 0.78) */}
+      {/* Floral Cluster 2 — Upper Center-Right */}
       <HibiscusFlower
-        className="w-[420px] h-[420px]"
+        className="w-[280px] h-[280px] sm:w-[420px] sm:h-[420px]"
         stroke="rgba(255, 255, 255, 0.76)"
         opacity={0.78}
         style={{ left: "60%", top: "-70px", transform: "rotate(45deg)" }}
       />
 
-      {/* Floral Cluster 3 — Upper Right: Purple blossom (Opacity: 0.52) */}
+      {/* Floral Cluster 3 — Upper Right */}
       <HibiscusFlower
-        className="w-[340px] h-[340px]"
+        className="w-[240px] h-[240px] sm:w-[340px] sm:h-[340px]"
         stroke="#76558F"
         opacity={0.52}
         style={{ right: "-50px", top: "140px", transform: "rotate(30deg)" }}
       />
 
-      {/* Floral Cluster 4 — Left Upper-Middle: White blossom (Opacity: 0.72) */}
+      {/* Floral Cluster 4 — Left Upper-Middle */}
       <HibiscusFlower
-        className="w-[400px] h-[400px]"
+        className="w-[260px] h-[260px] sm:w-[400px] sm:h-[400px]"
         stroke="rgba(255, 255, 255, 0.72)"
         opacity={0.72}
         style={{ left: "-80px", top: "30vh", transform: "rotate(-40deg)" }}
       />
 
-      {/* Floral Cluster 5 — Left Lower-Middle: White fragment (Opacity: 0.48) */}
+      {/* Floral Cluster 5 — Left Lower-Middle */}
       <HibiscusFlower
-        className="w-[280px] h-[280px]"
+        className="w-[200px] h-[200px] sm:w-[280px] sm:h-[280px]"
         stroke="rgba(255, 255, 255, 0.65)"
         opacity={0.48}
         style={{ left: "-50px", top: "60vh", transform: "rotate(10deg)" }}
       />
 
-      {/* Floral Cluster 6 — Lower Left: Purple mixed composition (Opacity: 0.50) */}
+      {/* Floral Cluster 6 — Lower Left */}
       <HibiscusFlower
-        className="w-[380px] h-[380px]"
+        className="w-[260px] h-[260px] sm:w-[380px] sm:h-[380px]"
         stroke="#76558F"
         opacity={0.50}
         style={{ left: "-40px", top: "82vh", transform: "rotate(-25deg)" }}
       />
 
-      {/* Floral Cluster 7 — Lower Right Main: Purple blossom (Opacity: 0.62) */}
+      {/* Floral Cluster 7 — Lower Right Main */}
       <HibiscusFlower
-        className="w-[450px] h-[450px]"
+        className="w-[280px] h-[280px] sm:w-[450px] sm:h-[450px]"
         stroke="#76558F"
         opacity={0.62}
         style={{ right: "-60px", top: "78vh", transform: "rotate(20deg)" }}
       />
 
-      {/* Floral Cluster 8 — Bottom Right White: Layered depth (Opacity: 0.76) */}
+      {/* Floral Cluster 8 — Bottom Right White */}
       <HibiscusFlower
-        className="w-[380px] h-[380px]"
+        className="w-[260px] h-[260px] sm:w-[380px] sm:h-[380px]"
         stroke="rgba(255, 255, 255, 0.76)"
         opacity={0.76}
         style={{ right: "-30px", top: "90vh", transform: "rotate(-10deg)" }}
       />
 
-      {/* Floral Cluster 9 — Bottom Center-Right: Purple blossom cropped by bottom (Opacity: 0.55) */}
+      {/* Floral Cluster 9 — Bottom Center-Right */}
       <HibiscusFlower
-        className="w-[360px] h-[360px]"
+        className="w-[240px] h-[240px] sm:w-[360px] sm:h-[360px]"
         stroke="#82629A"
         opacity={0.55}
         style={{ left: "62%", top: "92vh", transform: "rotate(5deg)" }}
       />
 
-      {/* 4. LAYER 4: CENTER READABILITY ZONE (Subtle feathered blend gradient) */}
+      {/* 4. LAYER 4: CENTER READABILITY ZONE */}
       <div 
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -294,11 +289,9 @@ const PremiumBackground = () => {
         }}
       />
 
-      {/* 5. CONTINUITY LOWER SECTIONS (Edgewater washes and floral framing scrolling downstream) */}
-      
-      {/* Downstream Section 3 Wash & Floral */}
+      {/* 5. CONTINUITY LOWER SECTIONS */}
       <WatercolorWash
-        className="w-[480px] h-[480px] -left-16"
+        className="hidden md:block w-[480px] h-[480px] -left-16"
         gradientId="wash-scrolling-left"
         fromColor1="rgba(214, 185, 225, 0.12)"
         fromColor2="rgba(233, 207, 228, 0.08)"
@@ -306,15 +299,14 @@ const PremiumBackground = () => {
         style={{ top: "215vh" }}
       />
       <HibiscusFlower
-        className="w-[280px] h-[280px]"
+        className="w-[200px] h-[200px] sm:w-[280px] sm:h-[280px]"
         stroke="#76558F"
         opacity={0.35}
         style={{ right: "-40px", top: "205vh", transform: "rotate(15deg)" }}
       />
 
-      {/* Downstream Section 5 Wash & Floral */}
       <WatercolorWash
-        className="w-[500px] h-[500px] right-[-10%]"
+        className="hidden md:block w-[500px] h-[500px] right-[-10%]"
         gradientId="wash-scrolling-right"
         fromColor1="rgba(190, 154, 205, 0.10)"
         fromColor2="rgba(214, 185, 225, 0.08)"
@@ -322,7 +314,7 @@ const PremiumBackground = () => {
         style={{ top: "335vh" }}
       />
       <HibiscusFlower
-        className="w-[290px] h-[290px]"
+        className="w-[200px] h-[200px] sm:w-[290px] sm:h-[290px]"
         stroke="rgba(255, 255, 255, 0.70)"
         opacity={0.42}
         style={{ left: "-45px", top: "325vh", transform: "rotate(-30deg)" }}

@@ -386,6 +386,8 @@ const CollectionPage = ({ collectionId }) => {
                         <img
                           src={getProductImage(product)}
                           alt={product.title}
+                          loading="lazy"
+                          decoding="async"
                           style={{
                             objectFit: 'contain',
                             objectPosition: 'center',
