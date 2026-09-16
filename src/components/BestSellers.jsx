@@ -58,12 +58,6 @@ const BestSellers = () => {
       desc: 'Stylish handmade clips and rubber bands for everyday charm.',
       image: coverClips,
     },
-    {
-      id: 'custom-gifts',
-      name: 'Custom Gifts',
-      desc: 'Personalized handmade gifts made just for you.',
-      image: sellerBloomBouquets,
-    },
   ];
 
   const renderCard = (col, idx) => (

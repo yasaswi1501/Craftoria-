@@ -429,53 +429,7 @@ export const productsData = [
     returnPolicy: '7 days easy return if product is unused.'
   },
 
-  // 7. CUSTOM GIFTS COLLECTION
-  {
-    id: 'personalized-memories-box',
-    slug: 'personalized-memories-box',
-    title: 'Personalized Memories Keepsake Box',
-    description: 'Premium wooden memory trunk lined with soft velvet, containing slots for pictures and custom initial brass locks.',
-    price: 1299,
-    rating: 5.0,
-    reviewCount: 84,
-    category: 'custom-gifts',
-    thumbnail: 'seller-bloom-bouquets.png',
-    galleryImages: ['seller-bloom-bouquets.png', 'seller-memory-canvas.png', 'gallery-5-child-frame.jpg'],
-    stock: 10,
-    customizable: true,
-    tags: ['keepsake-box', 'personalized', 'luxury-gift', 'engraved'],
-    featured: true,
-    bestSeller: true,
-    discount: 200,
-    estimatedDelivery: '4-6 Business Days',
-    details: 'Lined with royal purple velvet, this hand-finished wooden box contains separate slots for letter envelopes, photos, and key rings. The lid features a brass nameplate customized with custom engraving.',
-    shippingDetails: 'Express priority shipping. Safely packaged in heavy-duty cardboard boxes.',
-    returnPolicy: 'Customized nameplate models cannot be refunded.'
-  },
-  {
-    id: 'bespoke-gift-hamper-lavender',
-    slug: 'bespoke-gift-hamper-lavender',
-    title: 'Bespoke Lavender Wellness Gift Hamper',
-    description: 'Luxury artisan gift hamper including a customized embroidery hoop, lavender tea bag clusters, and organic lavender oil.',
-    price: 1599,
-    rating: 4.9,
-    reviewCount: 52,
-    category: 'custom-gifts',
-    thumbnail: 'seller-bloom-bouquets.png',
-    galleryImages: ['seller-bloom-bouquets.png', 'seller-embroidery-hoop.png', 'gallery-1-polaroid.jpg'],
-    stock: 8,
-    customizable: true,
-    tags: ['gift-hamper', 'wellness', 'curated-set', 'luxury'],
-    featured: true,
-    bestSeller: true,
-    discount: 300,
-    estimatedDelivery: '3-5 Business Days',
-    details: 'A beautifully arranged woven wicker basket housing a 5-inch floral embroidery hoop with custom monogram initials, organic relaxation tea, lavender sprigs, and a custom greeting card.',
-    shippingDetails: 'Express packaging. Bubble-lined box shipping.',
-    returnPolicy: 'Personalized basket items are exchangeable only for damages.'
-  },
-
-  // 8. CRAFTORIA BLOOM BOUQUETS COLLECTION
+  // 7. CRAFTORIA BLOOM BOUQUETS COLLECTION
   {
     id: 'bouquet-lavender-dream',
     slug: 'bouquet-lavender-dream',
@@ -550,13 +504,6 @@ export const collectionsData = [
     desc: 'Aesthetic memory-style polaroids for gifts and decor.',
     count: 3,
     descriptionLong: 'Retro vintage mini polaroids and wall-hanging photo strings printed on thick Fujifilm stock, complete with wooden clips and glowing fairy light threads.'
-  },
-  {
-    id: 'custom-gifts',
-    name: 'Custom Gifts',
-    desc: 'Personalized handmade gifts made just for you.',
-    count: 2,
-    descriptionLong: 'Curated wellness hampers and velvet keepsake trunks finished with personalized metal tags. The ultimate luxury gifts for birthdays, weddings, and anniversaries.'
   },
   {
     id: 'handmade-decor',

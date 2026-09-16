@@ -66,7 +66,6 @@ const CollectionPage = ({ collectionId }) => {
       case 'clips-rubber-bands': return coverClips;
       case 'handmade-decor': return coverMacrame;
       case 'craftoria-bloom-bouquets': return coverBouquets;
-      case 'custom-gifts': return sellerBloomBouquets;
       default: return sellerMemoryCanvas;
     }
   };
