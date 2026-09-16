@@ -503,7 +503,7 @@ const ProductPage = ({ productSlug }) => {
               <div
                 key={p.id}
                 onClick={() => navigate(`/product/${p.slug}`)}
-                className="glass-card rounded-[22px] overflow-hidden flex flex-col group border border-brand-purple/20 shadow-xs relative bg-white/40 cursor-pointer min-h-[305px] text-left p-3"
+                className="glass-card rounded-[22px] overflow-hidden flex flex-col group border border-brand-purple/20 shadow-xs relative bg-white/40 cursor-pointer text-left p-3 hover:border-brand-purple/40 hover:shadow-md transition-all"
               >
                 <div className="h-40 w-full rounded-xl overflow-hidden bg-gradient-to-tr from-[#FCF7FF] via-[#F3E7FA] to-[#E9D7F5] flex items-center justify-center p-3 relative">
                   <img
@@ -513,11 +513,11 @@ const ProductPage = ({ productSlug }) => {
                     style={{ maxWidth: '88%', maxHeight: '88%' }}
                   />
                 </div>
-                <div className="pt-3 flex flex-col flex-grow">
-                  <h4 className="font-serif text-xs sm:text-sm font-bold text-brand-dark leading-tight line-clamp-1 mb-1 group-hover:text-brand-plum transition-colors">
+                <div className="pt-3 flex flex-col gap-1">
+                  <h4 className="font-serif text-xs sm:text-sm font-bold text-brand-dark leading-tight line-clamp-1 group-hover:text-brand-plum transition-colors">
                     {p.title}
                   </h4>
-                  <div className="text-[11px] font-semibold text-brand-plum mt-auto group-hover:underline">View Craft &rarr;</div>
+                  <div className="text-[11px] font-semibold text-brand-plum group-hover:underline">View Craft &rarr;</div>
                 </div>
               </div>
             ))}
