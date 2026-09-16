@@ -1242,9 +1242,6 @@ const Checkout = () => {
                               <div className="font-semibold text-brand-plum">
                                 ✍️ <strong>Personalization:</strong> <span className="italic">"{item.customText || item.customization?.text}"</span>
                               </div>
-                              {item.customization?.colorTheme && (
-                                <div>🎨 <strong>Palette:</strong> {item.customization.colorTheme}</div>
-                              )}
                               {item.customization?.occasion && (
                                 <div>🎁 <strong>Occasion:</strong> {item.customization.occasion}</div>
                               )}

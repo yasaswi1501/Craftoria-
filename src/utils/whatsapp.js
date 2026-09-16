@@ -20,9 +20,6 @@ export const generateWhatsAppOrderMessage = (cart, addressDetails = null, delive
     if (custText) {
       text += `   ✍️ _Personalization: ${custText}_\n`;
     }
-    if (item.customization?.colorTheme) {
-      text += `   🎨 _Color Theme: ${item.customization.colorTheme}_\n`;
-    }
     if (item.customization?.occasion) {
       text += `   🎁 _Occasion: ${item.customization.occasion}_\n`;
     }

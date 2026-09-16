@@ -217,11 +217,6 @@ const CartDrawer = () => {
                                 <span>Personalized:</span>
                                 <span className="font-semibold text-brand-dark italic">"{item.customText || item.customization?.text}"</span>
                               </div>
-                              {item.customization?.colorTheme && (
-                                <div className="text-brand-dark/75 text-[9px]">
-                                  <span className="font-semibold">Palette:</span> {item.customization.colorTheme}
-                                </div>
-                              )}
                               {item.customization?.occasion && (
                                 <div className="text-brand-dark/75 text-[9px]">
                                   <span className="font-semibold">Occasion:</span> {item.customization.occasion}

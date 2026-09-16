@@ -2,13 +2,13 @@ import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ArrowLeft, Heart, ShoppingBag, Star, Check, Sparkles, ChevronDown, 
-  ChevronUp, Truck, ShieldCheck, RefreshCw, AlertCircle, Palette, Gift, Package, HelpCircle, MessageCircle 
+  ChevronUp, Truck, ShieldCheck, RefreshCw, AlertCircle, Gift, Package, HelpCircle, MessageCircle 
 } from 'lucide-react';
 import { useRouter } from '../context/RouterContext';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { productsData, collectionsData } from '../data/products';
-import { COLOR_THEMES, OCCASIONS, PACKAGING_OPTIONS } from './CustomizationModal';
+import { OCCASIONS, PACKAGING_OPTIONS } from './CustomizationModal';
 
 import sellerMemoryCanvas from '../assets/seller-memory-canvas.png';
 import sellerEmbroideryHoop from '../assets/seller-embroidery-hoop.png';
@@ -60,7 +60,6 @@ const ProductPage = ({ productSlug }) => {
   const [activeImage, setActiveImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [customizationText, setCustomizationText] = useState('');
-  const [selectedTheme, setSelectedTheme] = useState(COLOR_THEMES[0].name);
   const [selectedOccasion, setSelectedOccasion] = useState(OCCASIONS[0]);
   const [giftNote, setGiftNote] = useState('');
   const [packaging, setPackaging] = useState(PACKAGING_OPTIONS[0].label);
@@ -74,7 +73,6 @@ const ProductPage = ({ productSlug }) => {
     setActiveImage(0);
     setQuantity(1);
     setCustomizationText('');
-    setSelectedTheme(COLOR_THEMES[0].name);
     setSelectedOccasion(OCCASIONS[0]);
     setGiftNote('');
     setPackaging(PACKAGING_OPTIONS[0].label);
@@ -108,7 +106,6 @@ const ProductPage = ({ productSlug }) => {
 
     const customizationData = {
       text: customizationText.trim(),
-      colorTheme: selectedTheme,
       occasion: selectedOccasion,
       giftNote: giftNote.trim() || undefined,
       packaging: packaging,
@@ -270,52 +267,11 @@ const ProductPage = ({ productSlug }) => {
               )}
             </div>
 
-            {/* 2. Color Palette Theme */}
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-brand-dark/85 flex items-center gap-1.5">
-                <Palette className="w-3.5 h-3.5 text-brand-plum" />
-                <span>2. Color Palette & Theme</span>
-              </label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {COLOR_THEMES.map((theme) => {
-                  const isSelected = selectedTheme === theme.name;
-                  return (
-                    <button
-                      key={theme.id}
-                      type="button"
-                      onClick={() => setSelectedTheme(theme.name)}
-                      className={`flex items-center justify-between p-2 rounded-xl border text-left cursor-pointer transition-all ${
-                        isSelected
-                          ? 'bg-brand-purple/15 border-brand-plum ring-1 ring-brand-plum/40 shadow-xs'
-                          : 'bg-white/60 border-brand-purple/15 hover:bg-white'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2 min-w-0 pr-1">
-                        <div className="flex -space-x-1 flex-shrink-0">
-                          {theme.colors.map((c, i) => (
-                            <div
-                              key={i}
-                              className="w-3 h-3 rounded-full border border-white"
-                              style={{ backgroundColor: c }}
-                            />
-                          ))}
-                        </div>
-                        <span className="text-[10px] font-semibold text-brand-dark truncate">
-                          {theme.name}
-                        </span>
-                      </div>
-                      {isSelected && <Check className="w-3 h-3 text-brand-plum flex-shrink-0" />}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* 3. Occasion Selector */}
+            {/* 2. Occasion Selector */}
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-brand-dark/85 flex items-center gap-1.5">
                 <Gift className="w-3.5 h-3.5 text-brand-plum" />
-                <span>3. Occasion / Purpose</span>
+                <span>2. Occasion / Purpose</span>
               </label>
               <div className="flex flex-wrap gap-1.5">
                 {OCCASIONS.map((occ) => {
@@ -338,12 +294,12 @@ const ProductPage = ({ productSlug }) => {
               </div>
             </div>
 
-            {/* 4. Gift Note & Packaging */}
+            {/* 3. Gift Note & Packaging */}
             <div className="space-y-2 pt-1 border-t border-brand-purple/10">
               <label className="text-xs font-bold text-brand-dark/85 flex items-center justify-between">
                 <span className="flex items-center gap-1.5">
                   <Package className="w-3.5 h-3.5 text-brand-plum" />
-                  <span>4. Handwritten Gift Note & Packaging</span>
+                  <span>3. Handwritten Gift Note & Packaging</span>
                 </span>
                 <span className="text-[10px] font-normal text-brand-dark/50">(Optional)</span>
               </label>
@@ -376,12 +332,12 @@ const ProductPage = ({ productSlug }) => {
               </div>
             </div>
 
-            {/* 5. Special Instructions */}
+            {/* 4. Special Instructions */}
             <div className="space-y-1">
               <label className="text-xs font-bold text-brand-dark/85 flex items-center justify-between">
                 <span className="flex items-center gap-1.5">
                   <HelpCircle className="w-3.5 h-3.5 text-brand-plum" />
-                  <span>5. Special Artisan Instructions</span>
+                  <span>4. Special Artisan Instructions</span>
                 </span>
                 <span className="text-[10px] font-normal text-brand-dark/50">(Optional)</span>
               </label>

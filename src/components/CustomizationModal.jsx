@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  X, Sparkles, Check, Heart, ShoppingBag, Palette, 
+  X, Sparkles, Check, Heart, ShoppingBag, 
   Gift, MessageCircle, AlertCircle, HelpCircle, Package, Plus, Minus
 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
@@ -18,16 +18,6 @@ import coverChildFrame from '../assets/gallery-5-child-frame.jpg';
 import coverCoupleEmbroidery from '../assets/gallery-3-couple-embroidery.jpg';
 import coverBlueFlowerKeychain from '../assets/gallery-2-blue-flower-keychain.jpg';
 import coverHeartKeychain from '../assets/gallery-4-heart-keychain.jpg';
-
-export const COLOR_THEMES = [
-  { id: 'lavender-lilac', name: 'Pastel Lavender & Lilac', colors: ['#76558F', '#D4B9E1', '#F5EEF8'] },
-  { id: 'blush-pink', name: 'Blush Pink & Rose Gold', colors: ['#E88B9E', '#F7D1D8', '#FFF0F3'] },
-  { id: 'sky-mint', name: 'Sky Blue & Mint', colors: ['#6EA8D9', '#A8E6CF', '#F0F9FF'] },
-  { id: 'sage-cream', name: 'Sage Green & Cream', colors: ['#8FA88B', '#E5DFC5', '#F8F9F5'] },
-  { id: 'sunset-peach', name: 'Warm Sunset & Peach', colors: ['#E28761', '#F7C59F', '#FFF6ED'] },
-  { id: 'monochrome', name: 'Monochrome & Neutral', colors: ['#3A3A3C', '#9E9E9E', '#F5F5F7'] },
-  { id: 'custom-palette', name: 'Custom Palette (Tell us in notes)', colors: ['#9C27B0', '#00BCD4', '#FF9800'] },
-];
 
 export const OCCASIONS = [
   '🎂 Birthday',
@@ -49,7 +39,6 @@ const CustomizationModal = ({ isOpen, onClose, product }) => {
   const { addToCart } = useCart();
 
   const [customText, setCustomText] = useState('');
-  const [selectedTheme, setSelectedTheme] = useState(COLOR_THEMES[0].name);
   const [selectedOccasion, setSelectedOccasion] = useState(OCCASIONS[0]);
   const [giftNote, setGiftNote] = useState('');
   const [packaging, setPackaging] = useState(PACKAGING_OPTIONS[0].label);
@@ -62,7 +51,6 @@ const CustomizationModal = ({ isOpen, onClose, product }) => {
   useEffect(() => {
     if (product) {
       setCustomText('');
-      setSelectedTheme(COLOR_THEMES[0].name);
       setSelectedOccasion(OCCASIONS[0]);
       setGiftNote('');
       setPackaging(PACKAGING_OPTIONS[0].label);
@@ -116,7 +104,6 @@ const CustomizationModal = ({ isOpen, onClose, product }) => {
 
     const customizationData = {
       text: customText.trim(),
-      colorTheme: selectedTheme,
       occasion: selectedOccasion,
       giftNote: giftNote.trim() || undefined,
       packaging: packaging,
@@ -253,57 +240,11 @@ const CustomizationModal = ({ isOpen, onClose, product }) => {
             </p>
           </div>
 
-          {/* 2. Color Palette & Theme Selection */}
-          <div className="space-y-2.5">
-            <label className="text-xs font-bold text-brand-dark flex items-center gap-1.5">
-              <Palette className="w-3.5 h-3.5 text-brand-plum" />
-              <span>2. Choose Color Palette & Theme</span>
-            </label>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-              {COLOR_THEMES.map((theme) => {
-                const isSelected = selectedTheme === theme.name;
-                return (
-                  <button
-                    key={theme.id}
-                    type="button"
-                    onClick={() => setSelectedTheme(theme.name)}
-                    className={`flex items-center justify-between p-2.5 rounded-xl border text-left cursor-pointer transition-all duration-200 ${
-                      isSelected
-                        ? 'bg-brand-purple/15 border-brand-plum shadow-xs ring-1 ring-brand-plum/40'
-                        : 'bg-white/80 border-brand-purple/15 hover:bg-white hover:border-brand-purple/30'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2.5 min-w-0 pr-2">
-                      <div className="flex -space-x-1 flex-shrink-0">
-                        {theme.colors.map((c, i) => (
-                          <div
-                            key={i}
-                            className="w-3.5 h-3.5 rounded-full border border-white shadow-2xs"
-                            style={{ backgroundColor: c }}
-                          />
-                        ))}
-                      </div>
-                      <span className="text-[11px] font-semibold text-brand-dark truncate">
-                        {theme.name}
-                      </span>
-                    </div>
-                    {isSelected && (
-                      <div className="w-4 h-4 rounded-full bg-brand-plum text-white flex items-center justify-center flex-shrink-0">
-                        <Check className="w-2.5 h-2.5" />
-                      </div>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* 3. Occasion / Purpose */}
+          {/* 2. Occasion / Purpose */}
           <div className="space-y-2">
             <label className="text-xs font-bold text-brand-dark flex items-center gap-1.5">
               <Gift className="w-3.5 h-3.5 text-brand-plum" />
-              <span>3. Occasion / Purpose</span>
+              <span>2. Occasion / Purpose</span>
             </label>
             <div className="flex flex-wrap gap-2">
               {OCCASIONS.map((occ) => {
@@ -326,13 +267,13 @@ const CustomizationModal = ({ isOpen, onClose, product }) => {
             </div>
           </div>
 
-          {/* 4. Gift Message & Packaging */}
+          {/* 3. Gift Message & Packaging */}
           <div className="space-y-3 pt-2 border-t border-brand-purple/10">
             <div>
               <label className="text-xs font-bold text-brand-dark flex items-center justify-between mb-1.5">
                 <span className="flex items-center gap-1.5">
                   <Package className="w-3.5 h-3.5 text-brand-plum" />
-                  <span>4. Gift Note & Packaging Style</span>
+                  <span>3. Gift Note & Packaging Style</span>
                 </span>
                 <span className="text-[10px] font-normal text-brand-dark/50">(Optional)</span>
               </label>
@@ -377,7 +318,7 @@ const CustomizationModal = ({ isOpen, onClose, product }) => {
             <label className="text-xs font-bold text-brand-dark flex items-center justify-between">
               <span className="flex items-center gap-1.5">
                 <HelpCircle className="w-3.5 h-3.5 text-brand-plum" />
-                <span>5. Special Artisan Instructions / Charm Requests</span>
+                <span>4. Special Artisan Instructions / Charm Requests</span>
               </span>
               <span className="text-[10px] font-normal text-brand-dark/50">(Optional)</span>
             </label>

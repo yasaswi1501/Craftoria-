@@ -169,12 +169,11 @@ export const CartProvider = ({ children }) => {
       if (itemProdId !== rawProductId) return false;
       if (!customization && !item.customization && !customText && !item.customText) return true;
       const textMatch = (item.customText || item.customization?.text || '') === (customText || '');
-      const themeMatch = (item.customization?.colorTheme || '') === (customization?.colorTheme || '');
       const occMatch = (item.customization?.occasion || '') === (customization?.occasion || '');
       const noteMatch = (item.customization?.giftNote || '') === (customization?.giftNote || '');
       const packMatch = (item.customization?.packaging || '') === (customization?.packaging || '');
       const specMatch = (item.customization?.specialNotes || '') === (customization?.specialNotes || '');
-      return textMatch && themeMatch && occMatch && noteMatch && packMatch && specMatch;
+      return textMatch && occMatch && noteMatch && packMatch && specMatch;
     };
 
     // 1. Update local cart state & storage immediately (Optimistic / Always-Available)
