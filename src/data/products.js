@@ -45,28 +45,6 @@ export const productsData = [
     returnPolicy: 'Exchange available within 7 days in case of floral damage.'
   },
   {
-    id: 'anniversary-special-canvas',
-    slug: 'anniversary-special-canvas',
-    title: 'Anniversary Special Memory Canvas',
-    description: 'Luxurious commemorative double photo canvas framed in pearl white borders and finished with a custom handwritten date stamp.',
-    price: 899,
-    rating: 5.0,
-    reviewCount: 31,
-    category: 'photo-frames',
-    thumbnail: 'seller-memory-canvas.png',
-    galleryImages: ['seller-memory-canvas.png', 'gallery-5-child-frame.jpg', 'gallery-1-polaroid.jpg'],
-    stock: 5,
-    customizable: true,
-    tags: ['anniversary', 'wedding', 'gifts', 'luxury'],
-    featured: true,
-    bestSeller: true,
-    discount: 150,
-    estimatedDelivery: '3-5 Business Days',
-    details: 'A premium anniversary showcase featuring a double-picture linen frame, gold paint strokes, pearl border elements, and written calligraphic initials. Stitched border details reflect luxury handcrafted design.',
-    shippingDetails: 'Priority express delivery available (1-2 days). Fully insured shipping package.',
-    returnPolicy: 'Customized couple names are non-refundable once production starts.'
-  },
-  {
     id: 'classic-wooden-frame',
     slug: 'classic-wooden-frame',
     title: 'Classic Wooden Photo Frame',
