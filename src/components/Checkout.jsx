@@ -176,11 +176,12 @@ const Checkout = () => {
     }
   }, [user]);
 
-  // Pricing calculations
+  // Pricing & Cart calculations
+  const totalItemsCount = cart.reduce((acc, item) => acc + item.quantity, 0);
   const cartSubtotal = cart.reduce((acc, item) => acc + (item.price || 249) * item.quantity, 0);
   const deliveryCharge = deliveryOption === 'express' ? 150 : 0;
-  const discountAmount = 150; // ₹150 member discount -- Checkout only renders for logged-in users (see App.jsx route guard)
-  const taxAmount = Math.round(cartSubtotal * 0.05); // 5% GST
+  const discountAmount = 150;
+  const taxAmount = Math.round(cartSubtotal * 0.05);
   const grandTotal = cartSubtotal + deliveryCharge + taxAmount - discountAmount;
 
   // Address validation & actions
@@ -717,7 +718,6 @@ const Checkout = () => {
                     <div className="flex flex-col text-left leading-normal">
                       <span className="font-bold text-sm">Express Delivery</span>
                       <span className="text-brand-dark/70 mt-0.5">Estimated delivery: 1–2 business days</span>
-                      <span className="font-bold text-brand-plum mt-1">₹150</span>
                     </div>
                   </div>
                 </div>
@@ -740,27 +740,21 @@ const Checkout = () => {
                   <h3 className="font-serif text-base font-bold border-b border-brand-purple/10 pb-2.5 mb-3 text-left">Order Summary</h3>
                   <div className="flex flex-col gap-1.5 border-b border-brand-purple/10 pb-3">
                     <div className="flex justify-between font-semibold">
-                      <span>Items Subtotal:</span>
-                      <span>₹{cartSubtotal}</span>
+                      <span>Total Items:</span>
+                      <span className="font-bold text-brand-plum">{totalItemsCount} {totalItemsCount === 1 ? 'item' : 'items'}</span>
                     </div>
                     <div className="flex justify-between font-semibold">
-                      <span>Delivery Options:</span>
-                      <span>{deliveryCharge === 0 ? 'FREE' : `₹${deliveryCharge}`}</span>
+                      <span>Shipping Option:</span>
+                      <span className="capitalize">{deliveryOption === 'express' ? 'Express Delivery' : 'Standard Delivery'}</span>
                     </div>
                     <div className="flex justify-between font-semibold">
-                      <span>GST (5%):</span>
-                      <span>₹{taxAmount}</span>
+                      <span>Estimated Time:</span>
+                      <span>{deliveryOption === 'express' ? '1–2 Business Days' : '3–5 Business Days'}</span>
                     </div>
-                    {discountAmount > 0 && (
-                      <div className="flex justify-between font-semibold text-emerald-600">
-                        <span>Member Discount:</span>
-                        <span>-₹{discountAmount}</span>
-                      </div>
-                    )}
                   </div>
-                  <div className="flex justify-between font-bold text-sm pt-2.5 text-brand-plum">
-                    <span>Grand Total:</span>
-                    <span>₹{grandTotal}</span>
+                  <div className="flex justify-between font-bold text-xs pt-2.5 text-brand-dark/80">
+                    <span>Packaging:</span>
+                    <span className="text-emerald-600 font-semibold">Artisan Gift Packaging</span>
                   </div>
                 </div>
               </div>
@@ -1134,27 +1128,21 @@ const Checkout = () => {
                   <h3 className="font-serif text-base font-bold border-b border-brand-purple/10 pb-2.5 mb-3">Order Summary</h3>
                   <div className="flex flex-col gap-1.5 border-b border-brand-purple/10 pb-3">
                     <div className="flex justify-between font-semibold">
-                      <span>Subtotal:</span>
-                      <span>₹{cartSubtotal}</span>
+                      <span>Total Items:</span>
+                      <span className="font-bold text-brand-plum">{totalItemsCount} {totalItemsCount === 1 ? 'item' : 'items'}</span>
                     </div>
                     <div className="flex justify-between font-semibold">
-                      <span>Delivery ({deliveryOption}):</span>
-                      <span>{deliveryCharge === 0 ? 'FREE' : `₹${deliveryCharge}`}</span>
+                      <span>Shipping Option:</span>
+                      <span className="capitalize">{deliveryOption === 'express' ? 'Express Delivery' : 'Standard Delivery'}</span>
                     </div>
                     <div className="flex justify-between font-semibold">
-                      <span>GST (5%):</span>
-                      <span>₹{taxAmount}</span>
+                      <span>Estimated Time:</span>
+                      <span>{deliveryOption === 'express' ? '1–2 Business Days' : '3–5 Business Days'}</span>
                     </div>
-                    {discountAmount > 0 && (
-                      <div className="flex justify-between font-semibold text-emerald-600">
-                        <span>Member Discount:</span>
-                        <span>-₹{discountAmount}</span>
-                      </div>
-                    )}
                   </div>
-                  <div className="flex justify-between font-bold text-sm pt-2.5 mb-4 text-brand-plum">
-                    <span>Grand Total:</span>
-                    <span>₹{grandTotal}</span>
+                  <div className="flex justify-between font-bold text-xs pt-2.5 mb-3 text-brand-dark/80">
+                    <span>Packaging:</span>
+                    <span className="text-emerald-600 font-semibold">Artisan Gift Packaging</span>
                   </div>
 
                   <div className="pt-2 text-[10px] text-brand-dark/70 leading-relaxed border-t border-brand-purple/10">
@@ -1231,10 +1219,10 @@ const Checkout = () => {
                             </div>
                             <div className="flex flex-col">
                               <span className="font-serif font-bold text-brand-dark">{item.name}</span>
-                              <span className="text-[10px] text-brand-dark/70 mt-0.5">Quantity: {item.quantity} • Price: ₹{item.price || 249}</span>
+                              <span className="text-[10px] text-brand-dark/70 mt-0.5">Quantity: {item.quantity}</span>
                             </div>
                           </div>
-                          <span className="font-bold text-brand-plum">₹{(item.price || 249) * item.quantity}</span>
+                          <span className="text-[11px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">Ready</span>
                         </div>
                       );
                     })}
@@ -1252,11 +1240,11 @@ const Checkout = () => {
                 {paymentProcessing ? (
                   <>
                     <RefreshCw className="w-4 h-4 animate-spin" />
-                    <span>Processing Payment...</span>
+                    <span>Processing Order...</span>
                   </>
                 ) : (
                   <span>
-                    {paymentMethod === 'cod' ? 'Confirm & Place Order' : `Pay & Place Order (₹${grandTotal})`}
+                    Confirm & Place Order
                   </span>
                 )}
               </button>
@@ -1270,27 +1258,26 @@ const Checkout = () => {
                   <h3 className="font-serif text-base font-bold border-b border-brand-purple/10 pb-2.5 mb-3">Order Summary</h3>
                   <div className="flex flex-col gap-1.5 border-b border-brand-purple/10 pb-3">
                     <div className="flex justify-between font-semibold">
-                      <span>Subtotal:</span>
-                      <span>₹{cartSubtotal}</span>
+                      <span>Total Items:</span>
+                      <span className="font-bold text-brand-plum">{totalItemsCount} {totalItemsCount === 1 ? 'item' : 'items'}</span>
                     </div>
                     <div className="flex justify-between font-semibold">
-                      <span>Delivery:</span>
-                      <span>{deliveryCharge === 0 ? 'FREE' : `₹${deliveryCharge}`}</span>
+                      <span>Shipping Option:</span>
+                      <span className="capitalize">{deliveryOption === 'express' ? 'Express Delivery' : 'Standard Delivery'}</span>
                     </div>
                     <div className="flex justify-between font-semibold">
-                      <span>GST (5%):</span>
-                      <span>₹{taxAmount}</span>
+                      <span>Estimated Time:</span>
+                      <span>{deliveryOption === 'express' ? '1–2 Business Days' : '3–5 Business Days'}</span>
                     </div>
-                    {discountAmount > 0 && (
-                      <div className="flex justify-between font-semibold text-emerald-600">
-                        <span>Member Discount:</span>
-                        <span>-₹{discountAmount}</span>
-                      </div>
-                    )}
                   </div>
-                  <div className="flex justify-between font-bold text-sm pt-2.5 text-brand-plum">
-                    <span>Grand Total:</span>
-                    <span>₹{grandTotal}</span>
+                  <div className="flex justify-between font-bold text-xs pt-2.5 mb-3 text-brand-dark/80">
+                    <span>Packaging:</span>
+                    <span className="text-emerald-600 font-semibold">Artisan Gift Packaging</span>
+                  </div>
+
+                  <div className="pt-2 text-[10px] text-brand-dark/70 leading-relaxed border-t border-brand-purple/10">
+                    <span className="font-bold block uppercase mb-1">Delivering to:</span>
+                    <span>{selectedAddress?.fullName}, {selectedAddress?.building}, {selectedAddress?.city} - {selectedAddress?.pinCode}</span>
                   </div>
                 </div>
               </div>
@@ -1323,8 +1310,8 @@ const Checkout = () => {
                 <span className="font-bold text-emerald-600">{placedOrder?.paymentStatus}</span>
               </div>
               <div className="flex justify-between border-b border-brand-purple/10 pb-2">
-                <span className="font-semibold text-brand-dark/70">Grand Total</span>
-                <span className="font-bold text-brand-plum">₹{placedOrder?.total}</span>
+                <span className="font-semibold text-brand-dark/70">Total Items</span>
+                <span className="font-bold text-brand-plum">{placedOrder?.items?.reduce((a, b) => a + (b.quantity || 1), 0) || totalItemsCount} items</span>
               </div>
               <div className="flex justify-between border-b border-brand-purple/10 pb-2">
                 <span className="font-semibold text-brand-dark/70">Est. Delivery</span>

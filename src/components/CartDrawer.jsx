@@ -56,7 +56,6 @@ const CartDrawer = () => {
   if (!isCartOpen) return null;
 
   const totalItemsCount = cart.reduce((acc, item) => acc + item.quantity, 0);
-  const cartSubtotal = cart.reduce((acc, item) => acc + (item.price || 249) * item.quantity, 0);
 
   const handleClose = () => {
     setIsCartOpen(false);
@@ -187,8 +186,6 @@ const CartDrawer = () => {
                           <h4 className="font-serif text-xs font-bold text-brand-dark leading-tight mt-0.5 mb-1 line-clamp-1">
                             {item.name}
                           </h4>
-                          <span className="text-xs font-bold text-brand-plum/90">₹{item.price}</span>
-                          
                           {/* Save & Remove tiny controls */}
                           <div className="flex gap-3.5 mt-2 mb-3">
                             <button
@@ -267,7 +264,6 @@ const CartDrawer = () => {
                           <h5 className="font-serif text-xs font-bold text-brand-dark leading-tight line-clamp-1">
                             {item.name}
                           </h5>
-                          <span className="text-xs font-bold text-brand-plum mt-0.5">₹{item.price || 249}</span>
                           
                           <div className="flex gap-3.5 mt-2.5">
                             <button
@@ -299,8 +295,8 @@ const CartDrawer = () => {
         {cart.length > 0 && (
           <div className="px-6 py-5 border-t border-brand-purple/15 bg-white/40 backdrop-blur-md flex flex-col gap-4 text-left">
             <div className="flex items-center justify-between text-xs font-semibold">
-              <span className="text-brand-dark/75">Subtotal:</span>
-              <span className="text-sm font-bold text-brand-plum">₹{cartSubtotal}</span>
+              <span className="text-brand-dark/75">Total Items:</span>
+              <span className="text-sm font-bold text-brand-plum">{totalItemsCount} {totalItemsCount === 1 ? 'item' : 'items'}</span>
             </div>
             
             <button

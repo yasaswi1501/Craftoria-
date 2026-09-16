@@ -301,7 +301,6 @@ const AccountMenu = ({ isOpen, onClose }) => {
                     <div key={item.id} className="glass-card p-3 rounded-xl border border-brand-purple/15 flex justify-between items-center text-xs text-left">
                       <div className="flex flex-col text-left">
                         <span className="font-serif font-bold text-brand-dark">{item.name}</span>
-                        <span className="text-[10px] text-brand-plum/80 font-semibold mt-0.5">₹{item.price || 249}</span>
                       </div>
                       <div className="flex gap-2.5 items-center">
                         <button

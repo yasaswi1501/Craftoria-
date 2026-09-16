@@ -19,7 +19,7 @@ export const productsData = [
     discount: 100,
     estimatedDelivery: '3-5 Business Days',
     details: 'This Retro Polaroid Memory Canvas combines tactile craftsmanship with memory preservation. Stretched over a sturdy pine frame, it supports custom handwriting and slots to mount real Polaroid photographs. Complete with decorative hemp strings and mini wooden pegs.',
-    shippingDetails: 'Ships standard globally. Free shipping above ₹499. Safely bubble-wrapped in reinforced craft boxes.',
+    shippingDetails: 'Ships standard globally. Safely bubble-wrapped in reinforced craft boxes.',
     returnPolicy: 'Due to custom hand-drawn elements, personalized products are returnable only in case of transit damage.'
   },
   {
@@ -41,7 +41,7 @@ export const productsData = [
     discount: 50,
     estimatedDelivery: '4-6 Business Days',
     details: 'Hand-treated antique wash canvas layered with real pressed dried lavender sprigs, rose petals, and paper lace decorations. Ideal for rustic bedroom or shelf styling.',
-    shippingDetails: 'Ships standard. Flat shipping fee of ₹40 applies below ₹499 orders.',
+    shippingDetails: 'Ships standard courier delivery. Safely packed in bubble wraps.',
     returnPolicy: 'Exchange available within 7 days in case of floral damage.'
   },
   {
@@ -85,7 +85,7 @@ export const productsData = [
     discount: 0,
     estimatedDelivery: '2-4 Business Days',
     details: 'Clean cut natural ash wood frame featuring a dual easel backing for vertical or horizontal placement. Coated with organic beeswax for a high-end feel.',
-    shippingDetails: 'Standard courier shipping inside India. Flat rate ₹40.',
+    shippingDetails: 'Standard courier shipping inside India.',
     returnPolicy: '7-day replacement/return accepted for unused items.'
   },
 
@@ -109,7 +109,7 @@ export const productsData = [
     discount: 100,
     estimatedDelivery: '4-6 Business Days',
     details: 'Stitched entirely by hand, this hoop art piece displays your chosen letter surrounded by pastel French knots, satin stitched petals, and detailed botanical patterns.',
-    shippingDetails: 'Ships standard. Flat rate fee of ₹40 for orders below ₹499.',
+    shippingDetails: 'Ships standard courier delivery. Bubble-wrapped for safe transit.',
     returnPolicy: 'Custom monogram embroidery is non-returnable once sewn.'
   },
   {
@@ -175,7 +175,7 @@ export const productsData = [
     discount: 50,
     estimatedDelivery: '3-5 Business Days',
     details: 'Detailed stitching recreating wild forest vegetation, using textured loops and knot clusters to create 3D foliage surfaces.',
-    shippingDetails: 'Standard courier delivery (flat rate ₹40 below ₹499 orders).',
+    shippingDetails: 'Standard courier delivery with protective packaging.',
     returnPolicy: '7-day easy exchange for physical defects.'
   },
 
@@ -199,7 +199,7 @@ export const productsData = [
     discount: 50,
     estimatedDelivery: '2-4 Business Days',
     details: 'Soft chenille wire plush heart keychain with dense loops. Attached to a premium gold-toned lobster clip, matching bags, cellphones, or keys sets.',
-    shippingDetails: 'Standard envelope shipping (flat rate ₹40 applies below ₹499).',
+    shippingDetails: 'Standard envelope shipping with card backing.',
     returnPolicy: '7-day replacement for clip hardware defects.'
   },
   {
@@ -265,7 +265,7 @@ export const productsData = [
     discount: 50,
     estimatedDelivery: '4-6 Business Days',
     details: 'Bright pipe cleaner petals with initial charms laser engraved on natural wood slides. Perfect custom accessory for backpacks.',
-    shippingDetails: 'Envelope courier dispatch (flat rate ₹40 below ₹499 orders).',
+    shippingDetails: 'Envelope courier dispatch with rigid card envelope.',
     returnPolicy: 'Bespoke engraved initial charms are non-refundable.'
   },
 
@@ -311,7 +311,7 @@ export const productsData = [
     discount: 0,
     estimatedDelivery: '3-5 Business Days',
     details: 'Mini polaroid pack displaying high contrast black & white or vintage warm snapshots. Stamped with custom dates on demands.',
-    shippingDetails: 'Flat rate envelope shipping ₹40.',
+    shippingDetails: 'Standard protective envelope shipping.',
     returnPolicy: '100% returns for defective print colors.'
   },
   {
@@ -357,7 +357,7 @@ export const productsData = [
     discount: 0,
     estimatedDelivery: '3-5 Business Days',
     details: 'Sturdy wooden peg springs coated in a matte protective lacquer. Ideal for hanging polaroid snaps, recipes, card crafts, or bag seals.',
-    shippingDetails: 'Standard flat rate shipping ₹40 below ₹499.',
+    shippingDetails: 'Standard courier shipping with protective packaging.',
     returnPolicy: '7 days easy return if product is damaged.'
   },
   {

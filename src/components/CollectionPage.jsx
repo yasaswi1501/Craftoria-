@@ -31,17 +31,15 @@ const CollectionPage = ({ collectionId }) => {
   // Filters State
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTags, setSelectedTags] = useState([]);
-  const [priceRange, setPriceRange] = useState(1600);
   const [onlyInStock, setOnlyInStock] = useState(false);
   const [onlyCustomizable, setOnlyCustomizable] = useState(false);
   const [minRating, setMinRating] = useState(0);
-  const [sortBy, setSortBy] = useState('popularity'); // 'popularity' | 'newest' | 'price-low' | 'price-high' | 'rating' | 'alpha'
+  const [sortBy, setSortBy] = useState('popularity'); // 'popularity' | 'newest' | 'rating' | 'alpha'
 
   // Reset filters when changing collections
   useEffect(() => {
     setSearchQuery('');
     setSelectedTags([]);
-    setPriceRange(1600);
     setOnlyInStock(false);
     setOnlyCustomizable(false);
     setMinRating(0);
@@ -92,38 +90,31 @@ const CollectionPage = ({ collectionId }) => {
       result = result.filter(p => p.title.toLowerCase().includes(q) || p.description.toLowerCase().includes(q));
     }
 
-    // 3. Price slider range
-    result = result.filter(p => p.price <= priceRange);
-
-    // 4. In Stock availability
+    // 3. In Stock availability
     if (onlyInStock) {
       result = result.filter(p => p.stock > 0);
     }
 
-    // 5. Customization
+    // 4. Customization
     if (onlyCustomizable) {
       result = result.filter(p => p.customizable);
     }
 
-    // 6. Minimum Rating
+    // 5. Minimum Rating
     if (minRating > 0) {
       result = result.filter(p => p.rating >= minRating);
     }
 
-    // 7. Tags checkboxes
+    // 6. Tags checkboxes
     if (selectedTags.length > 0) {
       result = result.filter(p => p.tags && p.tags.some(t => selectedTags.includes(t)));
     }
 
-    // 8. Sorting options
+    // 7. Sorting options
     if (sortBy === 'popularity') {
       result.sort((a, b) => b.reviewCount - a.reviewCount);
     } else if (sortBy === 'newest') {
       result.sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded));
-    } else if (sortBy === 'price-low') {
-      result.sort((a, b) => a.price - b.price);
-    } else if (sortBy === 'price-high') {
-      result.sort((a, b) => b.price - a.price);
     } else if (sortBy === 'rating') {
       result.sort((a, b) => b.rating - a.rating);
     } else if (sortBy === 'alpha') {
@@ -131,7 +122,7 @@ const CollectionPage = ({ collectionId }) => {
     }
 
     return result;
-  }, [collectionId, searchQuery, priceRange, onlyInStock, onlyCustomizable, minRating, selectedTags, sortBy]);
+  }, [collectionId, searchQuery, onlyInStock, onlyCustomizable, minRating, selectedTags, sortBy]);
 
   const handleAddToCart = (product, e) => {
     e.stopPropagation();
@@ -153,7 +144,6 @@ const CollectionPage = ({ collectionId }) => {
   const resetAllFilters = () => {
     setSearchQuery('');
     setSelectedTags([]);
-    setPriceRange(1600);
     setOnlyInStock(false);
     setOnlyCustomizable(false);
     setMinRating(0);
@@ -221,8 +211,6 @@ const CollectionPage = ({ collectionId }) => {
             >
               <option value="popularity">Popularity</option>
               <option value="newest">Newest</option>
-              <option value="price-low">Price Low to High</option>
-              <option value="price-high">Price High to Low</option>
               <option value="rating">Customer Rating</option>
               <option value="alpha">Alphabetical</option>
             </select>
@@ -264,28 +252,7 @@ const CollectionPage = ({ collectionId }) => {
               </div>
             )}
 
-            {/* B. Price Range Slider */}
-            <div className="space-y-2.5 text-xs">
-              <div className="flex justify-between font-semibold">
-                <span className="text-brand-dark/85">Max Price</span>
-                <span className="text-brand-plum font-bold">₹{priceRange}</span>
-              </div>
-              <input
-                type="range"
-                min="100"
-                max="2000"
-                step="50"
-                value={priceRange}
-                onChange={(e) => setPriceRange(Number(e.target.value))}
-                className="w-full accent-brand-plum h-1 bg-brand-purple/20 rounded-lg appearance-none cursor-pointer"
-              />
-              <div className="flex justify-between text-[9px] font-semibold text-brand-dark/50">
-                <span>₹100</span>
-                <span>₹2000</span>
-              </div>
-            </div>
-
-            {/* C. Minimum Star Ratings Filter */}
+            {/* B. Minimum Star Ratings Filter */}
             <div className="space-y-2.5 text-xs">
               <span className="font-semibold text-brand-dark/85 block mb-1">Customer Rating</span>
               {[4.5, 4, 3].map(stars => (
@@ -312,7 +279,7 @@ const CollectionPage = ({ collectionId }) => {
               )}
             </div>
 
-            {/* D. Availability & Customization switches */}
+            {/* C. Availability & Customization switches */}
             <div className="space-y-3 pt-3 border-t border-brand-purple/10 text-xs">
               <label className="flex items-center gap-2 cursor-pointer select-none">
                 <input
@@ -352,7 +319,7 @@ const CollectionPage = ({ collectionId }) => {
                 </div>
                 <h3 className="font-serif text-lg font-bold mb-1">No products found</h3>
                 <p className="text-xs text-brand-dark/65 max-w-xs mb-6 leading-relaxed">
-                  Adjust your price slider, selected styles, or ratings to discover handmade items in this collection.
+                  Adjust your selected styles or ratings to discover handmade items in this collection.
                 </p>
                 <button
                   onClick={resetAllFilters}
@@ -379,7 +346,7 @@ const CollectionPage = ({ collectionId }) => {
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0 }}
                       onClick={() => navigate(`/product/${product.slug}`)}
-                      className="glass-card rounded-[24px] overflow-hidden flex flex-col group border border-brand-purple/20 shadow-sm relative bg-white/40 cursor-pointer min-h-[365px]"
+                      className="glass-card rounded-[24px] overflow-hidden flex flex-col group border border-brand-purple/20 shadow-sm relative bg-white/40 cursor-pointer min-h-[340px]"
                     >
                       {/* Product Image */}
                       <div className="h-[185px] sm:h-[200px] w-full border-b border-brand-purple/10 overflow-hidden relative bg-gradient-to-tr from-[#FCF7FF] via-[#F3E7FA] to-[#E9D7F5] flex items-center justify-center p-4">
@@ -431,7 +398,7 @@ const CollectionPage = ({ collectionId }) => {
                         </p>
 
                         {/* Rating row */}
-                        <div className="flex items-center gap-1 mb-2.5">
+                        <div className="flex items-center gap-1 mb-3">
                           <div className="flex text-amber-400">
                             {[...Array(5)].map((_, i) => (
                               <Star
@@ -443,18 +410,7 @@ const CollectionPage = ({ collectionId }) => {
                           <span className="text-[9px] font-bold text-brand-dark/50">({product.reviewCount})</span>
                         </div>
 
-                        {/* Price Details */}
-                        <div className="flex flex-wrap items-baseline gap-1.5 mb-3">
-                          <span className="text-sm font-bold text-brand-plum">₹{product.price}</span>
-                          {product.discount > 0 && (
-                            <>
-                              <span className="line-through text-brand-dark/45 text-[10px]">₹{product.price + product.discount}</span>
-                              <span className="text-[9px] text-emerald-600 font-bold">(Save ₹{product.discount})</span>
-                            </>
-                          )}
-                        </div>
-
-                        {/* Direct purchase row */}
+                        {/* Direct purchase row - ONLY Add to Cart */}
                         <div className="flex gap-2 mt-auto pt-2 border-t border-brand-purple/10">
                           {/* Add to Cart button / Quantity stepper */}
                           {cartQty > 0 ? (
@@ -490,7 +446,7 @@ const CollectionPage = ({ collectionId }) => {
                                 desc: product.description,
                                 image: product.thumbnail
                               }, e)}
-                              className="flex-grow inline-flex items-center justify-center gap-1 py-2 rounded-full bg-brand-plum hover:bg-brand-violet text-white text-[9px] font-bold uppercase tracking-wider h-8 shadow-xs cursor-pointer"
+                              className="flex-grow inline-flex items-center justify-center gap-1.5 py-2 rounded-full bg-brand-plum hover:bg-brand-violet text-white text-[9px] font-bold uppercase tracking-wider h-8 shadow-xs cursor-pointer"
                             >
                               {isAdded ? (
                                 <>
@@ -500,7 +456,7 @@ const CollectionPage = ({ collectionId }) => {
                               ) : (
                                 <>
                                   <ShoppingBag className="w-3 h-3" />
-                                  <span>Add</span>
+                                  <span>Add to Cart</span>
                                 </>
                               )}
                             </button>
@@ -577,27 +533,6 @@ const CollectionPage = ({ collectionId }) => {
                     ))}
                   </div>
                 )}
-
-                {/* Price Slider */}
-                <div className="space-y-2.5">
-                  <div className="flex justify-between font-semibold">
-                    <span className="text-brand-dark/85">Max Price</span>
-                    <span className="text-brand-plum font-bold">₹{priceRange}</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="100"
-                    max="2000"
-                    step="50"
-                    value={priceRange}
-                    onChange={(e) => setPriceRange(Number(e.target.value))}
-                    className="w-full accent-brand-plum h-1 bg-brand-purple/20 rounded-lg appearance-none cursor-pointer"
-                  />
-                  <div className="flex justify-between text-[9px] font-semibold text-brand-dark/50">
-                    <span>₹100</span>
-                    <span>₹2000</span>
-                  </div>
-                </div>
 
                 {/* Rating filter */}
                 <div className="space-y-2.5">

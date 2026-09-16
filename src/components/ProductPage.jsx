@@ -110,26 +110,6 @@ const ProductPage = ({ productSlug }) => {
     setTimeout(() => setIsAddedToCart(false), 2000);
   };
 
-  const handleBuyNow = () => {
-    if (product.customizable && !customizationText.trim()) {
-      setCustomizationError('Please enter your customization text details before checking out.');
-      return;
-    }
-    setCustomizationError('');
-
-    const cartItem = {
-      id: product.id,
-      name: product.title,
-      price: product.price,
-      desc: product.description,
-      customText: customizationText.trim() ? customizationText : undefined,
-      qty: quantity
-    };
-
-    addToCart(cartItem);
-    navigate('/checkout');
-  };
-
   return (
     <div className="min-h-screen bg-[#FDFBFD] pt-24 pb-16 px-4 sm:px-6 lg:px-8 text-brand-dark max-w-[1250px] mx-auto text-left">
       
@@ -226,21 +206,8 @@ const ProductPage = ({ productSlug }) => {
             </div>
           </div>
 
-          {/* Pricing Box */}
-          <div className="flex items-baseline gap-2.5 pt-1.5 border-t border-brand-purple/10">
-            <span className="text-2xl font-bold text-brand-plum">₹{product.price}</span>
-            {product.discount > 0 && (
-              <>
-                <span className="line-through text-brand-dark/40 text-sm">₹{product.price + product.discount}</span>
-                <span className="text-xs text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100 font-mono">
-                  Save ₹{product.discount}
-                </span>
-              </>
-            )}
-          </div>
-
           {/* Basic description */}
-          <p className="text-xs sm:text-sm text-brand-dark/75 font-medium leading-relaxed">
+          <p className="text-xs sm:text-sm text-brand-dark/75 font-medium leading-relaxed pt-2 border-t border-brand-purple/10">
             {product.details || product.description}
           </p>
 
@@ -300,8 +267,8 @@ const ProductPage = ({ productSlug }) => {
             </div>
           </div>
 
-          {/* Action Purchase Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 pt-3">
+          {/* Action Purchase Buttons - ONLY Add to Cart & Wishlist */}
+          <div className="flex gap-3 pt-3">
             <button
               onClick={handleAddToCart}
               className="flex-grow inline-flex items-center justify-center gap-2 py-3 px-6 rounded-full bg-brand-plum hover:bg-brand-violet text-white font-semibold text-xs uppercase tracking-widest hover:shadow-md cursor-pointer transition-all h-11"
@@ -318,13 +285,6 @@ const ProductPage = ({ productSlug }) => {
             </button>
 
             <button
-              onClick={handleBuyNow}
-              className="flex-grow inline-flex items-center justify-center py-3 px-6 rounded-full bg-brand-violet hover:bg-[#683b8a] text-white font-semibold text-xs uppercase tracking-widest hover:shadow-md cursor-pointer transition-all h-11"
-            >
-              Buy Now
-            </button>
-
-            <button
               onClick={() => toggleWishlist({
                 id: product.id,
                 name: product.title,
@@ -332,7 +292,7 @@ const ProductPage = ({ productSlug }) => {
                 desc: product.description,
                 image: product.thumbnail
               })}
-              className="p-3 rounded-full border border-brand-purple/20 text-brand-plum hover:bg-brand-purple/10 flex items-center justify-center cursor-pointer h-11 w-11 focus:outline-none"
+              className="p-3 rounded-full border border-brand-purple/20 text-brand-plum hover:bg-brand-purple/10 flex items-center justify-center cursor-pointer h-11 w-11 focus:outline-none flex-shrink-0"
               aria-label="Wishlist Toggle"
             >
               <Heart className={`w-4 h-4 ${isInWishlist(product.id) ? 'fill-red-500 text-red-500' : 'text-brand-dark/50'}`} />
@@ -412,7 +372,7 @@ const ProductPage = ({ productSlug }) => {
                   <h4 className="font-serif text-xs sm:text-sm font-bold text-brand-dark leading-tight line-clamp-1 mb-1 group-hover:text-brand-plum transition-colors">
                     {p.title}
                   </h4>
-                  <div className="text-xs font-bold text-brand-plum mt-auto">₹{p.price}</div>
+                  <div className="text-[11px] font-semibold text-brand-plum mt-auto group-hover:underline">View Craft &rarr;</div>
                 </div>
               </div>
             ))}

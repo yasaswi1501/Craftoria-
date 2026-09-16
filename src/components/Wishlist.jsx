@@ -154,12 +154,8 @@ const Wishlist = () => {
                     {item.name}
                   </h3>
 
-                  <div className="text-xs font-semibold text-emerald-600 mb-2 flex items-center gap-1">
+                  <div className="text-xs font-semibold text-emerald-600 mb-3 flex items-center gap-1">
                     <Sparkles className="w-3 h-3 text-emerald-500 animate-pulse" /> In Stock & Ready to Ship
-                  </div>
-
-                  <div className="text-sm sm:text-base font-bold text-brand-plum mb-4">
-                    ₹{item.price || 249}
                   </div>
 
                   {/* Actions */}
