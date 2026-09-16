@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   X, Sparkles, Check, Heart, ShoppingBag, 
   Gift, MessageCircle, AlertCircle, HelpCircle, Package, Plus, Minus
 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { productsData } from '../data/products';
 
 import sellerMemoryCanvas from '../assets/seller-memory-canvas.png';
 import sellerEmbroideryHoop from '../assets/seller-embroidery-hoop.png';
@@ -35,9 +36,22 @@ export const PACKAGING_OPTIONS = [
   { id: 'eco-kraft', label: 'Eco-Friendly Artisan Kraft Packaging', note: 'Rustic minimal craft wrapping' },
 ];
 
+export const CATEGORY_TABS = [
+  { id: 'all', label: 'All Crafts' },
+  { id: 'craftoria-bloom-bouquets', label: '🌸 Bouquets' },
+  { id: 'embroidery', label: '🧵 Embroidery' },
+  { id: 'photo-frames', label: '🖼️ Frames' },
+  { id: 'keychains', label: '🔑 Keychains' },
+  { id: 'polaroids', label: '📸 Polaroids' },
+  { id: 'handmade-decor', label: '🏡 Home Decor' },
+  { id: 'clips-rubber-bands', label: '🎀 Hair Clips' },
+];
+
 const CustomizationModal = ({ isOpen, onClose, product }) => {
   const { addToCart } = useCart();
 
+  const [selectedProduct, setSelectedProduct] = useState(product || productsData[0]);
+  const [selectedCategoryFilter, setSelectedCategoryFilter] = useState('all');
   const [customText, setCustomText] = useState('');
   const [selectedOccasion, setSelectedOccasion] = useState(OCCASIONS[0]);
   const [giftNote, setGiftNote] = useState('');
@@ -47,9 +61,17 @@ const CustomizationModal = ({ isOpen, onClose, product }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
 
-  // Reset form whenever a new product is selected
+  // Reset or initialize product selection whenever modal opens or product changes
   useEffect(() => {
     if (product) {
+      const match = productsData.find(p => p.id === product.id || p.slug === product.slug);
+      const chosen = match || product || productsData[0];
+      setSelectedProduct(chosen);
+      if (chosen?.category && chosen.category !== 'custom-orders') {
+        setSelectedCategoryFilter(chosen.category);
+      } else {
+        setSelectedCategoryFilter('all');
+      }
       setCustomText('');
       setSelectedOccasion(OCCASIONS[0]);
       setGiftNote('');
@@ -60,6 +82,11 @@ const CustomizationModal = ({ isOpen, onClose, product }) => {
       setIsSuccess(false);
     }
   }, [product, isOpen]);
+
+  const filteredProducts = useMemo(() => {
+    if (selectedCategoryFilter === 'all') return productsData;
+    return productsData.filter(p => p.category === selectedCategoryFilter);
+  }, [selectedCategoryFilter]);
 
   // Lock background body scroll when modal is open to ensure pure, uninterrupted modal scrolling
   useEffect(() => {
@@ -110,12 +137,14 @@ const CustomizationModal = ({ isOpen, onClose, product }) => {
       specialNotes: specialInstructions.trim() || undefined,
     };
 
+    const targetProduct = selectedProduct || product;
+
     const cartPayload = {
-      id: product.id,
-      name: product.title || product.name,
-      price: product.price,
-      desc: product.description || product.desc,
-      image: product.thumbnail || product.image,
+      id: targetProduct.id,
+      name: targetProduct.title || targetProduct.name,
+      price: targetProduct.price,
+      desc: targetProduct.description || targetProduct.desc,
+      image: targetProduct.thumbnail || targetProduct.image,
       customText: customText.trim(),
       customization: customizationData,
       qty: quantity,
@@ -186,24 +215,85 @@ const CustomizationModal = ({ isOpen, onClose, product }) => {
           style={{ touchAction: 'pan-y' }}
         >
           
+          {/* 1. Select Product / Craft Piece */}
+          <div className="space-y-2.5 bg-white/70 border border-brand-purple/20 p-3.5 sm:p-4 rounded-2xl shadow-xs">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-bold text-brand-dark flex items-center gap-1.5">
+                <Package className="w-3.5 h-3.5 text-brand-plum" />
+                <span>Select Craft / Product to Customize</span>
+              </label>
+              <span className="text-[10px] font-bold text-brand-plum font-mono uppercase tracking-wider">
+                {productsData.length} items available
+              </span>
+            </div>
+
+            {/* Category Filter Chips */}
+            <div className="flex items-center gap-1.5 overflow-x-auto custom-scrollbar pb-1">
+              {CATEGORY_TABS.map((tab) => {
+                const isActive = selectedCategoryFilter === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => {
+                      setSelectedCategoryFilter(tab.id);
+                      if (tab.id !== 'all') {
+                        const firstInCat = productsData.find(p => p.category === tab.id);
+                        if (firstInCat) setSelectedProduct(firstInCat);
+                      }
+                    }}
+                    className={`px-2.5 py-1 rounded-full text-[10px] font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                      isActive
+                        ? 'bg-brand-plum text-white shadow-xs'
+                        : 'bg-white/80 border border-brand-purple/15 text-brand-dark/75 hover:bg-white hover:text-brand-plum'
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Product Dropdown Selector */}
+            <div className="relative">
+              <select
+                value={selectedProduct?.id || ''}
+                onChange={(e) => {
+                  const match = productsData.find(p => p.id === e.target.value);
+                  if (match) setSelectedProduct(match);
+                }}
+                className="w-full text-xs font-semibold p-2.5 sm:p-3 pr-10 rounded-xl border border-brand-purple/25 bg-white focus:outline-none focus:ring-2 focus:ring-brand-plum/30 focus:border-brand-purple transition-all cursor-pointer appearance-none shadow-xs text-brand-dark"
+              >
+                {filteredProducts.map((prod) => (
+                  <option key={prod.id} value={prod.id}>
+                    {prod.title} ({prod.category ? prod.category.replace('-', ' ') : 'Handcrafted'})
+                  </option>
+                ))}
+              </select>
+              <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-brand-plum text-[10px]">
+                ▼
+              </div>
+            </div>
+          </div>
+
           {/* Selected Product Summary Card */}
           <div className="glass-card p-3.5 sm:p-4 rounded-2xl border border-brand-purple/15 bg-white/60 flex items-center gap-3.5">
             <div className="w-16 h-16 sm:w-18 sm:h-18 rounded-xl bg-gradient-to-tr from-[#FCF7FF] via-[#F3E7FA] to-[#E9D7F5] border border-brand-purple/10 overflow-hidden flex-shrink-0 flex items-center justify-center p-1.5">
               <img
-                src={getProductImage(product)}
-                alt={product.title || product.name}
-                className="w-full h-full object-contain pointer-events-none"
+                src={getProductImage(selectedProduct)}
+                alt={selectedProduct?.title || selectedProduct?.name}
+                className="w-full h-full object-contain pointer-events-none transition-all duration-300"
               />
             </div>
             <div className="flex-grow min-w-0">
               <span className="text-[8px] font-bold text-brand-plum/80 uppercase tracking-widest font-mono">
-                {product.category ? product.category.replace('-', ' ') : 'Handcrafted'}
+                {selectedProduct?.category ? selectedProduct.category.replace('-', ' ') : 'Handcrafted'}
               </span>
               <h4 className="font-serif text-sm sm:text-base font-bold text-brand-dark truncate mt-0.5">
-                {product.title || product.name}
+                {selectedProduct?.title || selectedProduct?.name}
               </h4>
               <p className="text-[11px] text-brand-dark/70 line-clamp-1 mt-0.5">
-                {product.description || product.desc}
+                {selectedProduct?.description || selectedProduct?.desc}
               </p>
             </div>
           </div>
