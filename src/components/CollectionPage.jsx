@@ -52,18 +52,15 @@ const CollectionPage = ({ collectionId }) => {
   const [onlyInStock, setOnlyInStock] = useState(false);
   const [onlyCustomizable, setOnlyCustomizable] = useState(false);
   const [minRating, setMinRating] = useState(0);
-  const [sortBy, setSortBy] = useState('featured'); // 'featured' | 'popularity' | 'newest' | 'rating' | 'alpha'
 
   const targetCategory = collectionId === 'clips-rubber-bands' ? 'accessories' : collectionId;
 
-  // Reset filters when changing collections
   useEffect(() => {
     setSearchQuery('');
     setSelectedTags([]);
     setOnlyInStock(false);
     setOnlyCustomizable(false);
     setMinRating(0);
-    setSortBy('featured');
   }, [collectionId]);
 
   // Load collection metadata
@@ -145,20 +142,8 @@ const CollectionPage = ({ collectionId }) => {
       result = result.filter(p => p.tags && p.tags.some(t => selectedTags.includes(t)));
     }
 
-    // 7. Sorting options
-    if (sortBy === 'popularity') {
-      result.sort((a, b) => b.reviewCount - a.reviewCount);
-    } else if (sortBy === 'newest') {
-      result.sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded));
-    } else if (sortBy === 'rating') {
-      result.sort((a, b) => b.rating - a.rating);
-    } else if (sortBy === 'alpha') {
-      result.sort((a, b) => a.title.localeCompare(b.title));
-    }
-    // if sortBy === 'featured', maintain catalog array order
-
     return result;
-  }, [collectionId, searchQuery, onlyInStock, onlyCustomizable, minRating, selectedTags, sortBy]);
+  }, [collectionId, searchQuery, onlyInStock, onlyCustomizable, minRating, selectedTags]);
 
   const handleAddToCart = (product, e) => {
     e.stopPropagation();
@@ -183,7 +168,6 @@ const CollectionPage = ({ collectionId }) => {
     setOnlyInStock(false);
     setOnlyCustomizable(false);
     setMinRating(0);
-    setSortBy('popularity');
   };
 
   return (
@@ -214,7 +198,7 @@ const CollectionPage = ({ collectionId }) => {
         </div>
       </div>
 
-      {/* Toolbar: Search, Mobile filters drawer toggle, sorting select */}
+      {/* Toolbar: Search, Mobile filters drawer toggle */}
       <div className="flex flex-col sm:flex-row gap-4 justify-between items-center bg-white/40 border border-brand-purple/15 p-4 rounded-[24px] mb-8 shadow-xs">
         {/* Search Input */}
         <div className="relative w-full sm:max-w-xs">
@@ -228,31 +212,13 @@ const CollectionPage = ({ collectionId }) => {
           />
         </div>
 
-        <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
-          {/* Mobile Filter Button */}
-          <button
-            onClick={() => setIsFilterDrawerOpen(true)}
-            className="lg:hidden flex items-center justify-center gap-1.5 px-4 h-9 rounded-full border border-brand-purple/15 bg-white text-xs font-bold text-brand-plum cursor-pointer"
-          >
-            <SlidersHorizontal className="w-3.5 h-3.5" /> Filters
-          </button>
-
-          {/* Sort By Dropdown */}
-          <div className="flex items-center gap-2 text-xs">
-            <span className="font-semibold text-brand-dark/70 hidden sm:inline font-mono">SORT BY:</span>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="bg-white border border-brand-purple/15 rounded-full px-3.5 py-1.5 h-9 font-semibold text-brand-dark/85 cursor-pointer text-xs focus:outline-none"
-            >
-              <option value="featured">Featured / Catalog</option>
-              <option value="popularity">Popularity</option>
-              <option value="newest">Newest</option>
-              <option value="rating">Customer Rating</option>
-              <option value="alpha">Alphabetical</option>
-            </select>
-          </div>
-        </div>
+        {/* Mobile Filter Button */}
+        <button
+          onClick={() => setIsFilterDrawerOpen(true)}
+          className="lg:hidden flex items-center justify-center gap-1.5 px-4 h-9 rounded-full border border-brand-purple/15 bg-white text-xs font-bold text-brand-plum cursor-pointer w-full sm:w-auto"
+        >
+          <SlidersHorizontal className="w-3.5 h-3.5" /> Filters
+        </button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
