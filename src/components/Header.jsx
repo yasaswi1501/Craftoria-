@@ -126,6 +126,21 @@ const Header = () => {
     setIsAccountOpen(true);
   };
 
+  const handleAccountButtonClick = () => {
+    if (window.innerWidth < 640) {
+      setIsAccountDropdownOpen(false);
+      setIsNavOpen(false);
+      if (!isLoggedIn) {
+        setIsAuthModalOpen(true);
+      } else {
+        setAccountInitialTab('menu');
+        setIsAccountOpen(true);
+      }
+    } else {
+      setIsAccountDropdownOpen((prev) => !prev);
+    }
+  };
+
   const handleWishlistClick = (e) => {
     e.preventDefault();
     setIsNavOpen(false);
@@ -211,7 +226,7 @@ const Header = () => {
             {/* E-Commerce Style Account Menu Dropdown (Flipkart / Amazon pattern) */}
             <div className="relative" ref={dropdownRef}>
               <button
-                onClick={() => setIsAccountDropdownOpen((prev) => !prev)}
+                onClick={handleAccountButtonClick}
                 className={`inline-flex items-center justify-center gap-1 px-2 sm:px-4 py-2 rounded-full text-xs font-semibold cursor-pointer transition-all duration-200 h-9 sm:h-10 border ${
                   isAccountDropdownOpen
                     ? 'bg-brand-purple/15 border-brand-purple/30 text-brand-plum shadow-xs'
@@ -232,10 +247,10 @@ const Header = () => {
                 <span className="hidden sm:inline font-medium">
                   {isLoggedIn ? `Hi, ${firstName}` : 'Login / Sign In'}
                 </span>
-                <ChevronDown className={`w-3 h-3 sm:w-3.5 sm:h-3.5 transition-transform duration-200 ${isAccountDropdownOpen ? 'rotate-180' : ''}`} />
+                <ChevronDown className={`hidden sm:inline w-3 h-3 sm:w-3.5 sm:h-3.5 transition-transform duration-200 ${isAccountDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
 
-              {/* Floating Dropdown Menu Card */}
+              {/* Floating Dropdown Menu Card (Desktop / Tablet only) */}
               <AnimatePresence>
                 {isAccountDropdownOpen && (
                   <motion.div
@@ -243,7 +258,7 @@ const Header = () => {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 8, scale: 0.96, transition: { duration: 0.15 } }}
                     transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                    className="absolute right-0 top-full mt-2 w-72 rounded-[22px] bg-white/95 backdrop-blur-md border border-brand-purple/20 shadow-[0_16px_40px_rgba(75,46,93,0.18)] z-50 p-3 text-left overflow-hidden"
+                    className="hidden sm:block absolute right-0 top-full mt-2 w-72 rounded-[22px] bg-white/95 backdrop-blur-md border border-brand-purple/20 shadow-[0_16px_40px_rgba(75,46,93,0.18)] z-50 p-3 text-left overflow-hidden"
                   >
                     {/* Header: User Profile or Sign-in Prompt */}
                     {isLoggedIn ? (
