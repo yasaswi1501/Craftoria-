@@ -27,7 +27,7 @@ const About = () => {
   ];
 
   return (
-    <section id="about" className="pt-12 sm:pt-14 pb-16 sm:pb-24 px-4 sm:px-6 relative overflow-hidden">
+    <section id="about" className="pt-12 sm:pt-14 pb-16 sm:pb-24 px-4 sm:px-6 relative overflow-hidden scroll-mt-20 sm:scroll-mt-24">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 items-center">
           

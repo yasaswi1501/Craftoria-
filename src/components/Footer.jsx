@@ -19,7 +19,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className="border-t border-brand-purple/15 mt-12 sm:mt-16 py-10 sm:py-12 px-4 sm:px-6 relative overflow-hidden text-brand-dark pb-safe" style={{ background: "rgba(252, 248, 252, 0.90)" }}>
+    <footer className="border-t border-brand-purple/15 py-10 sm:py-12 px-4 sm:px-6 relative overflow-hidden text-brand-dark pb-safe bg-white/40 backdrop-blur-xs">
       {/* Subtle floral corner line arts in the footer */}
       <HibiscusFlower
         className="w-[200px] h-[200px] left-[-30px] bottom-[-30px]"

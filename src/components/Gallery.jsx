@@ -56,7 +56,7 @@ const Gallery = () => {
   ];
 
   return (
-    <section id="gallery" className="py-16 sm:py-20 px-3.5 sm:px-6 relative overflow-hidden border-t border-brand-purple/10">
+    <section id="gallery" className="py-16 sm:py-20 px-3.5 sm:px-6 relative overflow-hidden border-t border-brand-purple/10 scroll-mt-20 sm:scroll-mt-24">
       {/* Section Background Washes */}
       <WatercolorWash
         className="w-[450px] h-[450px] left-[15%] -top-10"

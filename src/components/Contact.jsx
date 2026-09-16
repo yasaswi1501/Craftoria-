@@ -85,7 +85,7 @@ const Contact = () => {
   };
 
   return (
-    <section id="contact" className="py-16 sm:py-24 px-4 sm:px-6 relative overflow-hidden border-t border-brand-purple/10">
+    <section id="contact" className="pt-14 sm:pt-20 pb-12 sm:pb-16 px-4 sm:px-6 relative overflow-hidden border-t border-brand-purple/10 scroll-mt-20 sm:scroll-mt-24">
       {/* Section Background Washes */}
       <WatercolorWash
         className="w-[500px] h-[500px] -left-16 bottom-[-5%]"
@@ -117,7 +117,7 @@ const Contact = () => {
       />
 
       <div className="max-w-7xl mx-auto relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 items-start">
           
           {/* Left Column: Heading, Details & Direct Contacts */}
           <motion.div
@@ -139,22 +139,22 @@ const Contact = () => {
             </p>
             
             {/* Direct Clickable Contact Cards */}
-            <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto pt-2">
+            <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row gap-2.5 sm:gap-3 w-full pt-2">
               <a
                 href="mailto:thecraftoriaaa26@gmail.com"
                 className="inline-flex items-center gap-2.5 px-4.5 py-2.5 rounded-2xl bg-white/70 hover:bg-white border border-brand-purple/20 text-brand-plum text-xs font-semibold shadow-xs transition-all duration-200"
               >
-                <div className="w-6 h-6 rounded-full bg-brand-purple/15 flex items-center justify-center">
+                <div className="w-6 h-6 rounded-full bg-brand-purple/15 flex items-center justify-center flex-shrink-0">
                   <Mail className="w-3.5 h-3.5 text-brand-plum" />
                 </div>
-                <span>thecraftoriaaa26@gmail.com</span>
+                <span className="truncate">thecraftoriaaa26@gmail.com</span>
               </a>
 
               <a
                 href="tel:+919908860895"
-                className="inline-flex items-center gap-2.5 px-4.5 py-2.5 rounded-2xl bg-white/70 hover:bg-white border border-brand-purple/20 text-brand-plum text-xs font-semibold shadow-xs transition-all duration-200"
+                className="inline-flex items-center gap-2.5 px-4.5 py-2.5 rounded-2xl bg-white/70 hover:bg-white border border-brand-purple/20 text-brand-plum text-xs font-semibold shadow-xs transition-all duration-200 flex-shrink-0"
               >
-                <div className="w-6 h-6 rounded-full bg-brand-purple/15 flex items-center justify-center">
+                <div className="w-6 h-6 rounded-full bg-brand-purple/15 flex items-center justify-center flex-shrink-0">
                   <Phone className="w-3.5 h-3.5 text-brand-plum" />
                 </div>
                 <span>+91 99088 60895</span>
@@ -188,7 +188,7 @@ const Contact = () => {
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
             className="lg:col-span-7"
           >
-            <div className="glass-card p-5 sm:p-10 rounded-[24px] sm:rounded-[32px] relative overflow-hidden border border-brand-purple/20 shadow-md">
+            <div className="glass-card p-5 sm:p-8 rounded-[24px] sm:rounded-[32px] relative overflow-hidden border border-brand-purple/20 shadow-md bg-white/70">
               <AnimatePresence mode="wait">
                 {!isSubmitted ? (
                   <motion.form

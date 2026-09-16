@@ -31,7 +31,7 @@ const WhyChoose = () => {
   ];
 
   return (
-    <section id="whychoose" className="py-16 sm:py-20 px-4 sm:px-6 relative overflow-hidden border-t border-brand-purple/10">
+    <section id="whychoose" className="py-16 sm:py-20 px-4 sm:px-6 relative overflow-hidden border-t border-brand-purple/10 scroll-mt-20 sm:scroll-mt-24">
       {/* Section Background Wash */}
       <WatercolorWash
         className="w-[500px] h-[500px] right-[10%] -top-12"

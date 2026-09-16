@@ -28,7 +28,7 @@ const Testimonials = () => {
   ];
 
   return (
-    <section id="testimonials" className="py-16 sm:py-20 px-4 sm:px-6 relative overflow-hidden border-t border-brand-purple/10">
+    <section id="testimonials" className="py-16 sm:py-20 px-4 sm:px-6 relative overflow-hidden border-t border-brand-purple/10 scroll-mt-20 sm:scroll-mt-24">
       {/* Soft lavender watercolor band across the section */}
       <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-56 bg-gradient-to-r from-brand-lavender/15 via-brand-pink/20 to-brand-lavender/15 blur-[45px] -z-10 pointer-events-none" />
       

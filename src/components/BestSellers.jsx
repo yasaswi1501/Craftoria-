@@ -113,7 +113,7 @@ const BestSellers = () => {
   );
 
   return (
-    <section id="bestsellers" className="py-16 sm:py-24 px-4 sm:px-6 relative overflow-hidden bg-transparent">
+    <section id="bestsellers" className="py-16 sm:py-24 px-4 sm:px-6 relative overflow-hidden bg-transparent scroll-mt-20 sm:scroll-mt-24">
       {/* Decorative Lavender Floral Illustrations */}
       <div className="absolute inset-0 pointer-events-none select-none z-0">
         {/* Top-right corner blossom */}

@@ -27,7 +27,7 @@ const Hero = () => {
   return (
     <section
       id="home"
-      className="min-h-[580px] lg:min-h-[calc(100vh-80px)] lg:max-h-[760px] flex items-center justify-center pt-20 sm:pt-16 pb-8 sm:pb-10 px-4 sm:px-6 relative overflow-hidden"
+      className="min-h-[580px] lg:min-h-[calc(100vh-80px)] lg:max-h-[760px] flex items-center justify-center pt-20 sm:pt-16 pb-8 sm:pb-10 px-4 sm:px-6 relative overflow-hidden scroll-mt-20 sm:scroll-mt-24"
     >
       {/* Soft lavender/pink glow blobs behind the hero text and hero visual */}
       <div 
