@@ -82,15 +82,46 @@ export const TARGET_CONTACT_EMAIL = 'thecraftoriaaa26@gmail.com';
 /**
  * Generate a formatted WhatsApp message for custom bespoke requests.
  */
-export const generateCustomRequestWhatsAppMessage = ({ name, email, phone, productType, message }) => {
-  let text = `🌸 *New Custom Commission Request - Craftoria* 🌸\n\n`;
+export const generateCustomRequestWhatsAppMessage = ({ 
+  name, 
+  email, 
+  phone, 
+  productType, 
+  personalization,
+  occasion,
+  packaging,
+  giftNote,
+  specialNotes,
+  message 
+}) => {
+  let text = `🌸 *New Custom Order Request - Craftoria* 🌸\n\n`;
   text += `👤 *Client Information:*\n`;
-  text += `• *Name:* ${name}\n`;
-  text += `• *Email:* ${email}\n`;
+  if (name) text += `• *Name:* ${name}\n`;
+  if (email) text += `• *Email:* ${email}\n`;
   if (phone) text += `• *Mobile:* ${phone}\n`;
-  text += `\n🎨 *Craft Category:* ${productType}\n\n`;
-  text += `📝 *Design Details & Requirements:*\n${message}\n\n`;
-  text += `✨ Sent via Craftoria Bespoke Commission Form`;
+  text += `\n🎨 *Craft Category:* ${productType}\n`;
+
+  if (personalization) {
+    text += `✍️ *Personalization / Monogram:* ${personalization}\n`;
+  }
+  if (occasion) {
+    text += `🎁 *Occasion:* ${occasion}\n`;
+  }
+  if (packaging) {
+    text += `📦 *Packaging Style:* ${packaging}\n`;
+  }
+  if (giftNote) {
+    text += `💌 *Gift Note:* "${giftNote}"\n`;
+  }
+  if (specialNotes) {
+    text += `📝 *Special Instructions:* "${specialNotes}"\n`;
+  }
+  if (message && message !== specialNotes) {
+    text += `💬 *Additional Details:* ${message}\n`;
+  }
+
+  text += `\n📸 *Photo / Reference Attachments:* If you have reference photos, polaroid pictures, or custom sketches, please attach them directly in this WhatsApp chat!\n`;
+  text += `\n✨ Sent via Craftoria Custom Orders Studio`;
 
   return text;
 };
@@ -98,8 +129,8 @@ export const generateCustomRequestWhatsAppMessage = ({ name, email, phone, produ
 /**
  * Open WhatsApp with the pre-filled custom request details.
  */
-export const sendCustomRequestToWhatsApp = ({ name, email, phone, productType, message }) => {
-  const text = generateCustomRequestWhatsAppMessage({ name, email, phone, productType, message });
+export const sendCustomRequestToWhatsApp = (payload) => {
+  const text = generateCustomRequestWhatsAppMessage(payload);
   const encodedText = encodeURIComponent(text);
   const whatsappUrl = `https://wa.me/${WHATSAPP_PHONE_NUMBER}?text=${encodedText}`;
 
@@ -116,7 +147,18 @@ export const sendCustomRequestToWhatsApp = ({ name, email, phone, productType, m
 /**
  * Dispatch the custom request form data to the target email address (thecraftoriaaa26@gmail.com).
  */
-export const sendCustomRequestEmail = async ({ name, email, phone, productType, message }) => {
+export const sendCustomRequestEmail = async ({ 
+  name, 
+  email, 
+  phone, 
+  productType, 
+  personalization,
+  occasion,
+  packaging,
+  giftNote,
+  specialNotes,
+  message 
+}) => {
   try {
     const response = await fetch(`https://formsubmit.co/ajax/${TARGET_CONTACT_EMAIL}`, {
       method: 'POST',
@@ -125,13 +167,17 @@ export const sendCustomRequestEmail = async ({ name, email, phone, productType, 
         'Accept': 'application/json',
       },
       body: JSON.stringify({
-        _subject: `New Custom Commission Request from ${name} - Craftoria`,
+        _subject: `New Custom Order Request (${productType}) from ${name} - Craftoria`,
         _template: 'table',
         name,
         email,
         phone: phone || 'Not provided',
         craft_category: productType,
-        message,
+        personalization_text: personalization || 'None',
+        occasion: occasion || 'Not specified',
+        packaging_style: packaging || 'Standard',
+        gift_note: giftNote || 'None',
+        special_instructions: specialNotes || message || 'None',
         sent_at: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
       }),
     });
