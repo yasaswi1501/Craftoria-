@@ -22,6 +22,9 @@ import coverHeartKeychain from '../assets/gallery-4-heart-keychain.jpg';
 import embroideryShirt from '../assets/embroidery-shirt.jpg';
 import fridgeMagnets from '../assets/fridge-magnets.jpg';
 import flowerVase from '../assets/flower-vase.jpg';
+import bouquet1Flower from '../assets/bouquet-1-flower.jpg';
+import bouquet3Flower from '../assets/bouquet-3-flower.jpg';
+import bouquet5Flower from '../assets/bouquet-5-flower.jpg';
 
 export const OCCASIONS = [
   '🎂 Birthday',
@@ -115,6 +118,9 @@ const CustomizationModal = ({ isOpen, onClose, product }) => {
     const cat = (prod?.category || '').toLowerCase();
     const imgName = prod?.thumbnail || prod?.image || '';
 
+    if (imgName === 'bouquet-1-flower.jpg' || id === 'bloom-bouquet-1-flower') return bouquet1Flower;
+    if (imgName === 'bouquet-3-flower.jpg' || id === 'bloom-bouquet-3-flower') return bouquet3Flower;
+    if (imgName === 'bouquet-5-flower.jpg' || id === 'bloom-bouquet-5-flower') return bouquet5Flower;
     if (imgName === 'embroidery-shirt.jpg' || id.includes('shirt')) return embroideryShirt;
     if (imgName === 'fridge-magnets.jpg' || id.includes('magnet')) return fridgeMagnets;
     if (imgName === 'flower-vase.jpg' || id.includes('vase')) return flowerVase;
@@ -122,13 +128,13 @@ const CustomizationModal = ({ isOpen, onClose, product }) => {
     if (imgName === 'gallery-4-heart-keychain.jpg' || id.includes('heart-keychain') || id.includes('purple-heart')) return coverHeartKeychain;
     if (imgName === 'gallery-3-couple-embroidery.jpg' || id.includes('couple-embroidery') || id.includes('middle-frame')) return coverCoupleEmbroidery;
     if (imgName === 'gallery-5-child-frame.jpg' || id.includes('child-frame') || id.includes('wooden-frame')) return coverChildFrame;
-    if (imgName === 'bloom-bouquets-cover.jpg' || id.includes('bloom-bouquets') || cat === 'craftoria-bloom-bouquets') return coverBouquets;
+    if (imgName === 'seller-bloom-bouquets.png' || id.includes('custom-bloom-bouquet')) return sellerBloomBouquets;
+    if (imgName === 'bloom-bouquets-cover.jpg' || cat === 'craftoria-bloom-bouquets') return coverBouquets;
     if (imgName === 'macrame-wall-hanging.jpg' || cat === 'handmade-decor') return coverMacrame;
     if (imgName === 'clips-rubber-bands.jpg' || cat === 'clips-rubber-bands' || cat === 'accessories') return coverClips;
     if (imgName === 'polaroids-new.jpg' || cat === 'polaroids') return coverPolaroids;
     if (imgName === 'seller-bloom-keychains.png' || cat === 'keychains') return sellerBloomKeychains;
     if (imgName === 'seller-embroidery-hoop.png' || cat === 'embroidery') return sellerEmbroideryHoop;
-    if (imgName === 'seller-bloom-bouquets.png') return sellerBloomBouquets;
     if (imgName === 'seller-memory-canvas.png' || cat === 'photo-frames') return sellerMemoryCanvas;
     return sellerMemoryCanvas;
   };

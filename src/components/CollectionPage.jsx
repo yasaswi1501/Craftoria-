@@ -25,6 +25,9 @@ import coverHeartKeychain from '../assets/gallery-4-heart-keychain.jpg';
 import embroideryShirt from '../assets/embroidery-shirt.jpg';
 import fridgeMagnets from '../assets/fridge-magnets.jpg';
 import flowerVase from '../assets/flower-vase.jpg';
+import bouquet1Flower from '../assets/bouquet-1-flower.jpg';
+import bouquet3Flower from '../assets/bouquet-3-flower.jpg';
+import bouquet5Flower from '../assets/bouquet-5-flower.jpg';
 
 const CollectionPage = ({ collectionId }) => {
   const { navigate } = useRouter();
@@ -46,7 +49,7 @@ const CollectionPage = ({ collectionId }) => {
   const [onlyInStock, setOnlyInStock] = useState(false);
   const [onlyCustomizable, setOnlyCustomizable] = useState(false);
   const [minRating, setMinRating] = useState(0);
-  const [sortBy, setSortBy] = useState('popularity'); // 'popularity' | 'newest' | 'rating' | 'alpha'
+  const [sortBy, setSortBy] = useState('featured'); // 'featured' | 'popularity' | 'newest' | 'rating' | 'alpha'
 
   const targetCategory = collectionId === 'clips-rubber-bands' ? 'accessories' : collectionId;
 
@@ -57,7 +60,7 @@ const CollectionPage = ({ collectionId }) => {
     setOnlyInStock(false);
     setOnlyCustomizable(false);
     setMinRating(0);
-    setSortBy('popularity');
+    setSortBy('featured');
   }, [collectionId]);
 
   // Load collection metadata
@@ -76,6 +79,9 @@ const CollectionPage = ({ collectionId }) => {
     const cat = (product?.category || '').toLowerCase();
     const imgName = product?.thumbnail || product?.image || '';
 
+    if (imgName === 'bouquet-1-flower.jpg' || id === 'bloom-bouquet-1-flower') return bouquet1Flower;
+    if (imgName === 'bouquet-3-flower.jpg' || id === 'bloom-bouquet-3-flower') return bouquet3Flower;
+    if (imgName === 'bouquet-5-flower.jpg' || id === 'bloom-bouquet-5-flower') return bouquet5Flower;
     if (imgName === 'embroidery-shirt.jpg' || id.includes('shirt')) return embroideryShirt;
     if (imgName === 'fridge-magnets.jpg' || id.includes('magnet')) return fridgeMagnets;
     if (imgName === 'flower-vase.jpg' || id.includes('vase')) return flowerVase;
@@ -83,7 +89,8 @@ const CollectionPage = ({ collectionId }) => {
     if (imgName === 'gallery-4-heart-keychain.jpg' || id.includes('heart-keychain') || id.includes('purple-heart')) return coverHeartKeychain;
     if (imgName === 'gallery-3-couple-embroidery.jpg' || id.includes('couple-embroidery') || id.includes('middle-frame')) return coverCoupleEmbroidery;
     if (imgName === 'gallery-5-child-frame.jpg' || id.includes('child-frame') || id.includes('wooden-frame')) return coverChildFrame;
-    if (imgName === 'bloom-bouquets-cover.jpg' || id.includes('bloom-bouquets') || cat === 'craftoria-bloom-bouquets') return coverBouquets;
+    if (imgName === 'seller-bloom-bouquets.png' || id.includes('custom-bloom-bouquet')) return sellerBloomBouquets;
+    if (imgName === 'bloom-bouquets-cover.jpg' || cat === 'craftoria-bloom-bouquets') return coverBouquets;
     if (imgName === 'macrame-wall-hanging.jpg' || cat === 'handmade-decor') return coverMacrame;
     if (imgName === 'clips-rubber-bands.jpg' || cat === 'clips-rubber-bands' || cat === 'accessories') return coverClips;
     if (imgName === 'polaroids-new.jpg' || cat === 'polaroids') return coverPolaroids;
@@ -142,6 +149,7 @@ const CollectionPage = ({ collectionId }) => {
     } else if (sortBy === 'alpha') {
       result.sort((a, b) => a.title.localeCompare(b.title));
     }
+    // if sortBy === 'featured', maintain catalog array order
 
     return result;
   }, [collectionId, searchQuery, onlyInStock, onlyCustomizable, minRating, selectedTags, sortBy]);
@@ -231,6 +239,7 @@ const CollectionPage = ({ collectionId }) => {
               onChange={(e) => setSortBy(e.target.value)}
               className="bg-white border border-brand-purple/15 rounded-full px-3.5 py-1.5 h-9 font-semibold text-brand-dark/85 cursor-pointer text-xs focus:outline-none"
             >
+              <option value="featured">Featured / Catalog</option>
               <option value="popularity">Popularity</option>
               <option value="newest">Newest</option>
               <option value="rating">Customer Rating</option>
