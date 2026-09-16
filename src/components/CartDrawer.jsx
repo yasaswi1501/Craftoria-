@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ShoppingBag, Plus, Minus, Trash2, ShieldCheck, MessageCircle } from 'lucide-react';
+import { X, ShoppingBag, Plus, Minus, Trash2, ShieldCheck, MessageCircle, Sparkles } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useRouter } from '../context/RouterContext';
 import { redirectToWhatsApp } from '../utils/whatsapp';
@@ -191,8 +191,35 @@ const CartDrawer = () => {
                           <h4 className="font-serif text-xs font-bold text-brand-dark leading-tight mt-0.5 mb-1 line-clamp-1">
                             {item.name}
                           </h4>
+
+                          {/* Customization Details Badges */}
+                          {(item.customText || item.customization) && (
+                            <div className="bg-brand-purple/10 border border-brand-purple/15 rounded-xl p-2 my-1 text-[10px] space-y-1 text-left">
+                              <div className="flex items-center gap-1 font-bold text-brand-plum">
+                                <Sparkles className="w-3 h-3" />
+                                <span>Personalized:</span>
+                                <span className="font-semibold text-brand-dark italic">"{item.customText || item.customization?.text}"</span>
+                              </div>
+                              {item.customization?.colorTheme && (
+                                <div className="text-brand-dark/75 text-[9px]">
+                                  <span className="font-semibold">Palette:</span> {item.customization.colorTheme}
+                                </div>
+                              )}
+                              {item.customization?.occasion && (
+                                <div className="text-brand-dark/75 text-[9px]">
+                                  <span className="font-semibold">Occasion:</span> {item.customization.occasion}
+                                </div>
+                              )}
+                              {item.customization?.giftNote && (
+                                <div className="text-brand-dark/75 text-[9px] line-clamp-1">
+                                  <span className="font-semibold">Gift Note:</span> "{item.customization.giftNote}"
+                                </div>
+                              )}
+                            </div>
+                          )}
+
                           {/* Save & Remove tiny controls */}
-                          <div className="flex gap-3.5 mt-2 mb-3">
+                          <div className="flex gap-3.5 mt-1.5 mb-2">
                             <button
                               onClick={() => saveForLater(item.id)}
                               className="text-[9px] font-bold text-brand-plum hover:underline cursor-pointer focus:outline-none"

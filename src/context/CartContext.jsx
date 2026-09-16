@@ -159,12 +159,28 @@ export const CartProvider = ({ children }) => {
     const productName = product.name || product.title || 'Product';
     const productDesc = product.desc || product.description || '';
     const productImage = product.image || product.thumbnail || '';
-    const productId = product.id;
+    const rawProductId = product.productId || product.id;
+    const customText = product.customText || product.customization?.text;
+    const customization = product.customization;
+
+    // Helper to check if item matches existing line item
+    const isMatchingItem = (item) => {
+      const itemProdId = item.productId || item.id;
+      if (itemProdId !== rawProductId) return false;
+      if (!customization && !item.customization && !customText && !item.customText) return true;
+      const textMatch = (item.customText || item.customization?.text || '') === (customText || '');
+      const themeMatch = (item.customization?.colorTheme || '') === (customization?.colorTheme || '');
+      const occMatch = (item.customization?.occasion || '') === (customization?.occasion || '');
+      const noteMatch = (item.customization?.giftNote || '') === (customization?.giftNote || '');
+      const packMatch = (item.customization?.packaging || '') === (customization?.packaging || '');
+      const specMatch = (item.customization?.specialNotes || '') === (customization?.specialNotes || '');
+      return textMatch && themeMatch && occMatch && noteMatch && packMatch && specMatch;
+    };
 
     // 1. Update local cart state & storage immediately (Optimistic / Always-Available)
     let isNewItem = false;
     setCart((prevCart) => {
-      const existingIndex = prevCart.findIndex((item) => item.id === productId);
+      const existingIndex = prevCart.findIndex(isMatchingItem);
       isNewItem = existingIndex === -1;
       let updated;
       if (!isNewItem) {
@@ -172,16 +188,22 @@ export const CartProvider = ({ children }) => {
           idx === existingIndex ? { ...item, quantity: item.quantity + addQty } : item
         );
       } else {
+        const lineItemId = (customization || customText)
+          ? `${rawProductId}_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 5)}`
+          : rawProductId;
+
         updated = [
           ...prevCart,
           {
-            id: productId,
+            id: lineItemId,
+            productId: rawProductId,
             name: productName,
             price: productPrice,
             desc: productDesc,
             quantity: addQty,
             image: productImage,
-            customText: product.customText,
+            customText: customText,
+            customization: customization,
           },
         ];
       }
@@ -200,7 +222,7 @@ export const CartProvider = ({ children }) => {
     if (isLoggedIn) {
       try {
         const variantMap = await getVariantMap();
-        const variantId = variantMap.get(productId);
+        const variantId = variantMap.get(rawProductId);
         if (variantId) {
           await supabase.rpc('cart_add_item', {
             p_variant_id: variantId,
@@ -335,14 +357,16 @@ export const CartProvider = ({ children }) => {
     });
   };
 
-  const removeFromCart = async (productId) => {
-    const updated = cart.filter((item) => item.id !== productId);
+  const removeFromCart = async (lineItemId) => {
+    const targetItem = cart.find((item) => item.id === lineItemId);
+    const updated = cart.filter((item) => item.id !== lineItemId);
     saveCartToStorage(updated);
 
     if (isLoggedIn) {
       try {
+        const rawId = targetItem?.productId || lineItemId;
         const variantMap = await getVariantMap();
-        const variantId = variantMap.get(productId);
+        const variantId = variantMap.get(rawId);
         if (variantId) {
           await supabase.rpc('cart_remove_item', { p_variant_id: variantId });
         }
@@ -352,22 +376,24 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  const updateQuantity = async (productId, newQuantity) => {
+  const updateQuantity = async (lineItemId, newQuantity) => {
     const parsedQty = parseInt(newQuantity, 10);
     if (isNaN(parsedQty) || parsedQty <= 0) {
-      removeFromCart(productId);
+      removeFromCart(lineItemId);
       return;
     }
 
+    const targetItem = cart.find((item) => item.id === lineItemId);
     const updated = cart.map((item) =>
-      item.id === productId ? { ...item, quantity: parsedQty } : item
+      item.id === lineItemId ? { ...item, quantity: parsedQty } : item
     );
     saveCartToStorage(updated);
 
     if (isLoggedIn) {
       try {
+        const rawId = targetItem?.productId || lineItemId;
         const variantMap = await getVariantMap();
-        const variantId = variantMap.get(productId);
+        const variantId = variantMap.get(rawId);
         if (variantId) {
           await supabase.rpc('cart_set_item_quantity', {
             p_variant_id: variantId,

@@ -16,8 +16,24 @@ export const generateWhatsAppOrderMessage = (cart, addressDetails = null, delive
 
   cart.forEach((item, index) => {
     text += `${index + 1}. *${item.name}* (Qty: ${item.quantity})\n`;
-    if (item.customText) {
-      text += `   ✍️ _Personalization: ${item.customText}_\n`;
+    const custText = item.customText || item.customization?.text;
+    if (custText) {
+      text += `   ✍️ _Personalization: ${custText}_\n`;
+    }
+    if (item.customization?.colorTheme) {
+      text += `   🎨 _Color Theme: ${item.customization.colorTheme}_\n`;
+    }
+    if (item.customization?.occasion) {
+      text += `   🎁 _Occasion: ${item.customization.occasion}_\n`;
+    }
+    if (item.customization?.packaging) {
+      text += `   📦 _Packaging: ${item.customization.packaging}_\n`;
+    }
+    if (item.customization?.giftNote) {
+      text += `   💌 _Gift Note: "${item.customization.giftNote}"_\n`;
+    }
+    if (item.customization?.specialNotes) {
+      text += `   📝 _Special Instructions: "${item.customization.specialNotes}"_\n`;
     }
   });
 
@@ -38,6 +54,7 @@ export const generateWhatsAppOrderMessage = (cart, addressDetails = null, delive
     text += `• *Shipping Option:* ${deliveryOption === 'express' ? 'Express Delivery (1–2 Days)' : 'Standard Delivery (3–5 Days)'}\n`;
   }
 
+  text += `\n📸 *Photo / Reference Attachments:* If you have reference photos, polaroid pictures, or custom sketches, please attach them directly in this WhatsApp chat!\n`;
   text += `\n💬 *Message:* Hi Craftoria! I would like to proceed with the payment and place an order for the above handcrafted items. Please share the pricing and payment details! ✨`;
 
   return text;

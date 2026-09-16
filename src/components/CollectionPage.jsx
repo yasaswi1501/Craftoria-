@@ -8,6 +8,7 @@ import { useRouter } from '../context/RouterContext';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { productsData, collectionsData } from '../data/products';
+import CustomizationModal from './CustomizationModal';
 
 import sellerMemoryCanvas from '../assets/seller-memory-canvas.png';
 import sellerEmbroideryHoop from '../assets/seller-embroidery-hoop.png';
@@ -22,6 +23,10 @@ const CollectionPage = ({ collectionId }) => {
   const { navigate } = useRouter();
   const { addToCart, cart, updateQuantity } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
+
+  // Customization modal state
+  const [customizingProduct, setCustomizingProduct] = useState(null);
+  const [isCustomizeOpen, setIsCustomizeOpen] = useState(false);
 
   // Mobile filter drawer visibility
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
@@ -409,69 +414,85 @@ const CollectionPage = ({ collectionId }) => {
                           <span className="text-[9px] font-bold text-brand-dark/50">({product.reviewCount})</span>
                         </div>
 
-                        {/* Direct purchase row - ONLY Add to Cart */}
-                        <div className="flex gap-2 mt-auto pt-2 border-t border-brand-purple/10">
-                          {/* Add to Cart button / Quantity stepper */}
-                          {cartQty > 0 ? (
-                            <div className="flex-grow inline-flex items-center justify-between rounded-full bg-brand-plum text-white h-8 px-1 shadow-xs">
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  updateQuantity(product.id, cartQty - 1);
-                                }}
-                                className="w-6 h-6 rounded-full flex items-center justify-center hover:bg-white/20 cursor-pointer focus:outline-none"
-                                aria-label="Decrease quantity"
-                              >
-                                <Minus className="w-3 h-3" />
-                              </button>
-                              <span className="text-[10px] font-bold min-w-[1.25rem] text-center">{cartQty}</span>
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  updateQuantity(product.id, cartQty + 1);
-                                }}
-                                className="w-6 h-6 rounded-full flex items-center justify-center hover:bg-white/20 cursor-pointer focus:outline-none"
-                                aria-label="Increase quantity"
-                              >
-                                <Plus className="w-3 h-3" />
-                              </button>
-                            </div>
-                          ) : (
-                            <button
-                              onClick={(e) => handleAddToCart({
-                                id: product.id,
-                                name: product.title,
-                                price: product.price,
-                                desc: product.description,
-                                image: product.thumbnail
-                              }, e)}
-                              className="flex-grow inline-flex items-center justify-center gap-1.5 py-2 rounded-full bg-brand-plum hover:bg-brand-violet text-white text-[9px] font-bold uppercase tracking-wider h-8 shadow-xs cursor-pointer"
-                            >
-                              {isAdded ? (
-                                <>
-                                  <Check className="w-3 h-3" />
-                                  <span>Added</span>
-                                </>
-                              ) : (
-                                <>
-                                  <ShoppingBag className="w-3 h-3" />
-                                  <span>Add to Cart</span>
-                                </>
-                              )}
-                            </button>
-                          )}
-
-                          {/* View details button */}
+                        {/* Action buttons row */}
+                        <div className="flex flex-col gap-2 mt-auto pt-2.5 border-t border-brand-purple/10">
+                          {/* 1. Primary Customize button */}
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
-                              navigate(`/product/${product.slug}`);
+                              setCustomizingProduct(product);
+                              setIsCustomizeOpen(true);
                             }}
-                            className="p-2 rounded-full border border-brand-purple/20 text-brand-plum hover:bg-brand-purple/10 flex items-center justify-center h-8 w-8 cursor-pointer focus:outline-none"
-                            title="View Product details"
+                            className="w-full inline-flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-full bg-gradient-to-r from-brand-plum to-brand-violet hover:from-brand-violet hover:to-brand-plum text-white text-[10px] font-bold uppercase tracking-wider h-8 shadow-xs cursor-pointer transition-all duration-300 hover:shadow-md"
                           >
-                            <Eye className="w-3.5 h-3.5" />
+                            <Sparkles className="w-3 h-3 text-amber-200" />
+                            <span>Customize Product</span>
                           </button>
+
+                          {/* 2. Quick Add / Stepper + Details Row */}
+                          <div className="flex gap-2">
+                            {/* Add to Cart button / Quantity stepper */}
+                            {cartQty > 0 ? (
+                              <div className="flex-grow inline-flex items-center justify-between rounded-full bg-brand-plum/90 text-white h-7 px-1 shadow-xs">
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    updateQuantity(product.id, cartQty - 1);
+                                  }}
+                                  className="w-5 h-5 rounded-full flex items-center justify-center hover:bg-white/20 cursor-pointer focus:outline-none"
+                                  aria-label="Decrease quantity"
+                                >
+                                  <Minus className="w-2.5 h-2.5" />
+                                </button>
+                                <span className="text-[10px] font-bold min-w-[1.25rem] text-center">{cartQty}</span>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    updateQuantity(product.id, cartQty + 1);
+                                  }}
+                                  className="w-5 h-5 rounded-full flex items-center justify-center hover:bg-white/20 cursor-pointer focus:outline-none"
+                                  aria-label="Increase quantity"
+                                >
+                                  <Plus className="w-2.5 h-2.5" />
+                                </button>
+                              </div>
+                            ) : (
+                              <button
+                                onClick={(e) => handleAddToCart({
+                                  id: product.id,
+                                  name: product.title,
+                                  price: product.price,
+                                  desc: product.description,
+                                  image: product.thumbnail
+                                }, e)}
+                                className="flex-grow inline-flex items-center justify-center gap-1 py-1 px-2 rounded-full border border-brand-purple/25 bg-white hover:bg-brand-purple/10 text-brand-plum text-[9px] font-bold uppercase tracking-wider h-7 shadow-2xs cursor-pointer transition-colors"
+                              >
+                                {isAdded ? (
+                                  <>
+                                    <Check className="w-2.5 h-2.5 text-emerald-600" />
+                                    <span className="text-emerald-600">Added</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <ShoppingBag className="w-2.5 h-2.5" />
+                                    <span>Quick Add</span>
+                                  </>
+                                )}
+                              </button>
+                            )}
+
+                            {/* View details button */}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigate(`/product/${product.slug}`);
+                              }}
+                              className="p-1.5 rounded-full border border-brand-purple/20 text-brand-plum hover:bg-brand-purple/10 flex items-center justify-center h-7 w-7 cursor-pointer focus:outline-none flex-shrink-0"
+                              title="View Product details"
+                            >
+                              <Eye className="w-3 h-3" />
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </motion.div>
@@ -592,6 +613,16 @@ const CollectionPage = ({ collectionId }) => {
           </div>
         )}
       </AnimatePresence>
+
+      {/* 4. CUSTOMIZATION MODAL */}
+      <CustomizationModal
+        isOpen={isCustomizeOpen}
+        onClose={() => {
+          setIsCustomizeOpen(false);
+          setCustomizingProduct(null);
+        }}
+        product={customizingProduct}
+      />
 
     </div>
   );

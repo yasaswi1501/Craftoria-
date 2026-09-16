@@ -1216,21 +1216,49 @@ const Checkout = () => {
                     {cart.map(item => {
                       const img = getProductImage(item);
                       return (
-                        <div key={item.id} className="flex justify-between items-center bg-white/50 p-2.5 rounded-xl border border-brand-purple/5">
-                          <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 rounded-lg bg-white border border-brand-purple/10 overflow-hidden flex-shrink-0 flex items-center justify-center p-1">
-                              {img ? (
-                                <img src={img} alt={item.name} className="w-full h-full object-contain" />
-                              ) : (
-                                <ShoppingBag className="w-4 h-4 text-brand-plum/50" />
+                        <div key={item.id} className="flex flex-col gap-2 bg-white/60 p-3 rounded-2xl border border-brand-purple/10 text-left">
+                          <div className="flex justify-between items-start gap-3">
+                            <div className="flex items-center gap-3">
+                              <div className="w-12 h-12 rounded-xl bg-white border border-brand-purple/10 overflow-hidden flex-shrink-0 flex items-center justify-center p-1">
+                                {img ? (
+                                  <img src={img} alt={item.name} className="w-full h-full object-contain" />
+                                ) : (
+                                  <ShoppingBag className="w-4 h-4 text-brand-plum/50" />
+                                )}
+                              </div>
+                              <div className="flex flex-col">
+                                <span className="font-serif font-bold text-brand-dark text-xs sm:text-sm">{item.name}</span>
+                                <span className="text-[10px] text-brand-dark/70 mt-0.5 font-mono">Qty: {item.quantity}</span>
+                              </div>
+                            </div>
+                            <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100 flex-shrink-0">
+                              Custom Crafted
+                            </span>
+                          </div>
+
+                          {/* Customization Details Sub-card */}
+                          {(item.customText || item.customization) && (
+                            <div className="bg-brand-purple/10 border border-brand-purple/15 rounded-xl p-2.5 text-[10px] space-y-1 text-brand-dark/85">
+                              <div className="font-semibold text-brand-plum">
+                                ✍️ <strong>Personalization:</strong> <span className="italic">"{item.customText || item.customization?.text}"</span>
+                              </div>
+                              {item.customization?.colorTheme && (
+                                <div>🎨 <strong>Palette:</strong> {item.customization.colorTheme}</div>
+                              )}
+                              {item.customization?.occasion && (
+                                <div>🎁 <strong>Occasion:</strong> {item.customization.occasion}</div>
+                              )}
+                              {item.customization?.packaging && (
+                                <div>📦 <strong>Packaging:</strong> {item.customization.packaging}</div>
+                              )}
+                              {item.customization?.giftNote && (
+                                <div>💌 <strong>Gift Note:</strong> "{item.customization.giftNote}"</div>
+                              )}
+                              {item.customization?.specialNotes && (
+                                <div>📝 <strong>Artisan Notes:</strong> "{item.customization.specialNotes}"</div>
                               )}
                             </div>
-                            <div className="flex flex-col">
-                              <span className="font-serif font-bold text-brand-dark">{item.name}</span>
-                              <span className="text-[10px] text-brand-dark/70 mt-0.5">Quantity: {item.quantity}</span>
-                            </div>
-                          </div>
-                          <span className="text-[11px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">Ready</span>
+                          )}
                         </div>
                       );
                     })}

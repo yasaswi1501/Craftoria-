@@ -4,6 +4,7 @@ import { Heart, ShoppingBag, Trash, ArrowLeft, Check, Sparkles, Minus, Plus } fr
 import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
 import { useRouter } from '../context/RouterContext';
+import CustomizationModal from './CustomizationModal';
 
 import sellerMemoryCanvas from '../assets/seller-memory-canvas.png';
 import sellerEmbroideryHoop from '../assets/seller-embroidery-hoop.png';
@@ -23,6 +24,8 @@ const Wishlist = () => {
   const { addToCart, cart, updateQuantity } = useCart();
   const { navigate } = useRouter();
   const [cartStates, setCartStates] = useState({}); // { productId: boolean }
+  const [customizingProduct, setCustomizingProduct] = useState(null);
+  const [isCustomizeOpen, setIsCustomizeOpen] = useState(false);
 
   const getProductImage = (id, savedImage) => {
     const rawId = (id || '').toLowerCase();
@@ -159,54 +162,77 @@ const Wishlist = () => {
                   </div>
 
                   {/* Actions */}
-                  {cartQty > 0 ? (
-                    <div
-                      onClick={(e) => e.stopPropagation()}
-                      className="w-full mt-auto inline-flex items-center justify-between rounded-full bg-brand-plum text-white h-10 px-2"
-                    >
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          updateQuantity(item.id, cartQty - 1);
-                        }}
-                        className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-white/20 cursor-pointer focus:outline-none"
-                        aria-label="Decrease quantity"
-                      >
-                        <Minus className="w-3.5 h-3.5" />
-                      </button>
-                      <span className="text-xs font-bold min-w-[1.5rem] text-center">{cartQty}</span>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          updateQuantity(item.id, cartQty + 1);
-                        }}
-                        className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-white/20 cursor-pointer focus:outline-none"
-                        aria-label="Increase quantity"
-                      >
-                        <Plus className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  ) : (
+                  <div className="flex flex-col gap-2 mt-auto">
+                    {/* Primary Customize Button */}
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleAddToCart(item);
+                        setCustomizingProduct({
+                          id: item.id,
+                          title: item.name,
+                          name: item.name,
+                          description: item.desc,
+                          desc: item.desc,
+                          thumbnail: item.image,
+                          image: item.image,
+                        });
+                        setIsCustomizeOpen(true);
                       }}
-                      className="w-full mt-auto inline-flex items-center justify-center gap-2 py-2.5 rounded-full bg-brand-plum hover:bg-brand-violet text-white font-semibold text-[10px] sm:text-xs uppercase tracking-widest hover:shadow-md transition-all duration-300 cursor-pointer h-10"
+                      className="w-full inline-flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-full bg-gradient-to-r from-brand-plum to-brand-violet hover:from-brand-violet hover:to-brand-plum text-white text-[10px] font-bold uppercase tracking-wider h-8 shadow-xs cursor-pointer transition-all duration-300 hover:shadow-md"
                     >
-                      {cartStates[item.id] ? (
-                        <>
-                          <Check className="w-3.5 h-3.5 animate-pulse" />
-                          <span>Added!</span>
-                        </>
-                      ) : (
-                        <>
-                          <ShoppingBag className="w-3.5 h-3.5" />
-                          <span>Add to Cart</span>
-                        </>
-                      )}
+                      <Sparkles className="w-3 h-3 text-amber-200" />
+                      <span>Customize Product</span>
                     </button>
-                  )}
+
+                    {cartQty > 0 ? (
+                      <div
+                        onClick={(e) => e.stopPropagation()}
+                        className="w-full inline-flex items-center justify-between rounded-full bg-brand-plum/90 text-white h-8 px-2"
+                      >
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            updateQuantity(item.id, cartQty - 1);
+                          }}
+                          className="w-6 h-6 rounded-full flex items-center justify-center hover:bg-white/20 cursor-pointer focus:outline-none"
+                          aria-label="Decrease quantity"
+                        >
+                          <Minus className="w-3 h-3" />
+                        </button>
+                        <span className="text-xs font-bold min-w-[1.5rem] text-center">{cartQty}</span>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            updateQuantity(item.id, cartQty + 1);
+                          }}
+                          className="w-6 h-6 rounded-full flex items-center justify-center hover:bg-white/20 cursor-pointer focus:outline-none"
+                          aria-label="Increase quantity"
+                        >
+                          <Plus className="w-3 h-3" />
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleAddToCart(item);
+                        }}
+                        className="w-full inline-flex items-center justify-center gap-1.5 py-1.5 rounded-full border border-brand-purple/25 bg-white hover:bg-brand-purple/10 text-brand-plum font-semibold text-[10px] uppercase tracking-wider transition-colors cursor-pointer h-8 shadow-2xs"
+                      >
+                        {cartStates[item.id] ? (
+                          <>
+                            <Check className="w-3 h-3 text-emerald-600" />
+                            <span className="text-emerald-600">Added!</span>
+                          </>
+                        ) : (
+                          <>
+                            <ShoppingBag className="w-3 h-3" />
+                            <span>Quick Add</span>
+                          </>
+                        )}
+                      </button>
+                    )}
+                  </div>
                 </div>
               </motion.div>
               );
@@ -214,6 +240,16 @@ const Wishlist = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Customization Modal */}
+      <CustomizationModal
+        isOpen={isCustomizeOpen}
+        onClose={() => {
+          setIsCustomizeOpen(false);
+          setCustomizingProduct(null);
+        }}
+        product={customizingProduct}
+      />
     </div>
   );
 };
