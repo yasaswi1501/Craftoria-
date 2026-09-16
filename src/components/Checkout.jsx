@@ -442,37 +442,37 @@ const Checkout = () => {
   // No logged-out gate needed here: App.jsx's route guard never mounts
   // Checkout unless the user is authenticated.
   return (
-    <div className="min-h-screen bg-[#FDFBFD] pt-24 pb-16 px-4 sm:px-6 lg:px-8 text-brand-dark max-w-[1250px] mx-auto">
+    <div className="min-h-screen bg-[#FDFBFD] pt-20 sm:pt-24 pb-16 px-3.5 sm:px-6 lg:px-8 text-brand-dark max-w-[1250px] mx-auto overflow-x-hidden">
       {/* Checkout Header */}
-      <div className="text-center mb-8">
+      <div className="text-center mb-6 sm:mb-8">
         <span className="text-[10px] font-bold uppercase tracking-widest text-brand-plum">Secure Checkout</span>
-        <h1 className="font-serif text-3xl font-bold mt-1 text-brand-dark">Craftoria</h1>
+        <h1 className="font-serif text-2xl sm:text-3xl font-bold mt-1 text-brand-dark">Craftoria</h1>
         
         {/* Step progress bar indicator */}
-        <div className="flex items-center justify-center gap-2 sm:gap-4 mt-6 text-xs font-semibold uppercase tracking-wider text-brand-dark/50 select-none">
+        <div className="flex items-center justify-center gap-1 sm:gap-4 mt-4 sm:mt-6 text-[10px] sm:text-xs font-semibold uppercase tracking-tight sm:tracking-wider text-brand-dark/50 select-none overflow-x-auto no-scrollbar py-1">
           <span 
-            className={`cursor-pointer transition-colors ${activeStep === 'address' ? 'text-brand-plum font-bold' : 'hover:text-brand-plum'}`}
+            className={`cursor-pointer transition-colors flex-shrink-0 ${activeStep === 'address' ? 'text-brand-plum font-bold' : 'hover:text-brand-plum'}`}
             onClick={() => goToStep('address')}
           >
             1. Address
           </span>
-          <span className="opacity-35">➔</span>
+          <span className="opacity-35 flex-shrink-0">➔</span>
           <span 
-            className={`transition-colors ${selectedAddressId ? 'cursor-pointer hover:text-brand-plum' : 'cursor-not-allowed'} ${activeStep === 'payment' ? 'text-brand-plum font-bold' : ''}`}
+            className={`transition-colors flex-shrink-0 ${selectedAddressId ? 'cursor-pointer hover:text-brand-plum' : 'cursor-not-allowed'} ${activeStep === 'payment' ? 'text-brand-plum font-bold' : ''}`}
             onClick={() => selectedAddressId && goToStep('payment')}
           >
             2. Payment
           </span>
-          <span className="opacity-35">➔</span>
+          <span className="opacity-35 flex-shrink-0">➔</span>
           <span 
-            className={`transition-colors ${(selectedAddressId && upiVerified) || (selectedAddressId && paymentMethod !== 'upi') ? 'cursor-pointer hover:text-brand-plum' : 'cursor-not-allowed'} ${activeStep === 'review' ? 'text-brand-plum font-bold' : ''}`}
+            className={`transition-colors flex-shrink-0 ${(selectedAddressId && upiVerified) || (selectedAddressId && paymentMethod !== 'upi') ? 'cursor-pointer hover:text-brand-plum' : 'cursor-not-allowed'} ${activeStep === 'review' ? 'text-brand-plum font-bold' : ''}`}
             onClick={() => selectedAddressId && goToStep('review')}
           >
             3. Review
           </span>
-          <span className="opacity-35">➔</span>
-          <span className={`${activeStep === 'success' ? 'text-brand-plum font-bold' : ''}`}>
-            4. Confirmation
+          <span className="opacity-35 flex-shrink-0">➔</span>
+          <span className={`flex-shrink-0 ${activeStep === 'success' ? 'text-brand-plum font-bold' : ''}`}>
+            4. Confirm
           </span>
         </div>
       </div>

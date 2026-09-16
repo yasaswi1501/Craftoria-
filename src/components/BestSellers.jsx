@@ -113,7 +113,7 @@ const BestSellers = () => {
   );
 
   return (
-    <section id="bestsellers" className="py-24 px-6 relative overflow-hidden bg-transparent">
+    <section id="bestsellers" className="py-16 sm:py-24 px-4 sm:px-6 relative overflow-hidden bg-transparent">
       {/* Decorative Lavender Floral Illustrations */}
       <div className="absolute inset-0 pointer-events-none select-none z-0">
         {/* Top-right corner blossom */}
@@ -130,19 +130,19 @@ const BestSellers = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-40px" }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="text-center mb-16"
+          className="text-center mb-10 sm:mb-16"
         >
           <span className="text-[10px] sm:text-xs font-bold text-brand-plum/85 uppercase tracking-[0.18em] block mb-2 font-mono">
             ARTISAN CATALOG
           </span>
-          <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-brand-dark tracking-wide leading-tight">
+          <h2 className="font-serif text-2.5xl sm:text-4xl md:text-5xl font-bold text-brand-dark tracking-wide leading-tight">
             Explore Our Collections
           </h2>
-          <div className="w-16 h-0.5 bg-brand-purple/40 mx-auto mt-5" />
+          <div className="w-16 h-0.5 bg-brand-purple/40 mx-auto mt-4 sm:mt-5" />
         </motion.div>
 
         {/* Categories Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8">
           {collections.map((col, idx) => renderCard(col, idx))}
         </div>
       </div>

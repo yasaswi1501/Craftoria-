@@ -28,7 +28,7 @@ const Testimonials = () => {
   ];
 
   return (
-    <section id="testimonials" className="py-20 px-6 relative overflow-hidden border-t border-brand-purple/10">
+    <section id="testimonials" className="py-16 sm:py-20 px-4 sm:px-6 relative overflow-hidden border-t border-brand-purple/10">
       {/* Soft lavender watercolor band across the section */}
       <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-56 bg-gradient-to-r from-brand-lavender/15 via-brand-pink/20 to-brand-lavender/15 blur-[45px] -z-10 pointer-events-none" />
       
@@ -61,19 +61,19 @@ const Testimonials = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-40px" }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="text-center max-w-3xl mx-auto mb-16"
+          className="text-center max-w-3xl mx-auto mb-10 sm:mb-16"
         >
           <span className="text-xs font-semibold tracking-widest text-brand-plum uppercase block mb-2 font-mono">
             What Our Customers Say
           </span>
-          <h2 className="font-serif text-3xl sm:text-4xl font-bold text-brand-dark tracking-wide">
+          <h2 className="font-serif text-2.5xl sm:text-4xl font-bold text-brand-dark tracking-wide">
             Loved Across Homes
           </h2>
           <div className="w-12 h-0.5 bg-brand-purple mx-auto mt-4" />
         </motion.div>
 
         {/* Testimonials Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-8">
           {testimonials.map((test, idx) => (
             <motion.div
               key={test.name}
@@ -87,7 +87,7 @@ const Testimonials = () => {
                 boxShadow: "0 20px 35px -10px rgba(75, 46, 93, 0.16)",
                 transition: { duration: 0.25 } 
               }}
-              className="glass-card p-7 rounded-3xl relative flex flex-col justify-between h-full border border-brand-purple/15 text-left hover:border-brand-purple/35 transition-all duration-300"
+              className="glass-card p-5 sm:p-7 rounded-2xl sm:rounded-3xl relative flex flex-col justify-between h-full border border-brand-purple/15 text-left hover:border-brand-purple/35 transition-all duration-300"
             >
               {/* Quote Mark */}
               <div className="absolute top-6 left-6 text-brand-purple/15">

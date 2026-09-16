@@ -85,7 +85,7 @@ const Contact = () => {
   };
 
   return (
-    <section id="contact" className="py-24 px-6 relative overflow-hidden border-t border-brand-purple/10">
+    <section id="contact" className="py-16 sm:py-24 px-4 sm:px-6 relative overflow-hidden border-t border-brand-purple/10">
       {/* Section Background Washes */}
       <WatercolorWash
         className="w-[500px] h-[500px] -left-16 bottom-[-5%]"
@@ -117,7 +117,7 @@ const Contact = () => {
       />
 
       <div className="max-w-7xl mx-auto relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 items-center">
           
           {/* Left Column: Heading, Details & Direct Contacts */}
           <motion.div
@@ -125,12 +125,12 @@ const Contact = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-40px" }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="lg:col-span-5 text-left space-y-6 flex flex-col items-start"
+            className="lg:col-span-5 text-left space-y-4 sm:space-y-6 flex flex-col items-start"
           >
             <span className="text-xs font-semibold tracking-widest text-brand-plum uppercase font-mono">
               Bespoke Commission
             </span>
-            <h2 className="font-serif text-3xl sm:text-4.5xl font-bold leading-tight text-brand-dark">
+            <h2 className="font-serif text-2.5xl sm:text-4.5xl font-bold leading-tight text-brand-dark">
               Have a Custom <br className="hidden sm:inline" />
               Idea in Mind?
             </h2>
@@ -188,7 +188,7 @@ const Contact = () => {
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
             className="lg:col-span-7"
           >
-            <div className="glass-card p-6 sm:p-10 rounded-[32px] relative overflow-hidden border border-brand-purple/20 shadow-md">
+            <div className="glass-card p-5 sm:p-10 rounded-[24px] sm:rounded-[32px] relative overflow-hidden border border-brand-purple/20 shadow-md">
               <AnimatePresence mode="wait">
                 {!isSubmitted ? (
                   <motion.form

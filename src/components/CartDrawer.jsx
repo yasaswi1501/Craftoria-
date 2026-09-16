@@ -277,18 +277,18 @@ const CartDrawer = () => {
                                   updateQuantity(item.id, item.quantity - 1);
                                 }
                               }}
-                              className="w-5.5 h-5.5 rounded-full border border-brand-purple/30 flex items-center justify-center hover:bg-white transition-colors duration-200 cursor-pointer"
+                              className="w-7 h-7 sm:w-6 sm:h-6 rounded-full border border-brand-purple/30 flex items-center justify-center hover:bg-white transition-colors duration-200 cursor-pointer"
                               aria-label="Decrease quantity"
                             >
-                              <Minus className="w-3 h-3 text-brand-plum" />
+                              <Minus className="w-3.5 h-3.5 text-brand-plum" />
                             </button>
-                            <span className="text-xs font-bold w-5 text-center">{item.quantity}</span>
+                            <span className="text-xs font-bold w-6 text-center">{item.quantity}</span>
                             <button
                               onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                              className="w-5.5 h-5.5 rounded-full border border-brand-purple/30 flex items-center justify-center hover:bg-white transition-colors duration-200 cursor-pointer"
+                              className="w-7 h-7 sm:w-6 sm:h-6 rounded-full border border-brand-purple/30 flex items-center justify-center hover:bg-white transition-colors duration-200 cursor-pointer"
                               aria-label="Increase quantity"
                             >
-                              <Plus className="w-3 h-3 text-brand-plum" />
+                              <Plus className="w-3.5 h-3.5 text-brand-plum" />
                             </button>
                           </div>
                         </div>
@@ -356,7 +356,7 @@ const CartDrawer = () => {
 
         {/* Footer */}
         {cart.length > 0 && (
-          <div className="px-6 py-5 border-t border-brand-purple/15 bg-white/40 backdrop-blur-md flex flex-col gap-3 text-left">
+          <div className="px-4 sm:px-6 py-4 sm:py-5 border-t border-brand-purple/15 bg-white/60 backdrop-blur-md flex flex-col gap-3 text-left pb-safe flex-shrink-0">
             <div className="flex items-center justify-between text-xs font-semibold">
               <span className="text-brand-dark/75">Total Items:</span>
               <span className="text-sm font-bold text-brand-plum">{totalItemsCount} {totalItemsCount === 1 ? 'item' : 'items'}</span>
@@ -365,7 +365,7 @@ const CartDrawer = () => {
             <button
               onClick={handleProceedToPayment}
               disabled={cart.length === 0}
-              className="w-full inline-flex items-center justify-center gap-2 py-3 px-6 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs uppercase tracking-widest transition-all duration-300 cursor-pointer shadow-md hover:shadow-lg disabled:opacity-40 disabled:cursor-not-allowed"
+              className="w-full inline-flex items-center justify-center gap-2 py-3 px-6 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs uppercase tracking-widest transition-all duration-300 cursor-pointer shadow-md hover:shadow-lg disabled:opacity-40 disabled:cursor-not-allowed h-11"
             >
               <MessageCircle className="w-4 h-4" />
               <span>Proceed to Payment</span>

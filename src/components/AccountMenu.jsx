@@ -224,13 +224,13 @@ const AccountMenu = ({ isOpen, onClose, initialTab = 'menu' }) => {
         animate={{ x: 0 }}
         exit={{ x: '100%' }}
         transition={{ type: 'spring', damping: 25, stiffness: 220 }}
-        className="relative w-full max-w-md h-full bg-[#FCF8FC] border-l border-brand-purple/20 shadow-[0_0_50px_rgba(75,46,93,0.15)] flex flex-col z-10 text-brand-dark"
+        className="relative w-full max-w-md h-full bg-[#FCF8FC] border-l border-brand-purple/20 shadow-[0_0_50px_rgba(75,46,93,0.15)] flex flex-col z-10 text-brand-dark pb-safe"
       >
         {/* Header */}
-        <div className="px-6 py-5 border-b border-brand-purple/10 flex items-center justify-between">
+        <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-brand-purple/10 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <User className="w-5 h-5 text-brand-plum" />
-            <h2 className="font-serif text-lg font-bold">
+            <h2 className="font-serif text-base sm:text-lg font-bold">
               {activeTab === 'menu' && 'My Account'}
               {activeTab === 'profile' && 'My Profile'}
               {activeTab === 'orders' && 'My Orders'}
@@ -240,15 +240,15 @@ const AccountMenu = ({ isOpen, onClose, initialTab = 'menu' }) => {
           </div>
           <button
             onClick={onClose}
-            className="w-9 h-9 rounded-full bg-brand-lavender/35 hover:bg-brand-lavender flex items-center justify-center cursor-pointer transition-colors duration-200"
+            className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-brand-lavender/35 hover:bg-brand-lavender flex items-center justify-center cursor-pointer transition-colors duration-200"
             aria-label="Close account menu"
           >
-            <X className="w-5 h-5 text-brand-plum" />
+            <X className="w-4 h-4 sm:w-5 sm:h-5 text-brand-plum" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="flex-grow overflow-y-auto px-6 py-6 text-left">
+        <div className="flex-grow overflow-y-auto px-4 sm:px-6 py-5 sm:py-6 text-left no-scrollbar">
           {/* MENU TAB */}
           {activeTab === 'menu' && (
             <div className="flex flex-col h-full justify-between">
@@ -673,7 +673,7 @@ const AccountMenu = ({ isOpen, onClose, initialTab = 'menu' }) => {
                     />
                   </div>
 
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                     <div className="space-y-1">
                       <label className="text-[10px] font-bold text-brand-dark/80 block">City</label>
                       <input

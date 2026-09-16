@@ -74,9 +74,9 @@ const Wishlist = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#FDFBFD] pt-24 pb-16 px-4 sm:px-6 lg:px-8 text-brand-dark max-w-[1200px] mx-auto text-left">
+    <div className="min-h-screen bg-[#FDFBFD] pt-20 sm:pt-24 pb-12 sm:pb-16 px-3.5 sm:px-6 lg:px-8 text-brand-dark max-w-[1200px] mx-auto text-left">
       {/* Back Button to Home */}
-      <div className="mb-6">
+      <div className="mb-4 sm:mb-6">
         <a
           href="/"
           className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-plum hover:underline focus:outline-none"
@@ -85,13 +85,13 @@ const Wishlist = () => {
         </a>
       </div>
 
-      <div className="flex items-center justify-between border-b border-brand-purple/10 pb-4 mb-8">
+      <div className="flex items-center justify-between border-b border-brand-purple/10 pb-3 sm:pb-4 mb-6 sm:mb-8">
         <div>
-          <span className="text-[10px] font-bold uppercase tracking-widest text-brand-plum">Your Favorites</span>
-          <h1 className="font-serif text-3xl font-bold mt-1">My Wishlist</h1>
+          <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-brand-plum">Your Favorites</span>
+          <h1 className="font-serif text-2xl sm:text-3xl font-bold mt-0.5 sm:mt-1">My Wishlist</h1>
         </div>
         {wishlist.length > 0 && (
-          <span className="text-xs font-semibold bg-brand-purple/15 text-brand-plum px-3.5 py-1.5 rounded-full uppercase tracking-wider">
+          <span className="text-[11px] sm:text-xs font-semibold bg-brand-purple/15 text-brand-plum px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full uppercase tracking-wider">
             {wishlist.length} {wishlist.length === 1 ? 'Item' : 'Items'}
           </span>
         )}
@@ -103,18 +103,18 @@ const Wishlist = () => {
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.96 }}
-            className="flex flex-col items-center justify-center text-center py-20 bg-white/40 border border-brand-purple/10 rounded-[32px] p-6 max-w-lg mx-auto"
+            className="flex flex-col items-center justify-center text-center py-16 sm:py-20 bg-white/40 border border-brand-purple/10 rounded-[28px] sm:rounded-[32px] p-5 sm:p-6 max-w-lg mx-auto shadow-xs"
           >
-            <div className="w-16 h-16 rounded-full bg-brand-purple/10 flex items-center justify-center mb-5">
-              <Heart className="w-7 h-7 text-brand-plum/70" />
+            <div className="w-14 sm:w-16 h-14 sm:h-16 rounded-full bg-brand-purple/10 flex items-center justify-center mb-4 sm:mb-5">
+              <Heart className="w-6 sm:w-7 h-6 sm:h-7 text-brand-plum/70" />
             </div>
-            <h2 className="font-serif text-xl font-bold mb-2">Your Wishlist is empty</h2>
-            <p className="text-xs text-brand-dark/70 leading-relaxed mb-8 max-w-xs">
+            <h2 className="font-serif text-lg sm:text-xl font-bold mb-1.5">Your Wishlist is empty</h2>
+            <p className="text-xs text-brand-dark/70 leading-relaxed mb-6 sm:mb-8 max-w-xs">
               Save the handcrafted pieces you love and come back to them anytime.
             </p>
             <a
               href="/#collections"
-              className="px-8 py-3.5 rounded-full bg-brand-plum hover:bg-brand-violet text-white font-semibold text-xs uppercase tracking-widest hover:shadow-md transition-all duration-300"
+              className="px-6 sm:px-8 py-3 sm:py-3.5 rounded-full bg-brand-plum hover:bg-brand-violet text-white font-semibold text-xs uppercase tracking-widest hover:shadow-md transition-all duration-300"
             >
               Explore Collections
             </a>
@@ -124,7 +124,7 @@ const Wishlist = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-7"
+            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6 lg:gap-7"
           >
             {wishlist.map(item => {
               const cartQty = cart.find((c) => c.id === item.id)?.quantity || 0;
@@ -136,10 +136,10 @@ const Wishlist = () => {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.98 }}
                 onClick={() => navigate(`/product/${item.id}`)}
-                className="glass-card rounded-[24px] overflow-hidden flex flex-col group border border-brand-purple/20 shadow-sm relative bg-white/40 cursor-pointer"
+                className="glass-card rounded-[20px] sm:rounded-[24px] overflow-hidden flex flex-col group border border-brand-purple/20 shadow-xs hover:shadow-md relative bg-white/50 cursor-pointer transition-all"
               >
                 {/* Product Image */}
-                <div className="h-[145px] sm:h-[220px] w-full border-b border-brand-purple/10 overflow-hidden relative bg-gradient-to-tr from-[#FCF7FF] via-[#F3E7FA] to-[#E9D7F5] flex items-center justify-center p-4">
+                <div className="h-[135px] sm:h-[220px] w-full border-b border-brand-purple/10 overflow-hidden relative bg-gradient-to-tr from-[#FCF7FF] via-[#F3E7FA] to-[#E9D7F5] flex items-center justify-center p-2.5 sm:p-4">
                   <img
                     src={getProductImage(item.id, item.image)}
                     alt={item.name}
@@ -160,7 +160,7 @@ const Wishlist = () => {
                       e.stopPropagation();
                       removeFromWishlist(item.id);
                     }}
-                    className="absolute top-2.5 right-2.5 w-7 h-7 rounded-full bg-white/80 hover:bg-white border border-brand-purple/15 flex items-center justify-center shadow-xs cursor-pointer focus:outline-none"
+                    className="absolute top-2 right-2 sm:top-2.5 sm:right-2.5 w-7 h-7 rounded-full bg-white/80 hover:bg-white border border-brand-purple/15 flex items-center justify-center shadow-xs cursor-pointer focus:outline-none"
                     aria-label="Remove from wishlist"
                   >
                     <Trash className="w-3.5 h-3.5 text-red-500" />
@@ -168,20 +168,20 @@ const Wishlist = () => {
                 </div>
 
                 {/* Details */}
-                <div className="p-3 sm:p-5 flex flex-col flex-grow text-left">
-                  <span className="text-[8px] sm:text-[10px] font-semibold text-brand-plum/80 uppercase tracking-wider mb-0.5 sm:mb-1">
-                    {item.desc || 'HANDMADE ARTISAN PIECE'}
+                <div className="p-2.5 sm:p-5 flex flex-col flex-grow text-left">
+                  <span className="text-[7.5px] sm:text-[10px] font-semibold text-brand-plum/80 uppercase tracking-wider mb-0.5 sm:mb-1 truncate font-mono">
+                    {item.desc || 'ARTISAN PIECE'}
                   </span>
-                  <h3 className="font-serif text-base sm:text-lg font-bold text-brand-dark mb-1">
+                  <h3 className="font-serif text-xs sm:text-lg font-bold text-brand-dark mb-1 line-clamp-1">
                     {item.name}
                   </h3>
 
-                  <div className="text-xs font-semibold text-emerald-600 mb-3 flex items-center gap-1">
-                    <Sparkles className="w-3 h-3 text-emerald-500 animate-pulse" /> In Stock & Ready to Ship
+                  <div className="text-[9.5px] sm:text-xs font-semibold text-emerald-600 mb-2 sm:mb-3 flex items-center gap-1">
+                    <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-emerald-500 animate-pulse flex-shrink-0" /> <span className="truncate">In Stock</span>
                   </div>
 
                   {/* Actions */}
-                  <div className="flex flex-col gap-2 mt-auto">
+                  <div className="flex flex-col gap-1.5 sm:gap-2 mt-auto">
                     {/* Primary Customize Button */}
                     <button
                       onClick={(e) => {
@@ -197,37 +197,37 @@ const Wishlist = () => {
                         });
                         setIsCustomizeOpen(true);
                       }}
-                      className="w-full inline-flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-full bg-gradient-to-r from-brand-plum to-brand-violet hover:from-brand-violet hover:to-brand-plum text-white text-[10px] font-bold uppercase tracking-wider h-8 shadow-xs cursor-pointer transition-all duration-300 hover:shadow-md"
+                      className="w-full inline-flex items-center justify-center gap-1 py-1 px-2 sm:px-3 rounded-full bg-gradient-to-r from-brand-plum to-brand-violet hover:from-brand-violet hover:to-brand-plum text-white text-[9px] sm:text-[10px] font-bold uppercase tracking-wider h-7.5 sm:h-8 shadow-2xs cursor-pointer transition-all duration-300 hover:shadow-md"
                     >
-                      <Sparkles className="w-3 h-3 text-amber-200" />
-                      <span>Customize Product</span>
+                      <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-amber-200" />
+                      <span className="truncate">Customize</span>
                     </button>
 
                     {cartQty > 0 ? (
                       <div
                         onClick={(e) => e.stopPropagation()}
-                        className="w-full inline-flex items-center justify-between rounded-full bg-brand-plum/90 text-white h-8 px-2"
+                        className="w-full inline-flex items-center justify-between rounded-full bg-brand-plum/90 text-white h-7.5 sm:h-8 px-2"
                       >
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             updateQuantity(item.id, cartQty - 1);
                           }}
-                          className="w-6 h-6 rounded-full flex items-center justify-center hover:bg-white/20 cursor-pointer focus:outline-none"
+                          className="w-5 sm:w-6 h-5 sm:h-6 rounded-full flex items-center justify-center hover:bg-white/20 cursor-pointer focus:outline-none"
                           aria-label="Decrease quantity"
                         >
-                          <Minus className="w-3 h-3" />
+                          <Minus className="w-2.5 sm:w-3 h-2.5 sm:h-3" />
                         </button>
-                        <span className="text-xs font-bold min-w-[1.5rem] text-center">{cartQty}</span>
+                        <span className="text-[10px] sm:text-xs font-bold min-w-[1.2rem] text-center">{cartQty}</span>
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             updateQuantity(item.id, cartQty + 1);
                           }}
-                          className="w-6 h-6 rounded-full flex items-center justify-center hover:bg-white/20 cursor-pointer focus:outline-none"
+                          className="w-5 sm:w-6 h-5 sm:h-6 rounded-full flex items-center justify-center hover:bg-white/20 cursor-pointer focus:outline-none"
                           aria-label="Increase quantity"
                         >
-                          <Plus className="w-3 h-3" />
+                          <Plus className="w-2.5 sm:w-3 h-2.5 sm:h-3" />
                         </button>
                       </div>
                     ) : (
@@ -236,7 +236,7 @@ const Wishlist = () => {
                           e.stopPropagation();
                           handleAddToCart(item);
                         }}
-                        className="w-full inline-flex items-center justify-center gap-1.5 py-1.5 rounded-full border border-brand-purple/25 bg-white hover:bg-brand-purple/10 text-brand-plum font-semibold text-[10px] uppercase tracking-wider transition-colors cursor-pointer h-8 shadow-2xs"
+                        className="w-full inline-flex items-center justify-center gap-1 py-1 rounded-full border border-brand-purple/25 bg-white hover:bg-brand-purple/10 text-brand-plum font-semibold text-[8.5px] sm:text-[10px] uppercase tracking-wider transition-colors cursor-pointer h-7.5 sm:h-8 shadow-2xs"
                       >
                         {cartStates[item.id] ? (
                           <>
@@ -245,8 +245,8 @@ const Wishlist = () => {
                           </>
                         ) : (
                           <>
-                            <ShoppingBag className="w-3 h-3" />
-                            <span>Quick Add</span>
+                            <ShoppingBag className="w-2.5 sm:w-3 h-2.5 sm:h-3" />
+                            <span className="truncate">Quick Add</span>
                           </>
                         )}
                       </button>

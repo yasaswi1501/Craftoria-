@@ -171,53 +171,53 @@ const CollectionPage = ({ collectionId }) => {
   };
 
   return (
-    <div className="min-h-screen bg-[#FDFBFD] pt-24 pb-16 px-4 sm:px-6 lg:px-8 text-brand-dark max-w-[1250px] mx-auto text-left">
+    <div className="min-h-screen bg-[#FDFBFD] pt-20 sm:pt-24 pb-16 px-3.5 sm:px-6 lg:px-8 text-brand-dark max-w-[1250px] mx-auto text-left">
       
       {/* Breadcrumb Path */}
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-3 text-xs font-semibold text-brand-plum">
+      <div className="mb-4 sm:mb-6 flex flex-wrap items-center justify-between gap-2 sm:gap-3 text-xs font-semibold text-brand-plum">
         <a
           href="/"
           className="inline-flex items-center gap-1.5 hover:underline focus:outline-none"
         >
           <ArrowLeft className="w-3.5 h-3.5" /> Back to Home
         </a>
-        <div className="text-brand-dark/50 select-none">
+        <div className="text-brand-dark/50 select-none text-[11px] sm:text-xs">
           Home <span className="mx-1">/</span> Collections <span className="mx-1">/</span> <span className="text-brand-plum font-bold">{collection.name}</span>
         </div>
       </div>
 
       {/* Category Header Banner */}
-      <div className="border-b border-brand-purple/10 pb-6 mb-8 text-left">
-        <span className="text-[10px] font-bold uppercase tracking-widest text-brand-plum font-mono">Artisan Catalog</span>
-        <h1 className="font-serif text-3xl sm:text-4xl font-bold mt-1 text-brand-dark">{collection.name}</h1>
-        <p className="text-xs sm:text-sm text-brand-dark/70 font-medium leading-relaxed max-w-3xl mt-2.5">
+      <div className="border-b border-brand-purple/10 pb-4 sm:pb-6 mb-6 sm:mb-8 text-left">
+        <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-brand-plum font-mono">Artisan Catalog</span>
+        <h1 className="font-serif text-2.5xl sm:text-4xl font-bold mt-1 text-brand-dark">{collection.name}</h1>
+        <p className="text-xs sm:text-sm text-brand-dark/70 font-medium leading-relaxed max-w-3xl mt-2">
           {collection.descriptionLong}
         </p>
-        <div className="flex items-center gap-2 mt-4 text-xs font-bold text-brand-plum/95 bg-brand-purple/10 w-fit px-3.5 py-1.5 rounded-full uppercase tracking-wider font-mono">
-          <Sparkles className="w-3.5 h-3.5 text-brand-plum animate-pulse" /> Showing {filteredProducts.length} Products
+        <div className="flex items-center gap-2 mt-3 sm:mt-4 text-[11px] sm:text-xs font-bold text-brand-plum/95 bg-brand-purple/10 w-fit px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full uppercase tracking-wider font-mono">
+          <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-brand-plum animate-pulse" /> Showing {filteredProducts.length} Products
         </div>
       </div>
 
-      {/* Toolbar: Search, Mobile filters drawer toggle */}
-      <div className="flex flex-col sm:flex-row gap-4 justify-between items-center bg-white/40 border border-brand-purple/15 p-4 rounded-[24px] mb-8 shadow-xs">
+      {/* Toolbar: Search & Mobile Filter Toggle */}
+      <div className="flex gap-2 sm:gap-4 justify-between items-center bg-white/50 border border-brand-purple/15 p-2.5 sm:p-4 rounded-[20px] sm:rounded-[24px] mb-6 sm:mb-8 shadow-xs">
         {/* Search Input */}
-        <div className="relative w-full sm:max-w-xs">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-dark/45" />
+        <div className="relative flex-1 sm:max-w-xs">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-brand-dark/45" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={`Search ${collection.name}...`}
-            className="w-full pl-10 pr-4 py-2 rounded-full border border-brand-purple/15 bg-white text-xs h-9 focus:outline-none focus:border-brand-purple transition-all"
+            className="w-full pl-9 pr-3 py-1.5 rounded-full border border-brand-purple/15 bg-white text-xs h-9 focus:outline-none focus:border-brand-purple transition-all"
           />
         </div>
 
         {/* Mobile Filter Button */}
         <button
           onClick={() => setIsFilterDrawerOpen(true)}
-          className="lg:hidden flex items-center justify-center gap-1.5 px-4 h-9 rounded-full border border-brand-purple/15 bg-white text-xs font-bold text-brand-plum cursor-pointer w-full sm:w-auto"
+          className="lg:hidden flex items-center justify-center gap-1.5 px-3.5 h-9 rounded-full border border-brand-purple/20 bg-white text-xs font-bold text-brand-plum cursor-pointer flex-shrink-0 shadow-2xs hover:bg-brand-purple/5"
         >
-          <SlidersHorizontal className="w-3.5 h-3.5" /> Filters
+          <SlidersHorizontal className="w-3.5 h-3.5" /> <span>Filters</span>
         </button>
       </div>
 
@@ -334,7 +334,7 @@ const CollectionPage = ({ collectionId }) => {
             ) : (
               <motion.div
                 layout
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+                className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6"
               >
                 {filteredProducts.map((product) => {
                   const isFav = isInWishlist(product.id);
@@ -349,10 +349,10 @@ const CollectionPage = ({ collectionId }) => {
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0 }}
                       onClick={() => navigate(`/product/${product.slug}`)}
-                      className="glass-card rounded-[24px] overflow-hidden flex flex-col group border border-brand-purple/20 shadow-sm relative bg-white/40 cursor-pointer min-h-[340px]"
+                      className="glass-card rounded-[20px] sm:rounded-[24px] overflow-hidden flex flex-col group border border-brand-purple/20 shadow-xs hover:shadow-md relative bg-white/50 cursor-pointer min-h-[300px] sm:min-h-[340px] transition-all"
                     >
                       {/* Product Image */}
-                      <div className="h-[185px] sm:h-[200px] w-full border-b border-brand-purple/10 overflow-hidden relative bg-gradient-to-tr from-[#FCF7FF] via-[#F3E7FA] to-[#E9D7F5] flex items-center justify-center p-4">
+                      <div className="h-[135px] sm:h-[200px] w-full border-b border-brand-purple/10 overflow-hidden relative bg-gradient-to-tr from-[#FCF7FF] via-[#F3E7FA] to-[#E9D7F5] flex items-center justify-center p-2.5 sm:p-4">
                         <img
                           src={getProductImage(product)}
                           alt={product.title}
@@ -381,7 +381,7 @@ const CollectionPage = ({ collectionId }) => {
                               image: product.thumbnail
                             });
                           }}
-                          className="absolute top-2.5 right-2.5 w-7 h-7 rounded-full bg-white/85 hover:bg-white border border-brand-purple/15 flex items-center justify-center shadow-xs cursor-pointer focus:outline-none"
+                          className="absolute top-2 right-2 sm:top-2.5 sm:right-2.5 w-7 h-7 rounded-full bg-white/85 hover:bg-white border border-brand-purple/15 flex items-center justify-center shadow-xs cursor-pointer focus:outline-none"
                           aria-label={isFav ? "Remove from wishlist" : "Add to wishlist"}
                         >
                           <Heart className={`w-3.5 h-3.5 ${isFav ? 'fill-red-500 text-red-500' : 'text-brand-dark/50'}`} />
@@ -389,19 +389,19 @@ const CollectionPage = ({ collectionId }) => {
                       </div>
 
                       {/* Details Area */}
-                      <div className="p-4 flex flex-col flex-grow text-left">
-                        <span className="text-[8px] font-bold text-brand-plum/80 uppercase tracking-wider mb-1 font-mono">
+                      <div className="p-3 sm:p-4 flex flex-col flex-grow text-left">
+                        <span className="text-[7.5px] sm:text-[8px] font-bold text-brand-plum/80 uppercase tracking-wider mb-0.5 sm:mb-1 font-mono">
                           {product.category.replace('-', ' ')}
                         </span>
                         <h3 className="font-serif text-xs sm:text-sm font-bold text-brand-dark leading-tight line-clamp-1 mb-1 group-hover:text-brand-plum transition-colors">
                           {product.title}
                         </h3>
-                        <p className="text-[10px] text-brand-dark/65 line-clamp-2 leading-relaxed mb-2 flex-grow">
+                        <p className="text-[9.5px] sm:text-[10px] text-brand-dark/65 line-clamp-1 sm:line-clamp-2 leading-relaxed mb-2 flex-grow">
                           {product.description}
                         </p>
 
                         {/* Rating row */}
-                        <div className="flex items-center gap-1 mb-3">
+                        <div className="flex items-center gap-1 mb-2.5">
                           <div className="flex text-amber-400">
                             {[...Array(5)].map((_, i) => (
                               <Star
@@ -410,11 +410,11 @@ const CollectionPage = ({ collectionId }) => {
                               />
                             ))}
                           </div>
-                          <span className="text-[9px] font-bold text-brand-dark/50">({product.reviewCount})</span>
+                          <span className="text-[8.5px] sm:text-[9px] font-bold text-brand-dark/50">({product.reviewCount})</span>
                         </div>
 
                         {/* Action buttons row */}
-                        <div className="flex flex-col gap-2 mt-auto pt-2.5 border-t border-brand-purple/10">
+                        <div className="flex flex-col gap-1.5 sm:gap-2 mt-auto pt-2 border-t border-brand-purple/10">
                           {/* 1. Primary Customize button */}
                           <button
                             onClick={(e) => {
@@ -422,17 +422,17 @@ const CollectionPage = ({ collectionId }) => {
                               setCustomizingProduct(product);
                               setIsCustomizeOpen(true);
                             }}
-                            className="w-full inline-flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-full bg-gradient-to-r from-brand-plum to-brand-violet hover:from-brand-violet hover:to-brand-plum text-white text-[10px] font-bold uppercase tracking-wider h-8 shadow-xs cursor-pointer transition-all duration-300 hover:shadow-md"
+                            className="w-full inline-flex items-center justify-center gap-1 py-1 px-2 sm:px-3 rounded-full bg-gradient-to-r from-brand-plum to-brand-violet hover:from-brand-violet hover:to-brand-plum text-white text-[9px] sm:text-[10px] font-bold uppercase tracking-wider h-7.5 sm:h-8 shadow-2xs cursor-pointer transition-all duration-300 hover:shadow-md"
                           >
-                            <Sparkles className="w-3 h-3 text-amber-200" />
-                            <span>Customize Product</span>
+                            <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-amber-200" />
+                            <span className="truncate">Customize</span>
                           </button>
 
                           {/* 2. Quick Add / Stepper + Details Row */}
-                          <div className="flex gap-2">
+                          <div className="flex gap-1.5 sm:gap-2">
                             {/* Add to Cart button / Quantity stepper */}
                             {cartQty > 0 ? (
-                              <div className="flex-grow inline-flex items-center justify-between rounded-full bg-brand-plum/90 text-white h-7 px-1 shadow-xs">
+                              <div className="flex-grow inline-flex items-center justify-between rounded-full bg-brand-plum/90 text-white h-7 px-1 shadow-2xs">
                                 <button
                                   onClick={(e) => {
                                     e.stopPropagation();
@@ -443,7 +443,7 @@ const CollectionPage = ({ collectionId }) => {
                                 >
                                   <Minus className="w-2.5 h-2.5" />
                                 </button>
-                                <span className="text-[10px] font-bold min-w-[1.25rem] text-center">{cartQty}</span>
+                                <span className="text-[9.5px] sm:text-[10px] font-bold min-w-[1.2rem] text-center">{cartQty}</span>
                                 <button
                                   onClick={(e) => {
                                     e.stopPropagation();
@@ -464,7 +464,7 @@ const CollectionPage = ({ collectionId }) => {
                                   desc: product.description,
                                   image: product.thumbnail
                                 }, e)}
-                                className="flex-grow inline-flex items-center justify-center gap-1 py-1 px-2 rounded-full border border-brand-purple/25 bg-white hover:bg-brand-purple/10 text-brand-plum text-[9px] font-bold uppercase tracking-wider h-7 shadow-2xs cursor-pointer transition-colors"
+                                className="flex-grow inline-flex items-center justify-center gap-1 py-1 px-1.5 rounded-full border border-brand-purple/25 bg-white hover:bg-brand-purple/10 text-brand-plum text-[8.5px] sm:text-[9px] font-bold uppercase tracking-wider h-7 shadow-2xs cursor-pointer transition-colors"
                               >
                                 {isAdded ? (
                                   <>
@@ -474,7 +474,7 @@ const CollectionPage = ({ collectionId }) => {
                                 ) : (
                                   <>
                                     <ShoppingBag className="w-2.5 h-2.5" />
-                                    <span>Quick Add</span>
+                                    <span className="truncate">Quick Add</span>
                                   </>
                                 )}
                               </button>
@@ -486,7 +486,7 @@ const CollectionPage = ({ collectionId }) => {
                                 e.stopPropagation();
                                 navigate(`/product/${product.slug}`);
                               }}
-                              className="p-1.5 rounded-full border border-brand-purple/20 text-brand-plum hover:bg-brand-purple/10 flex items-center justify-center h-7 w-7 cursor-pointer focus:outline-none flex-shrink-0"
+                              className="p-1 rounded-full border border-brand-purple/20 text-brand-plum hover:bg-brand-purple/10 flex items-center justify-center h-7 w-7 cursor-pointer focus:outline-none flex-shrink-0"
                               title="View Product details"
                             >
                               <Eye className="w-3 h-3" />

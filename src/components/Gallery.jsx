@@ -65,7 +65,7 @@ const Gallery = () => {
   ];
 
   return (
-    <section id="gallery" className="py-20 px-6 relative overflow-hidden border-t border-brand-purple/10">
+    <section id="gallery" className="py-16 sm:py-20 px-3.5 sm:px-6 relative overflow-hidden border-t border-brand-purple/10">
       {/* Section Background Washes */}
       <WatercolorWash
         className="w-[450px] h-[450px] left-[15%] -top-10"
@@ -97,7 +97,7 @@ const Gallery = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-40px" }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="text-center max-w-3xl mx-auto mb-12"
+          className="text-center max-w-3xl mx-auto mb-8 sm:mb-12"
         >
           <span className="text-xs font-semibold tracking-widest text-brand-plum uppercase block mb-2">
             A Glimpse of Our Craft
@@ -106,7 +106,7 @@ const Gallery = () => {
         </motion.div>
 
         {/* 7 Card Gallery Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 md:gap-5 lg:gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4 lg:gap-6">
           {items.map((item, idx) => (
             <motion.div
               key={item.id}

@@ -31,7 +31,7 @@ const WhyChoose = () => {
   ];
 
   return (
-    <section id="whychoose" className="py-20 px-6 relative overflow-hidden border-t border-brand-purple/10">
+    <section id="whychoose" className="py-16 sm:py-20 px-4 sm:px-6 relative overflow-hidden border-t border-brand-purple/10">
       {/* Section Background Wash */}
       <WatercolorWash
         className="w-[500px] h-[500px] right-[10%] -top-12"
@@ -50,7 +50,7 @@ const WhyChoose = () => {
       />
 
       <div className="max-w-7xl mx-auto relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-center">
           
           {/* Left Column: Heading Block (span 3) */}
           <motion.div
@@ -58,9 +58,9 @@ const WhyChoose = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-40px" }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="lg:col-span-3 text-left space-y-3"
+            className="lg:col-span-3 text-left space-y-2 sm:space-y-3"
           >
-            <h2 className="font-serif text-3xl sm:text-4xl font-bold leading-tight text-brand-dark">
+            <h2 className="font-serif text-2.5xl sm:text-4xl font-bold leading-tight text-brand-dark">
               Why Choose <br className="hidden lg:inline" />
               Craftoria?
             </h2>
@@ -68,7 +68,7 @@ const WhyChoose = () => {
           </motion.div>
 
           {/* Right Column: Features Grid (span 9) */}
-          <div className="lg:col-span-9 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="lg:col-span-9 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
             {features.map((feat, idx) => (
               <motion.div
                 key={feat.title}

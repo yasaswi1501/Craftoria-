@@ -156,10 +156,10 @@ const Header = () => {
     <>
       <header
         className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
-          scrolled ? 'glass-nav py-3.5' : 'bg-transparent py-6'
+          scrolled ? 'glass-nav py-3' : 'bg-transparent py-4 sm:py-6'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-3.5 sm:px-6 flex items-center justify-between">
           
           {/* Mobile Left Hamburger Menu Toggle */}
           <div className="flex lg:hidden">
@@ -416,7 +416,7 @@ const Header = () => {
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 220 }}
-              className="relative w-80 max-w-[85vw] h-full bg-[#FCF8FC] border-r border-brand-purple/20 shadow-[0_0_40px_rgba(75,46,93,0.15)] flex flex-col z-10 text-brand-dark p-5 overflow-y-auto"
+              className="relative w-80 max-w-[88vw] h-full bg-[#FCF8FC] border-r border-brand-purple/20 shadow-[0_0_40px_rgba(75,46,93,0.15)] flex flex-col z-10 text-brand-dark p-4 sm:p-5 overflow-y-auto pb-safe"
             >
               {/* Drawer Top Row: Flipkart/Amazon Brand & Close */}
               <div className="flex items-center justify-between mb-4 pb-3 border-b border-brand-purple/10">

@@ -222,7 +222,7 @@ const AuthModal = ({ isOpen, onClose }) => {
   );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-plum/40 backdrop-blur-sm overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-brand-plum/40 backdrop-blur-sm overflow-y-auto no-scrollbar pb-safe pt-safe">
       <div 
         className="absolute inset-0 cursor-pointer" 
         onClick={() => {
@@ -237,7 +237,7 @@ const AuthModal = ({ isOpen, onClose }) => {
         initial={{ opacity: 0, scale: 0.95, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 10 }}
-        className="relative w-full max-w-md glass-card rounded-[32px] overflow-hidden p-6 sm:p-8 border border-brand-purple/30 shadow-[0_24px_50px_rgba(75,46,93,0.15)] z-10 flex flex-col text-brand-dark my-8"
+        className="relative w-full max-w-md glass-card rounded-[24px] sm:rounded-[32px] overflow-hidden p-5 sm:p-8 border border-brand-purple/30 shadow-[0_24px_50px_rgba(75,46,93,0.15)] z-10 flex flex-col text-brand-dark my-auto max-h-[92vh] overflow-y-auto no-scrollbar"
       >
         {/* Close Button */}
         <button
@@ -246,10 +246,10 @@ const AuthModal = ({ isOpen, onClose }) => {
             onClose();
           }}
           disabled={isSubmitting || isGoogleLoading}
-          className="absolute top-6 right-6 w-9 h-9 rounded-full bg-white/40 hover:bg-white/80 flex items-center justify-center shadow-sm cursor-pointer transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-brand-purple/20 disabled:opacity-50"
+          className="absolute top-4 sm:top-6 right-4 sm:right-6 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/60 hover:bg-white/90 flex items-center justify-center shadow-sm cursor-pointer transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-brand-purple/20 disabled:opacity-50 z-20"
           aria-label="Close modal"
         >
-          <X className="w-5 h-5 text-brand-plum" />
+          <X className="w-4 h-4 sm:w-5 sm:h-5 text-brand-plum" />
         </button>
 
         {/* VIEW: LOGIN */}

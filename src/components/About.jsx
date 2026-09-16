@@ -27,9 +27,9 @@ const About = () => {
   ];
 
   return (
-    <section id="about" className="pt-14 pb-24 px-6 relative overflow-hidden">
+    <section id="about" className="pt-12 sm:pt-14 pb-16 sm:pb-24 px-4 sm:px-6 relative overflow-hidden">
       <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 items-center">
           
           {/* Left Column: Vertical Oval Craft Graphic */}
           <motion.div
@@ -40,7 +40,7 @@ const About = () => {
             className="lg:col-span-5 flex justify-center"
           >
             {/* Vertical Oval Window */}
-            <div className="w-full max-w-[340px] h-[450px] rounded-[180px] bg-gradient-to-tr from-brand-pink/45 via-brand-purple/20 to-brand-cream/60 border border-brand-purple/25 shadow-xl overflow-hidden relative flex items-center justify-center group">
+            <div className="w-full max-w-[280px] sm:max-w-[340px] h-[360px] sm:h-[450px] rounded-[140px] sm:rounded-[180px] bg-gradient-to-tr from-brand-pink/45 via-brand-purple/20 to-brand-cream/60 border border-brand-purple/25 shadow-xl overflow-hidden relative flex items-center justify-center group">
               {/* Soft background glows inside oval */}
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,249,243,0.35)_0%,_transparent_70%)]" />
               

@@ -185,7 +185,7 @@ const CustomizationModal = ({ isOpen, onClose, product }) => {
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6"
+      className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-6"
       data-lenis-prevent="true"
     >
       {/* Backdrop */}
@@ -205,19 +205,19 @@ const CustomizationModal = ({ isOpen, onClose, product }) => {
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
         onWheel={(e) => e.stopPropagation()}
         data-lenis-prevent="true"
-        className="relative w-full max-w-2xl max-h-[88vh] sm:max-h-[85vh] h-auto bg-[#FCF8FC] border border-brand-purple/20 rounded-[28px] shadow-[0_20px_60px_rgba(75,46,93,0.25)] overflow-hidden flex flex-col z-10 text-brand-dark text-left my-auto"
+        className="relative w-full max-w-2xl max-h-[92vh] sm:max-h-[85vh] h-auto bg-[#FCF8FC] border border-brand-purple/20 rounded-[24px] sm:rounded-[28px] shadow-[0_20px_60px_rgba(75,46,93,0.25)] overflow-hidden flex flex-col z-10 text-brand-dark text-left my-auto"
       >
         {/* Header (Sticky / Fixed at top of modal) */}
-        <div className="px-5 sm:px-7 py-4 border-b border-brand-purple/10 bg-white/80 backdrop-blur-md flex items-center justify-between flex-shrink-0 z-20">
+        <div className="px-4 sm:px-7 py-3.5 sm:py-4 border-b border-brand-purple/10 bg-white/85 backdrop-blur-md flex items-center justify-between flex-shrink-0 z-20">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-full bg-brand-purple/15 flex items-center justify-center text-brand-plum flex-shrink-0">
               <Sparkles className="w-4 h-4" />
             </div>
             <div>
-              <span className="text-[9px] font-bold uppercase tracking-widest text-brand-plum font-mono">
+              <span className="text-[8.5px] sm:text-[9px] font-bold uppercase tracking-widest text-brand-plum font-mono">
                 Artisan Customization Studio
               </span>
-              <h3 className="font-serif text-base sm:text-lg font-bold text-brand-dark leading-tight">
+              <h3 className="font-serif text-sm sm:text-lg font-bold text-brand-dark leading-tight">
                 Customize Your Handcrafted Piece
               </h3>
             </div>
@@ -234,25 +234,25 @@ const CustomizationModal = ({ isOpen, onClose, product }) => {
 
         {/* Scrollable Form Content */}
         <div 
-          className="flex-1 min-h-0 overflow-y-auto p-5 sm:p-7 space-y-6 custom-scrollbar overscroll-contain"
+          className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-7 space-y-5 sm:space-y-6 custom-scrollbar overscroll-contain"
           data-lenis-prevent="true"
           style={{ touchAction: 'pan-y' }}
         >
           
           {/* 1. Select Product / Craft Piece */}
-          <div className="space-y-2.5 bg-white/70 border border-brand-purple/20 p-3.5 sm:p-4 rounded-2xl shadow-xs">
+          <div className="space-y-2.5 bg-white/70 border border-brand-purple/20 p-3 sm:p-4 rounded-2xl shadow-xs">
             <div className="flex items-center justify-between">
               <label className="text-xs font-bold text-brand-dark flex items-center gap-1.5">
                 <Package className="w-3.5 h-3.5 text-brand-plum" />
                 <span>Select Craft / Product to Customize</span>
               </label>
-              <span className="text-[10px] font-bold text-brand-plum font-mono uppercase tracking-wider">
-                {productsData.length} items available
+              <span className="text-[9.5px] sm:text-[10px] font-bold text-brand-plum font-mono uppercase tracking-wider">
+                {productsData.length} items
               </span>
             </div>
 
             {/* Category Filter Chips */}
-            <div className="flex items-center gap-1.5 overflow-x-auto custom-scrollbar pb-1">
+            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 -mx-0.5 px-0.5">
               {CATEGORY_TABS.map((tab) => {
                 const isActive = selectedCategoryFilter === tab.id;
                 return (
@@ -461,11 +461,11 @@ const CustomizationModal = ({ isOpen, onClose, product }) => {
         </div>
 
         {/* Footer: Quantity Stepper & Save & Add to Cart Button */}
-        <div className="px-5 sm:px-7 py-4 border-t border-brand-purple/15 bg-white/80 backdrop-blur-md flex flex-wrap items-center justify-between gap-4 flex-shrink-0 z-20">
+        <div className="px-4 sm:px-7 py-3 sm:py-4 border-t border-brand-purple/15 bg-white/90 backdrop-blur-md flex flex-row items-center justify-between gap-3 flex-shrink-0 z-20 pb-safe">
           
           {/* Quantity Stepper */}
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-brand-dark/75 font-mono">QTY:</span>
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+            <span className="text-[11px] sm:text-xs font-bold text-brand-dark/75 font-mono">QTY:</span>
             <div className="flex items-center border border-brand-purple/20 rounded-full bg-white h-9 px-1">
               <button
                 type="button"
@@ -475,7 +475,7 @@ const CustomizationModal = ({ isOpen, onClose, product }) => {
               >
                 <Minus className="w-3 h-3" />
               </button>
-              <span className="w-7 text-center text-xs font-bold text-brand-dark">{quantity}</span>
+              <span className="w-6 sm:w-7 text-center text-xs font-bold text-brand-dark">{quantity}</span>
               <button
                 type="button"
                 onClick={() => setQuantity(q => Math.min(10, q + 1))}
@@ -488,11 +488,11 @@ const CustomizationModal = ({ isOpen, onClose, product }) => {
           </div>
 
           {/* Action Button */}
-          <div className="flex items-center gap-2 flex-grow sm:flex-grow-0">
+          <div className="flex items-center gap-2 flex-1 sm:flex-initial">
             <button
               type="button"
               onClick={handleSaveAndAddToCart}
-              className={`flex-grow sm:flex-initial inline-flex items-center justify-center gap-2 py-2.5 px-6 rounded-full font-semibold text-xs uppercase tracking-wider transition-all duration-300 cursor-pointer shadow-md hover:shadow-lg h-10 ${
+              className={`w-full sm:w-auto inline-flex items-center justify-center gap-1.5 py-2.5 px-4 sm:px-6 rounded-full font-semibold text-[11px] sm:text-xs uppercase tracking-wider transition-all duration-300 cursor-pointer shadow-md hover:shadow-lg h-10 ${
                 isSuccess
                   ? 'bg-emerald-600 text-white'
                   : 'bg-brand-plum hover:bg-brand-violet text-white'
@@ -501,12 +501,12 @@ const CustomizationModal = ({ isOpen, onClose, product }) => {
               {isSuccess ? (
                 <>
                   <Check className="w-4 h-4 animate-bounce" />
-                  <span>Customization Saved & Added!</span>
+                  <span className="truncate">Saved & Added!</span>
                 </>
               ) : (
                 <>
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>Save Customization & Add to Cart</span>
+                  <Sparkles className="w-3.5 h-3.5 flex-shrink-0" />
+                  <span className="truncate">Save & Add to Cart</span>
                 </>
               )}
             </button>
@@ -519,3 +519,4 @@ const CustomizationModal = ({ isOpen, onClose, product }) => {
 };
 
 export default CustomizationModal;
+
