@@ -24,6 +24,8 @@ import bouquet1Flower from '../assets/bouquet-1-flower.jpg';
 import bouquet3Flower from '../assets/bouquet-3-flower.jpg';
 import bouquet5Flower from '../assets/bouquet-5-flower.jpg';
 import customHomeDecor from '../assets/custom-home-decor.jpg';
+import hairClips from '../assets/hair-clips.jpg';
+import customHairAccessories from '../assets/custom-hair-accessories.jpg';
 
 const CartDrawer = () => {
   const { 
@@ -57,6 +59,8 @@ const CartDrawer = () => {
     const id = (typeof item === 'string' ? item : item?.id || '').toLowerCase();
     const imgName = typeof item === 'object' ? item?.image || item?.thumbnail || '' : '';
 
+    if (imgName === 'hair-clips.jpg' || id === 'accessories-clips') return hairClips;
+    if (imgName === 'custom-hair-accessories.jpg' || id.includes('custom-accessories')) return customHairAccessories;
     if (imgName === 'bouquet-1-flower.jpg' || id === 'bloom-bouquet-1-flower') return bouquet1Flower;
     if (imgName === 'bouquet-3-flower.jpg' || id === 'bloom-bouquet-3-flower') return bouquet3Flower;
     if (imgName === 'bouquet-5-flower.jpg' || id === 'bloom-bouquet-5-flower') return bouquet5Flower;

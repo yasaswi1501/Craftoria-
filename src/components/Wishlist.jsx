@@ -25,6 +25,8 @@ import bouquet1Flower from '../assets/bouquet-1-flower.jpg';
 import bouquet3Flower from '../assets/bouquet-3-flower.jpg';
 import bouquet5Flower from '../assets/bouquet-5-flower.jpg';
 import customHomeDecor from '../assets/custom-home-decor.jpg';
+import hairClips from '../assets/hair-clips.jpg';
+import customHairAccessories from '../assets/custom-hair-accessories.jpg';
 
 const Wishlist = () => {
   const { wishlist, removeFromWishlist } = useWishlist();
@@ -38,6 +40,8 @@ const Wishlist = () => {
     const rawId = (id || '').toLowerCase();
     const rawSaved = savedImage || '';
 
+    if (rawSaved === 'hair-clips.jpg' || rawId === 'accessories-clips') return hairClips;
+    if (rawSaved === 'custom-hair-accessories.jpg' || rawId.includes('custom-accessories')) return customHairAccessories;
     if (rawSaved === 'bouquet-1-flower.jpg' || rawId === 'bloom-bouquet-1-flower') return bouquet1Flower;
     if (rawSaved === 'bouquet-3-flower.jpg' || rawId === 'bloom-bouquet-3-flower') return bouquet3Flower;
     if (rawSaved === 'bouquet-5-flower.jpg' || rawId === 'bloom-bouquet-5-flower') return bouquet5Flower;

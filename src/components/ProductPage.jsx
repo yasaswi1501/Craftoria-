@@ -29,6 +29,8 @@ import bouquet1Flower from '../assets/bouquet-1-flower.jpg';
 import bouquet3Flower from '../assets/bouquet-3-flower.jpg';
 import bouquet5Flower from '../assets/bouquet-5-flower.jpg';
 import customHomeDecor from '../assets/custom-home-decor.jpg';
+import hairClips from '../assets/hair-clips.jpg';
+import customHairAccessories from '../assets/custom-hair-accessories.jpg';
 
 const ProductPage = ({ productSlug }) => {
   const { navigate } = useRouter();
@@ -51,6 +53,8 @@ const ProductPage = ({ productSlug }) => {
 
   // Map image string to Vite imports
   const getGalleryImageSrc = (imgName) => {
+    if (imgName === 'hair-clips.jpg') return hairClips;
+    if (imgName === 'custom-hair-accessories.jpg') return customHairAccessories;
     if (imgName === 'bouquet-1-flower.jpg') return bouquet1Flower;
     if (imgName === 'bouquet-3-flower.jpg') return bouquet3Flower;
     if (imgName === 'bouquet-5-flower.jpg') return bouquet5Flower;

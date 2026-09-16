@@ -605,18 +605,18 @@ export const productsData = [
     returnPolicy: 'Exchange available for shipping damage.'
   },
 
-  // 7. ACCESSORIES COLLECTION (Renamed from Clips & Rubber Bands)
+  // 7. ACCESSORIES COLLECTION
   {
     id: 'accessories-clips',
     slug: 'accessories-clips',
-    title: 'Handcrafted Floral Hair Clips Set',
+    title: 'Hair Clips',
     description: 'Set of 4 pastel alloy snap clips featuring hand-sculpted pipe cleaner daisies and lavender flower barrettes.',
     price: 199,
     rating: 4.8,
     reviewCount: 38,
     category: 'accessories',
-    thumbnail: 'clips-rubber-bands.jpg',
-    galleryImages: ['clips-rubber-bands.jpg'],
+    thumbnail: 'hair-clips.jpg',
+    galleryImages: ['hair-clips.jpg', 'custom-hair-accessories.jpg'],
     stock: 50,
     customizable: true,
     tags: ['accessories', 'clips', 'hair-clips', 'floral', 'handmade'],
@@ -629,38 +629,16 @@ export const productsData = [
     returnPolicy: '7-day replacement for clip defects.'
   },
   {
-    id: 'accessories-rubber-bands',
-    slug: 'accessories-rubber-bands',
-    title: 'Pastel Silk Scrunchies & Rubber Bands Pack',
-    description: 'Pack of 3 soft silk scrunchies and 6 snag-free pastel elastic rubber bands for stylish hair styling.',
-    price: 249,
-    rating: 4.9,
-    reviewCount: 45,
-    category: 'accessories',
-    thumbnail: 'clips-rubber-bands.jpg',
-    galleryImages: ['clips-rubber-bands.jpg'],
-    stock: 60,
-    customizable: true,
-    tags: ['accessories', 'rubber-bands', 'scrunchies', 'elastic', 'silk'],
-    featured: false,
-    bestSeller: true,
-    discount: 50,
-    estimatedDelivery: '2-4 Business Days',
-    details: 'Made with soft silk fabrics that prevent hair breakage and creasing. High-elasticity inner cores retain stretch over time.',
-    shippingDetails: 'Packed in organza pouches inside courier mailers.',
-    returnPolicy: 'Unopened hygiene products are returnable within 7 days.'
-  },
-  {
     id: 'custom-accessories-piece',
     slug: 'custom-accessories-piece',
-    title: 'Customized Hair Accessories Set',
-    description: 'Personalized clips and rubber bands set curated with your favorite color palette, flower charms, and initials.',
+    title: 'Customized Hair Clips',
+    description: 'Personalized hair clips gift set curated with your favorite color palette, flower charms, and monogram initials.',
     price: 279,
     rating: 5.0,
     reviewCount: 67,
     category: 'accessories',
-    thumbnail: 'clips-rubber-bands.jpg',
-    galleryImages: ['clips-rubber-bands.jpg'],
+    thumbnail: 'custom-hair-accessories.jpg',
+    galleryImages: ['custom-hair-accessories.jpg', 'hair-clips.jpg'],
     stock: 45,
     customizable: true,
     tags: ['custom', 'accessories', 'personalized', 'hair-clips', 'gift'],
@@ -720,8 +698,8 @@ export const collectionsData = [
   {
     id: 'accessories',
     name: 'Accessories',
-    desc: 'Stylish handmade clips, rubber bands, and hair accessories for everyday charm.',
-    count: 3,
-    descriptionLong: 'Handcrafted floral clips, soft elastic silk scrunchies, and rubber bands made with exquisite attention to detail.'
+    desc: 'Stylish handmade hair clips and personalized hair accessories for everyday charm.',
+    count: 2,
+    descriptionLong: 'Handcrafted floral snap clips and bespoke initial charm hair accessories made with exquisite attention to detail.'
   }
 ];

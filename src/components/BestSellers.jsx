@@ -10,6 +10,8 @@ import coverClips from '../assets/clips-rubber-bands.jpg';
 import coverMacrame from '../assets/macrame-wall-hanging.jpg';
 import sellerBloomBouquets from '../assets/seller-bloom-bouquets.png';
 import coverBouquets from '../assets/bloom-bouquets-cover.jpg';
+import customHomeDecor from '../assets/custom-home-decor.jpg';
+import hairClips from '../assets/hair-clips.jpg';
 
 const BestSellers = () => {
   const { navigate } = useRouter();
@@ -49,14 +51,14 @@ const BestSellers = () => {
     {
       id: 'handmade-decor',
       name: 'Home Decor',
-      desc: 'Elegant craft pieces, fridge magnets, and vases to add warmth to your space.',
-      image: coverMacrame,
+      desc: 'Artisanal fridge magnets, flower vases, and keepsakes to add warmth to your space.',
+      image: customHomeDecor,
     },
     {
       id: 'accessories',
       name: 'Accessories',
-      desc: 'Stylish handmade clips, rubber bands, and hair accessories for everyday charm.',
-      image: coverClips,
+      desc: 'Stylish handmade hair clips and personalized hair accessories for everyday charm.',
+      image: hairClips,
     },
   ];
 
