@@ -52,7 +52,7 @@ export const generateWhatsAppOrderMessage = (cart, addressDetails = null, delive
   }
 
   text += `\n*Photo / Reference Attachments:* If you have reference photos, polaroid pictures, or custom sketches, please attach them directly in this WhatsApp chat!\n`;
-  text += `\n*Message:* Hi Craftoria! I would like to proceed with the payment and place an order for the above handcrafted items. Please share the pricing and payment details! ✨`;
+  text += `\n*Message:* Hi Craftoria! I would like to proceed with the payment and place an order for the above handcrafted items. Please share the pricing and payment details!`;
 
   return text;
 };
