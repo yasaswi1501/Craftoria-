@@ -9,11 +9,14 @@ import sellerMemoryCanvas from '../assets/seller-memory-canvas.png';
 import sellerEmbroideryHoop from '../assets/seller-embroidery-hoop.png';
 import sellerBloomBouquets from '../assets/seller-bloom-bouquets.png';
 import sellerBloomKeychains from '../assets/seller-bloom-keychains.png';
-
 import coverPolaroids from '../assets/polaroids-new.jpg';
 import coverClips from '../assets/clips-rubber-bands.jpg';
 import coverMacrame from '../assets/macrame-wall-hanging.jpg';
 import coverBouquets from '../assets/bloom-bouquets-cover.jpg';
+import coverChildFrame from '../assets/gallery-5-child-frame.jpg';
+import coverCoupleEmbroidery from '../assets/gallery-3-couple-embroidery.jpg';
+import coverBlueFlowerKeychain from '../assets/gallery-2-blue-flower-keychain.jpg';
+import coverHeartKeychain from '../assets/gallery-4-heart-keychain.jpg';
 
 const Wishlist = () => {
   const { wishlist, removeFromWishlist } = useWishlist();
@@ -22,23 +25,21 @@ const Wishlist = () => {
   const [cartStates, setCartStates] = useState({}); // { productId: boolean }
 
   const getProductImage = (id, savedImage) => {
-    if (savedImage === 'seller-memory-canvas.png') return sellerMemoryCanvas;
-    if (savedImage === 'seller-embroidery-hoop.png') return sellerEmbroideryHoop;
-    if (savedImage === 'seller-bloom-keychains.png') return sellerBloomKeychains;
-    if (savedImage === 'seller-bloom-bouquets.png') return sellerBloomBouquets;
-    if (savedImage === 'gallery-1-polaroid.jpg' || savedImage === 'polaroids-new.jpg') return coverPolaroids;
-    if (savedImage === 'gallery-7-two-flower-keychain.jpg' || savedImage === 'clips-rubber-bands.jpg') return coverClips;
-    if (savedImage === 'macrame-wall-hanging.jpg') return coverMacrame;
-    if (savedImage === 'bloom-bouquets-cover.jpg') return coverBouquets;
+    const rawId = (id || '').toLowerCase();
+    const rawSaved = savedImage || '';
 
-    // String matches
-    if (id.includes('canvas') || id === 'memory-canvas') return sellerMemoryCanvas;
-    if (id.includes('hoop') || id === 'embroidery-hoop') return sellerEmbroideryHoop;
-    if (id.includes('bouquet') || id === 'bloom-bouquets' || id.includes('craftoria-bloom-bouquets')) return coverBouquets;
-    if (id.includes('keychain') || id === 'bloom-keychains') return sellerBloomKeychains;
-    if (id.includes('polaroid') || id === 'polaroids') return coverPolaroids;
-    if (id.includes('clip') || id === 'clips-rubber-bands') return coverClips;
-    if (id.includes('decor') || id === 'handmade-decor') return coverMacrame;
+    if (rawSaved === 'gallery-2-blue-flower-keychain.jpg' || rawId.includes('blue-blossom')) return coverBlueFlowerKeychain;
+    if (rawSaved === 'gallery-4-heart-keychain.jpg' || rawId.includes('heart-keychain') || rawId.includes('purple-heart')) return coverHeartKeychain;
+    if (rawSaved === 'gallery-3-couple-embroidery.jpg' || rawId.includes('couple-embroidery')) return coverCoupleEmbroidery;
+    if (rawSaved === 'gallery-5-child-frame.jpg' || rawId.includes('child-frame') || rawId.includes('wooden-frame')) return coverChildFrame;
+    if (rawSaved === 'bloom-bouquets-cover.jpg' || rawId.includes('craftoria-bloom') || rawId.includes('bloom-bouquets')) return coverBouquets;
+    if (rawSaved === 'macrame-wall-hanging.jpg' || rawId.includes('macrame') || rawId.includes('decor')) return coverMacrame;
+    if (rawSaved === 'clips-rubber-bands.jpg' || rawId.includes('clip') || rawId.includes('rubber-band')) return coverClips;
+    if (rawSaved === 'polaroids-new.jpg' || rawSaved === 'gallery-1-polaroid.jpg' || rawId.includes('polaroid')) return coverPolaroids;
+    if (rawSaved === 'seller-bloom-keychains.png' || rawId.includes('keychain')) return sellerBloomKeychains;
+    if (rawSaved === 'seller-embroidery-hoop.png' || rawId.includes('embroidery') || rawId.includes('hoop')) return sellerEmbroideryHoop;
+    if (rawSaved === 'seller-bloom-bouquets.png' || rawId.includes('bouquet') || rawId.includes('gift')) return sellerBloomBouquets;
+    if (rawSaved === 'seller-memory-canvas.png' || rawId.includes('canvas') || rawId.includes('frame')) return sellerMemoryCanvas;
     return sellerMemoryCanvas;
   };
 

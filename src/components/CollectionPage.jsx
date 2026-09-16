@@ -487,7 +487,8 @@ const CollectionPage = ({ collectionId }) => {
                                 id: product.id,
                                 name: product.title,
                                 price: product.price,
-                                desc: product.description
+                                desc: product.description,
+                                image: product.thumbnail
                               }, e)}
                               className="flex-grow inline-flex items-center justify-center gap-1 py-2 rounded-full bg-brand-plum hover:bg-brand-violet text-white text-[9px] font-bold uppercase tracking-wider h-8 shadow-xs cursor-pointer"
                             >

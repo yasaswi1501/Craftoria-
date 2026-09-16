@@ -13,8 +13,14 @@ import sellerMemoryCanvas from '../assets/seller-memory-canvas.png';
 import sellerEmbroideryHoop from '../assets/seller-embroidery-hoop.png';
 import sellerBloomBouquets from '../assets/seller-bloom-bouquets.png';
 import sellerBloomKeychains from '../assets/seller-bloom-keychains.png';
-import coverPolaroids from '../assets/gallery-1-polaroid.jpg';
-import coverClips from '../assets/gallery-7-two-flower-keychain.jpg';
+import coverPolaroids from '../assets/polaroids-new.jpg';
+import coverClips from '../assets/clips-rubber-bands.jpg';
+import coverMacrame from '../assets/macrame-wall-hanging.jpg';
+import coverBouquets from '../assets/bloom-bouquets-cover.jpg';
+import coverChildFrame from '../assets/gallery-5-child-frame.jpg';
+import coverCoupleEmbroidery from '../assets/gallery-3-couple-embroidery.jpg';
+import coverBlueFlowerKeychain from '../assets/gallery-2-blue-flower-keychain.jpg';
+import coverHeartKeychain from '../assets/gallery-4-heart-keychain.jpg';
 
 const Checkout = () => {
   const { user } = useAuth();
@@ -81,13 +87,22 @@ const Checkout = () => {
   const [idempotencyKey, setIdempotencyKey] = useState(() => crypto.randomUUID());
 
   // Image Mapper helper
-  const getProductImage = (id) => {
-    if (id.includes('canvas') || id === 'memory-canvas') return sellerMemoryCanvas;
-    if (id.includes('hoop') || id === 'embroidery-hoop') return sellerEmbroideryHoop;
-    if (id.includes('bouquet') || id === 'bloom-bouquets') return sellerBloomBouquets;
-    if (id.includes('keychain') || id === 'bloom-keychains') return sellerBloomKeychains;
-    if (id.includes('polaroid') || id === 'polaroids') return coverPolaroids;
-    if (id.includes('clip') || id === 'clips-rubber-bands') return coverClips;
+  const getProductImage = (item) => {
+    const id = (typeof item === 'string' ? item : item?.id || '').toLowerCase();
+    const imgName = typeof item === 'object' ? item?.image || item?.thumbnail || '' : '';
+
+    if (imgName === 'gallery-2-blue-flower-keychain.jpg' || id.includes('blue-blossom')) return coverBlueFlowerKeychain;
+    if (imgName === 'gallery-4-heart-keychain.jpg' || id.includes('heart-keychain') || id.includes('purple-heart')) return coverHeartKeychain;
+    if (imgName === 'gallery-3-couple-embroidery.jpg' || id.includes('couple-embroidery')) return coverCoupleEmbroidery;
+    if (imgName === 'gallery-5-child-frame.jpg' || id.includes('child-frame') || id.includes('wooden-frame')) return coverChildFrame;
+    if (imgName === 'bloom-bouquets-cover.jpg' || id.includes('craftoria-bloom') || id.includes('bloom-bouquets')) return coverBouquets;
+    if (imgName === 'macrame-wall-hanging.jpg' || id.includes('macrame') || id.includes('decor')) return coverMacrame;
+    if (imgName === 'clips-rubber-bands.jpg' || id.includes('clip') || id.includes('rubber-band')) return coverClips;
+    if (imgName === 'polaroids-new.jpg' || imgName === 'gallery-1-polaroid.jpg' || id.includes('polaroid')) return coverPolaroids;
+    if (imgName === 'seller-bloom-keychains.png' || id.includes('keychain')) return sellerBloomKeychains;
+    if (imgName === 'seller-embroidery-hoop.png' || id.includes('embroidery') || id.includes('hoop')) return sellerEmbroideryHoop;
+    if (imgName === 'seller-bloom-bouquets.png' || id.includes('bouquet') || id.includes('gift')) return sellerBloomBouquets;
+    if (imgName === 'seller-memory-canvas.png' || id.includes('canvas') || id.includes('frame')) return sellerMemoryCanvas;
     return sellerMemoryCanvas;
   };
 
@@ -1203,7 +1218,7 @@ const Checkout = () => {
                   <span className="font-bold text-brand-plum uppercase tracking-wider text-[10px] mb-1">Review Items</span>
                   <div className="flex flex-col gap-3">
                     {cart.map(item => {
-                      const img = getProductImage(item.id);
+                      const img = getProductImage(item);
                       return (
                         <div key={item.id} className="flex justify-between items-center bg-white/50 p-2.5 rounded-xl border border-brand-purple/5">
                           <div className="flex items-center gap-3">
