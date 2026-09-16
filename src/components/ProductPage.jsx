@@ -21,6 +21,10 @@ import coverBouquets from '../assets/bloom-bouquets-cover.jpg';
 import coverChildFrame from '../assets/gallery-5-child-frame.jpg';
 import coverCoupleEmbroidery from '../assets/gallery-3-couple-embroidery.jpg';
 import coverBlueFlowerKeychain from '../assets/gallery-2-blue-flower-keychain.jpg';
+import coverHeartKeychain from '../assets/gallery-4-heart-keychain.jpg';
+import embroideryShirt from '../assets/embroidery-shirt.jpg';
+import fridgeMagnets from '../assets/fridge-magnets.jpg';
+import flowerVase from '../assets/flower-vase.jpg';
 
 const ProductPage = ({ productSlug }) => {
   const { navigate } = useRouter();
@@ -34,7 +38,8 @@ const ProductPage = ({ productSlug }) => {
 
   // Load collection metadata
   const collection = useMemo(() => {
-    return collectionsData.find(c => c.id === product.category) || {
+    const catId = product.category === 'clips-rubber-bands' ? 'accessories' : product.category;
+    return collectionsData.find(c => c.id === catId || c.id === product.category) || {
       id: product.category,
       name: 'Artisan Collection',
     };
@@ -42,17 +47,21 @@ const ProductPage = ({ productSlug }) => {
 
   // Map image string to Vite imports
   const getGalleryImageSrc = (imgName) => {
+    if (imgName === 'embroidery-shirt.jpg') return embroideryShirt;
+    if (imgName === 'fridge-magnets.jpg') return fridgeMagnets;
+    if (imgName === 'flower-vase.jpg') return flowerVase;
     if (imgName === 'seller-memory-canvas.png') return sellerMemoryCanvas;
     if (imgName === 'seller-embroidery-hoop.png') return sellerEmbroideryHoop;
     if (imgName === 'seller-bloom-keychains.png') return sellerBloomKeychains;
     if (imgName === 'seller-bloom-bouquets.png') return sellerBloomBouquets;
-    if (imgName === 'gallery-1-polaroid.jpg') return coverPolaroids;
+    if (imgName === 'polaroids-new.jpg' || imgName === 'gallery-1-polaroid.jpg') return coverPolaroids;
     if (imgName === 'gallery-7-two-flower-keychain.jpg' || imgName === 'clips-rubber-bands.jpg') return coverClips;
     if (imgName === 'macrame-wall-hanging.jpg') return coverMacrame;
     if (imgName === 'bloom-bouquets-cover.jpg') return coverBouquets;
     if (imgName === 'gallery-5-child-frame.jpg') return coverChildFrame;
     if (imgName === 'gallery-3-couple-embroidery.jpg') return coverCoupleEmbroidery;
     if (imgName === 'gallery-2-blue-flower-keychain.jpg') return coverBlueFlowerKeychain;
+    if (imgName === 'gallery-4-heart-keychain.jpg') return coverHeartKeychain;
     return sellerMemoryCanvas;
   };
 

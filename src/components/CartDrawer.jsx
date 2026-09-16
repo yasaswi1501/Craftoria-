@@ -17,6 +17,9 @@ import coverChildFrame from '../assets/gallery-5-child-frame.jpg';
 import coverCoupleEmbroidery from '../assets/gallery-3-couple-embroidery.jpg';
 import coverBlueFlowerKeychain from '../assets/gallery-2-blue-flower-keychain.jpg';
 import coverHeartKeychain from '../assets/gallery-4-heart-keychain.jpg';
+import embroideryShirt from '../assets/embroidery-shirt.jpg';
+import fridgeMagnets from '../assets/fridge-magnets.jpg';
+import flowerVase from '../assets/flower-vase.jpg';
 
 const CartDrawer = () => {
   const { 
@@ -50,13 +53,16 @@ const CartDrawer = () => {
     const id = (typeof item === 'string' ? item : item?.id || '').toLowerCase();
     const imgName = typeof item === 'object' ? item?.image || item?.thumbnail || '' : '';
 
+    if (imgName === 'embroidery-shirt.jpg' || id.includes('shirt')) return embroideryShirt;
+    if (imgName === 'fridge-magnets.jpg' || id.includes('magnet')) return fridgeMagnets;
+    if (imgName === 'flower-vase.jpg' || id.includes('vase')) return flowerVase;
     if (imgName === 'gallery-2-blue-flower-keychain.jpg' || id.includes('blue-blossom')) return coverBlueFlowerKeychain;
     if (imgName === 'gallery-4-heart-keychain.jpg' || id.includes('heart-keychain') || id.includes('purple-heart')) return coverHeartKeychain;
-    if (imgName === 'gallery-3-couple-embroidery.jpg' || id.includes('couple-embroidery')) return coverCoupleEmbroidery;
+    if (imgName === 'gallery-3-couple-embroidery.jpg' || id.includes('couple-embroidery') || id.includes('middle-frame')) return coverCoupleEmbroidery;
     if (imgName === 'gallery-5-child-frame.jpg' || id.includes('child-frame') || id.includes('wooden-frame')) return coverChildFrame;
     if (imgName === 'bloom-bouquets-cover.jpg' || id.includes('craftoria-bloom') || id.includes('bloom-bouquets')) return coverBouquets;
     if (imgName === 'macrame-wall-hanging.jpg' || id.includes('macrame') || id.includes('decor')) return coverMacrame;
-    if (imgName === 'clips-rubber-bands.jpg' || id.includes('clip') || id.includes('rubber-band')) return coverClips;
+    if (imgName === 'clips-rubber-bands.jpg' || id.includes('clip') || id.includes('rubber-band') || id.includes('accessories')) return coverClips;
     if (imgName === 'polaroids-new.jpg' || imgName === 'gallery-1-polaroid.jpg' || id.includes('polaroid')) return coverPolaroids;
     if (imgName === 'seller-bloom-keychains.png' || id.includes('keychain')) return sellerBloomKeychains;
     if (imgName === 'seller-embroidery-hoop.png' || id.includes('embroidery') || id.includes('hoop')) return sellerEmbroideryHoop;

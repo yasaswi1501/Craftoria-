@@ -14,7 +14,7 @@ import coverBouquets from '../assets/bloom-bouquets-cover.jpg';
 const BestSellers = () => {
   const { navigate } = useRouter();
 
-  // The 8 collections in the exact request order:
+  // The 7 collections in the exact request catalog order:
   const collections = [
     {
       id: 'photo-frames',
@@ -43,19 +43,19 @@ const BestSellers = () => {
     {
       id: 'craftoria-bloom-bouquets',
       name: 'Craftoria Bloom Bouquets',
-      desc: 'Handcrafted everlasting bouquets made with premium pipe cleaners, designed to celebrate every special moment with elegance and love.',
+      desc: 'Handcrafted everlasting bouquets made with premium pipe cleaners, designed to celebrate every special moment.',
       image: coverBouquets,
     },
     {
       id: 'handmade-decor',
       name: 'Home Decor',
-      desc: 'Elegant craft pieces to add warmth to your space.',
+      desc: 'Elegant craft pieces, fridge magnets, and vases to add warmth to your space.',
       image: coverMacrame,
     },
     {
-      id: 'clips-rubber-bands',
-      name: 'Clips & Rubber Bands',
-      desc: 'Stylish handmade clips and rubber bands for everyday charm.',
+      id: 'accessories',
+      name: 'Accessories',
+      desc: 'Stylish handmade clips, rubber bands, and hair accessories for everyday charm.',
       image: coverClips,
     },
   ];

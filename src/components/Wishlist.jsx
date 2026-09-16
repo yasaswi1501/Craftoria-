@@ -18,6 +18,9 @@ import coverChildFrame from '../assets/gallery-5-child-frame.jpg';
 import coverCoupleEmbroidery from '../assets/gallery-3-couple-embroidery.jpg';
 import coverBlueFlowerKeychain from '../assets/gallery-2-blue-flower-keychain.jpg';
 import coverHeartKeychain from '../assets/gallery-4-heart-keychain.jpg';
+import embroideryShirt from '../assets/embroidery-shirt.jpg';
+import fridgeMagnets from '../assets/fridge-magnets.jpg';
+import flowerVase from '../assets/flower-vase.jpg';
 
 const Wishlist = () => {
   const { wishlist, removeFromWishlist } = useWishlist();
@@ -31,13 +34,16 @@ const Wishlist = () => {
     const rawId = (id || '').toLowerCase();
     const rawSaved = savedImage || '';
 
+    if (rawSaved === 'embroidery-shirt.jpg' || rawId.includes('shirt')) return embroideryShirt;
+    if (rawSaved === 'fridge-magnets.jpg' || rawId.includes('magnet')) return fridgeMagnets;
+    if (rawSaved === 'flower-vase.jpg' || rawId.includes('vase')) return flowerVase;
     if (rawSaved === 'gallery-2-blue-flower-keychain.jpg' || rawId.includes('blue-blossom')) return coverBlueFlowerKeychain;
     if (rawSaved === 'gallery-4-heart-keychain.jpg' || rawId.includes('heart-keychain') || rawId.includes('purple-heart')) return coverHeartKeychain;
-    if (rawSaved === 'gallery-3-couple-embroidery.jpg' || rawId.includes('couple-embroidery')) return coverCoupleEmbroidery;
+    if (rawSaved === 'gallery-3-couple-embroidery.jpg' || rawId.includes('couple-embroidery') || rawId.includes('middle-frame')) return coverCoupleEmbroidery;
     if (rawSaved === 'gallery-5-child-frame.jpg' || rawId.includes('child-frame') || rawId.includes('wooden-frame')) return coverChildFrame;
     if (rawSaved === 'bloom-bouquets-cover.jpg' || rawId.includes('craftoria-bloom') || rawId.includes('bloom-bouquets')) return coverBouquets;
     if (rawSaved === 'macrame-wall-hanging.jpg' || rawId.includes('macrame') || rawId.includes('decor')) return coverMacrame;
-    if (rawSaved === 'clips-rubber-bands.jpg' || rawId.includes('clip') || rawId.includes('rubber-band')) return coverClips;
+    if (rawSaved === 'clips-rubber-bands.jpg' || rawId.includes('clip') || rawId.includes('rubber-band') || rawId.includes('accessories')) return coverClips;
     if (rawSaved === 'polaroids-new.jpg' || rawSaved === 'gallery-1-polaroid.jpg' || rawId.includes('polaroid')) return coverPolaroids;
     if (rawSaved === 'seller-bloom-keychains.png' || rawId.includes('keychain')) return sellerBloomKeychains;
     if (rawSaved === 'seller-embroidery-hoop.png' || rawId.includes('embroidery') || rawId.includes('hoop')) return sellerEmbroideryHoop;

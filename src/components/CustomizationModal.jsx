@@ -19,6 +19,9 @@ import coverChildFrame from '../assets/gallery-5-child-frame.jpg';
 import coverCoupleEmbroidery from '../assets/gallery-3-couple-embroidery.jpg';
 import coverBlueFlowerKeychain from '../assets/gallery-2-blue-flower-keychain.jpg';
 import coverHeartKeychain from '../assets/gallery-4-heart-keychain.jpg';
+import embroideryShirt from '../assets/embroidery-shirt.jpg';
+import fridgeMagnets from '../assets/fridge-magnets.jpg';
+import flowerVase from '../assets/flower-vase.jpg';
 
 export const OCCASIONS = [
   '🎂 Birthday',
@@ -44,7 +47,7 @@ export const CATEGORY_TABS = [
   { id: 'keychains', label: '🔑 Keychains' },
   { id: 'polaroids', label: '📸 Polaroids' },
   { id: 'handmade-decor', label: '🏡 Home Decor' },
-  { id: 'clips-rubber-bands', label: '🎀 Hair Clips' },
+  { id: 'accessories', label: '🎀 Accessories' },
 ];
 
 const CustomizationModal = ({ isOpen, onClose, product }) => {
@@ -68,7 +71,8 @@ const CustomizationModal = ({ isOpen, onClose, product }) => {
       const chosen = match || product || productsData[0];
       setSelectedProduct(chosen);
       if (chosen?.category && chosen.category !== 'custom-orders') {
-        setSelectedCategoryFilter(chosen.category);
+        const catKey = chosen.category === 'clips-rubber-bands' ? 'accessories' : chosen.category;
+        setSelectedCategoryFilter(catKey);
       } else {
         setSelectedCategoryFilter('all');
       }
@@ -85,7 +89,12 @@ const CustomizationModal = ({ isOpen, onClose, product }) => {
 
   const filteredProducts = useMemo(() => {
     if (selectedCategoryFilter === 'all') return productsData;
-    return productsData.filter(p => p.category === selectedCategoryFilter);
+    return productsData.filter(p => {
+      if (selectedCategoryFilter === 'accessories') {
+        return p.category === 'accessories' || p.category === 'clips-rubber-bands';
+      }
+      return p.category === selectedCategoryFilter;
+    });
   }, [selectedCategoryFilter]);
 
   // Lock background body scroll when modal is open to ensure pure, uninterrupted modal scrolling
@@ -106,13 +115,16 @@ const CustomizationModal = ({ isOpen, onClose, product }) => {
     const cat = (prod?.category || '').toLowerCase();
     const imgName = prod?.thumbnail || prod?.image || '';
 
+    if (imgName === 'embroidery-shirt.jpg' || id.includes('shirt')) return embroideryShirt;
+    if (imgName === 'fridge-magnets.jpg' || id.includes('magnet')) return fridgeMagnets;
+    if (imgName === 'flower-vase.jpg' || id.includes('vase')) return flowerVase;
     if (imgName === 'gallery-2-blue-flower-keychain.jpg' || id.includes('blue-blossom')) return coverBlueFlowerKeychain;
     if (imgName === 'gallery-4-heart-keychain.jpg' || id.includes('heart-keychain') || id.includes('purple-heart')) return coverHeartKeychain;
-    if (imgName === 'gallery-3-couple-embroidery.jpg' || id.includes('couple-embroidery')) return coverCoupleEmbroidery;
+    if (imgName === 'gallery-3-couple-embroidery.jpg' || id.includes('couple-embroidery') || id.includes('middle-frame')) return coverCoupleEmbroidery;
     if (imgName === 'gallery-5-child-frame.jpg' || id.includes('child-frame') || id.includes('wooden-frame')) return coverChildFrame;
     if (imgName === 'bloom-bouquets-cover.jpg' || id.includes('bloom-bouquets') || cat === 'craftoria-bloom-bouquets') return coverBouquets;
     if (imgName === 'macrame-wall-hanging.jpg' || cat === 'handmade-decor') return coverMacrame;
-    if (imgName === 'clips-rubber-bands.jpg' || cat === 'clips-rubber-bands') return coverClips;
+    if (imgName === 'clips-rubber-bands.jpg' || cat === 'clips-rubber-bands' || cat === 'accessories') return coverClips;
     if (imgName === 'polaroids-new.jpg' || cat === 'polaroids') return coverPolaroids;
     if (imgName === 'seller-bloom-keychains.png' || cat === 'keychains') return sellerBloomKeychains;
     if (imgName === 'seller-embroidery-hoop.png' || cat === 'embroidery') return sellerEmbroideryHoop;

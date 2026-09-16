@@ -39,7 +39,8 @@ function App() {
   // Route matching with database existence validation
   const isCollectionsPage = pathname.startsWith('/collections/');
   const rawCollectionId = isCollectionsPage ? pathname.split('/')[2] : null;
-  const validCollection = isCollectionsPage ? collectionsData.find(c => c.id === rawCollectionId) : null;
+  const effectiveCollectionId = rawCollectionId === 'clips-rubber-bands' ? 'accessories' : rawCollectionId;
+  const validCollection = isCollectionsPage ? collectionsData.find(c => c.id === effectiveCollectionId) : null;
   const isInvalidCollection = isCollectionsPage && !validCollection;
 
   const isProductPage = pathname.startsWith('/product/');
@@ -152,7 +153,7 @@ function App() {
           ) : isWishlistPage ? (
             <Wishlist />
           ) : validCollection ? (
-            <CollectionPage collectionId={rawCollectionId} />
+            <CollectionPage collectionId={effectiveCollectionId || rawCollectionId} />
           ) : validProduct ? (
             <ProductPage productSlug={rawProductSlug} />
           ) : (

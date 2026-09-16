@@ -18,6 +18,13 @@ import coverPolaroids from '../assets/polaroids-new.jpg';
 import coverClips from '../assets/clips-rubber-bands.jpg';
 import coverMacrame from '../assets/macrame-wall-hanging.jpg';
 import coverBouquets from '../assets/bloom-bouquets-cover.jpg';
+import coverChildFrame from '../assets/gallery-5-child-frame.jpg';
+import coverCoupleEmbroidery from '../assets/gallery-3-couple-embroidery.jpg';
+import coverBlueFlowerKeychain from '../assets/gallery-2-blue-flower-keychain.jpg';
+import coverHeartKeychain from '../assets/gallery-4-heart-keychain.jpg';
+import embroideryShirt from '../assets/embroidery-shirt.jpg';
+import fridgeMagnets from '../assets/fridge-magnets.jpg';
+import flowerVase from '../assets/flower-vase.jpg';
 
 const CollectionPage = ({ collectionId }) => {
   const { navigate } = useRouter();
@@ -41,6 +48,8 @@ const CollectionPage = ({ collectionId }) => {
   const [minRating, setMinRating] = useState(0);
   const [sortBy, setSortBy] = useState('popularity'); // 'popularity' | 'newest' | 'rating' | 'alpha'
 
+  const targetCategory = collectionId === 'clips-rubber-bands' ? 'accessories' : collectionId;
+
   // Reset filters when changing collections
   useEffect(() => {
     setSearchQuery('');
@@ -53,40 +62,49 @@ const CollectionPage = ({ collectionId }) => {
 
   // Load collection metadata
   const collection = useMemo(() => {
-    return collectionsData.find(c => c.id === collectionId) || {
+    return collectionsData.find(c => c.id === targetCategory || c.id === collectionId) || {
       id: collectionId,
       name: 'Artisan Collection',
       desc: 'Exclusive handcrafted Craftoria designs.',
       descriptionLong: 'Discover our luxury handcrafted catalog made with premium threads, canvases, and chenille wire materials by local artisans.'
     };
-  }, [collectionId]);
+  }, [collectionId, targetCategory]);
 
   // Get matching product image helper
   const getProductImage = (product) => {
-    switch (product.category) {
-      case 'photo-frames': return sellerMemoryCanvas;
-      case 'embroidery': return sellerEmbroideryHoop;
-      case 'keychains': return sellerBloomKeychains;
-      case 'polaroids': return coverPolaroids;
-      case 'clips-rubber-bands': return coverClips;
-      case 'handmade-decor': return coverMacrame;
-      case 'craftoria-bloom-bouquets': return coverBouquets;
-      default: return sellerMemoryCanvas;
-    }
+    const id = (product?.id || '').toLowerCase();
+    const cat = (product?.category || '').toLowerCase();
+    const imgName = product?.thumbnail || product?.image || '';
+
+    if (imgName === 'embroidery-shirt.jpg' || id.includes('shirt')) return embroideryShirt;
+    if (imgName === 'fridge-magnets.jpg' || id.includes('magnet')) return fridgeMagnets;
+    if (imgName === 'flower-vase.jpg' || id.includes('vase')) return flowerVase;
+    if (imgName === 'gallery-2-blue-flower-keychain.jpg' || id.includes('blue-blossom')) return coverBlueFlowerKeychain;
+    if (imgName === 'gallery-4-heart-keychain.jpg' || id.includes('heart-keychain') || id.includes('purple-heart')) return coverHeartKeychain;
+    if (imgName === 'gallery-3-couple-embroidery.jpg' || id.includes('couple-embroidery') || id.includes('middle-frame')) return coverCoupleEmbroidery;
+    if (imgName === 'gallery-5-child-frame.jpg' || id.includes('child-frame') || id.includes('wooden-frame')) return coverChildFrame;
+    if (imgName === 'bloom-bouquets-cover.jpg' || id.includes('bloom-bouquets') || cat === 'craftoria-bloom-bouquets') return coverBouquets;
+    if (imgName === 'macrame-wall-hanging.jpg' || cat === 'handmade-decor') return coverMacrame;
+    if (imgName === 'clips-rubber-bands.jpg' || cat === 'clips-rubber-bands' || cat === 'accessories') return coverClips;
+    if (imgName === 'polaroids-new.jpg' || cat === 'polaroids') return coverPolaroids;
+    if (imgName === 'seller-bloom-keychains.png' || cat === 'keychains') return sellerBloomKeychains;
+    if (imgName === 'seller-embroidery-hoop.png' || cat === 'embroidery') return sellerEmbroideryHoop;
+    if (imgName === 'seller-memory-canvas.png' || cat === 'photo-frames') return sellerMemoryCanvas;
+    return sellerMemoryCanvas;
   };
 
   // Collect all unique tags for filter checkboxes
   const uniqueTags = useMemo(() => {
-    const colProducts = productsData.filter(p => p.category === collectionId);
+    const colProducts = productsData.filter(p => p.category === targetCategory || p.category === collectionId);
     const tagsSet = new Set();
     colProducts.forEach(p => p.tags && p.tags.forEach(t => tagsSet.add(t)));
     return Array.from(tagsSet);
-  }, [collectionId]);
+  }, [collectionId, targetCategory]);
 
   // Filtering & Sorting Products logic
   const filteredProducts = useMemo(() => {
     // 1. Strict category partition check (reusable database category matching)
-    let result = productsData.filter(p => p.category === collectionId);
+    let result = productsData.filter(p => p.category === targetCategory || p.category === collectionId);
 
     // 2. Search query
     if (searchQuery.trim()) {

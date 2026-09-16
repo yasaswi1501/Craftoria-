@@ -287,12 +287,12 @@ const Contact = () => {
                             className="glass-input px-4 py-3 rounded-xl text-xs sm:text-sm transition-all duration-200 w-full appearance-none pr-10 cursor-pointer"
                           >
                             <option value="Craftoria Bloom Bouquets">Craftoria Bloom Bouquets (Chenille Stem Flowers)</option>
-                            <option value="Embroidery">Embroidery Hoops (Couples, Names, Floral)</option>
-                            <option value="Photo Frames">Handmade Photo Frames</option>
+                            <option value="Embroidery">Embroidery Hoops & Apparel (Couples, Names, Floral)</option>
+                            <option value="Photo Frames">Handmade Photo Frames & Canvases</option>
                             <option value="Keychains">Keychains & Bag Charms</option>
-                            <option value="Polaroids">Aesthetic Polaroids</option>
-                            <option value="Home Decor">Home Decor & Wall Hangings</option>
-                            <option value="Clips & Rubber Bands">Clips & Hair Accessories</option>
+                            <option value="Polaroids">Aesthetic Polaroids & Music Strips</option>
+                            <option value="Home Decor">Home Decor (Fridge Magnets & Flower Vases)</option>
+                            <option value="Accessories">Accessories (Clips, Scrunchies & Barrettes)</option>
                           </select>
                           <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-brand-plum text-[10px]">
                             ▼
