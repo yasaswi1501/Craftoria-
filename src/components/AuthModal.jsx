@@ -2,10 +2,14 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { X, Eye, EyeOff, Mail, Phone, Lock, User, ArrowLeft, Loader2, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useScrollLock } from '../utils/scrollLock';
 
 const AuthModal = ({ isOpen, onClose }) => {
   const { login, signup, loginWithGoogle, forgotPassword } = useAuth();
   const [view, setView] = useState('login'); // 'login' | 'signup' | 'forgot'
+  
+  // Lock background body scroll cleanly when auth modal is open
+  useScrollLock(isOpen);
   
   // Form fields
   const [name, setName] = useState('');
@@ -222,9 +226,10 @@ const AuthModal = ({ isOpen, onClose }) => {
   );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-brand-plum/40 backdrop-blur-sm overflow-y-auto no-scrollbar pb-safe pt-safe">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-brand-plum/40 backdrop-blur-sm overflow-y-auto no-scrollbar pb-safe pt-safe" data-lenis-prevent="true">
       <div 
-        className="absolute inset-0 cursor-pointer" 
+        className="fixed inset-0 cursor-pointer touch-none" 
+        onTouchMove={(e) => e.preventDefault()}
         onClick={() => {
           if (!isSubmitting && !isGoogleLoading) {
             clearFields();
@@ -237,7 +242,10 @@ const AuthModal = ({ isOpen, onClose }) => {
         initial={{ opacity: 0, scale: 0.95, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 10 }}
-        className="relative w-full max-w-md glass-card rounded-[24px] sm:rounded-[32px] overflow-hidden p-5 sm:p-8 border border-brand-purple/30 shadow-[0_24px_50px_rgba(75,46,93,0.15)] z-10 flex flex-col text-brand-dark my-auto max-h-[92vh] overflow-y-auto no-scrollbar"
+        onWheel={(e) => e.stopPropagation()}
+        data-lenis-prevent="true"
+        className="relative w-full max-w-md glass-card rounded-[24px] sm:rounded-[32px] overflow-hidden p-5 sm:p-8 border border-brand-purple/30 shadow-[0_24px_50px_rgba(75,46,93,0.15)] z-10 flex flex-col text-brand-dark my-auto max-h-[92vh] overflow-y-auto overscroll-contain custom-scrollbar"
+        style={{ touchAction: 'pan-y' }}
       >
         {/* Close Button */}
         <button

@@ -9,6 +9,7 @@ import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { productsData, collectionsData } from '../data/products';
 import CustomizationModal from './CustomizationModal';
+import { useScrollLock } from '../utils/scrollLock';
 
 import sellerMemoryCanvas from '../assets/seller-memory-canvas.png';
 import sellerEmbroideryHoop from '../assets/seller-embroidery-hoop.png';
@@ -45,6 +46,9 @@ const CollectionPage = ({ collectionId }) => {
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
   // Add to cart animation tracking
   const [addedStates, setAddedStates] = useState({});
+
+  // Lock background body scroll cleanly when filter drawer is open
+  useScrollLock(isFilterDrawerOpen);
 
   // Filters State
   const [searchQuery, setSearchQuery] = useState('');
@@ -506,22 +510,25 @@ const CollectionPage = ({ collectionId }) => {
       {/* 3. MOBILE FILTERS DRAWER */}
       <AnimatePresence>
         {isFilterDrawerOpen && (
-          <div className="fixed inset-0 z-50 flex lg:hidden">
+          <div className="fixed inset-0 z-50 flex lg:hidden" data-lenis-prevent="true">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsFilterDrawerOpen(false)}
-              className="absolute inset-0 bg-brand-plum/40 backdrop-blur-xs cursor-pointer"
+              onTouchMove={(e) => e.preventDefault()}
+              className="fixed inset-0 bg-brand-plum/40 backdrop-blur-xs cursor-pointer touch-none"
             />
             <motion.div
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 220 }}
-              className="relative w-full max-w-xs h-full bg-[#FCF8FC] border-r border-brand-purple/20 shadow-xl flex flex-col z-10 p-5 text-brand-dark text-left"
+              onWheel={(e) => e.stopPropagation()}
+              data-lenis-prevent="true"
+              className="relative w-full max-w-xs h-full bg-[#FCF8FC] border-r border-brand-purple/20 shadow-xl flex flex-col z-10 p-5 text-brand-dark text-left pb-safe overscroll-contain"
             >
-              <div className="flex justify-between items-center border-b border-brand-purple/10 pb-3 mb-5">
+              <div className="flex justify-between items-center border-b border-brand-purple/10 pb-3 mb-5 flex-shrink-0">
                 <h3 className="font-serif text-base font-bold flex items-center gap-1.5">
                   <Filter className="w-4 h-4 text-brand-plum" /> Filters
                 </h3>
@@ -534,7 +541,10 @@ const CollectionPage = ({ collectionId }) => {
                 </button>
               </div>
 
-              <div className="flex-grow overflow-y-auto space-y-6 pr-1 custom-scrollbar text-xs">
+              <div 
+                className="flex-grow overflow-y-auto space-y-6 pr-1 custom-scrollbar text-xs overscroll-contain"
+                style={{ touchAction: 'pan-y' }}
+              >
                 {/* Styles / Tags */}
                 {uniqueTags.length > 0 && (
                   <div className="space-y-2">

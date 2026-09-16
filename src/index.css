@@ -76,6 +76,15 @@
   }
 }
 
+/* Bulletproof mobile scroll lock for modals & navigation drawers */
+html.lock-scroll,
+body.lock-scroll {
+  overflow: hidden !important;
+  height: 100% !important;
+  overscroll-behavior: none !important;
+  touch-action: none !important;
+}
+
 /* Irregular watercolor wash blobs */
 .watercolor-blob {
   position: absolute;

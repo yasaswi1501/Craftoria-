@@ -4,6 +4,7 @@ import { X, ShoppingBag, Plus, Minus, Trash2, ShieldCheck, MessageCircle, Sparkl
 import { useCart } from '../context/CartContext';
 import { useRouter } from '../context/RouterContext';
 import { redirectToWhatsApp } from '../utils/whatsapp';
+import { useScrollLock } from '../utils/scrollLock';
 
 import sellerMemoryCanvas from '../assets/seller-memory-canvas.png';
 import sellerEmbroideryHoop from '../assets/seller-embroidery-hoop.png';
@@ -44,16 +45,8 @@ const CartDrawer = () => {
 
   const [showClearConfirm, setShowClearConfirm] = useState(false);
 
-  // Lock background body scroll when cart drawer is open
-  useEffect(() => {
-    if (isCartOpen) {
-      const prevOverflow = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
-      return () => {
-        document.body.style.overflow = prevOverflow;
-      };
-    }
-  }, [isCartOpen]);
+  // Lock background body scroll cleanly when cart drawer is open
+  useScrollLock(isCartOpen);
 
   const getProductImage = (item) => {
     const id = (typeof item === 'string' ? item : item?.id || '').toLowerCase();
@@ -110,7 +103,8 @@ const CartDrawer = () => {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={handleClose}
-        className="fixed inset-0 bg-brand-plum/40 backdrop-blur-xs cursor-pointer"
+        onTouchMove={(e) => e.preventDefault()}
+        className="fixed inset-0 bg-brand-plum/40 backdrop-blur-xs cursor-pointer touch-none"
       />
 
       {/* Drawer Body */}

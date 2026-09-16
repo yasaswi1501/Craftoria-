@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { productsData } from '../data/products';
+import { useScrollLock } from '../utils/scrollLock';
 
 import sellerMemoryCanvas from '../assets/seller-memory-canvas.png';
 import sellerEmbroideryHoop from '../assets/seller-embroidery-hoop.png';
@@ -103,16 +104,8 @@ const CustomizationModal = ({ isOpen, onClose, product }) => {
     });
   }, [selectedCategoryFilter]);
 
-  // Lock background body scroll when modal is open to ensure pure, uninterrupted modal scrolling
-  useEffect(() => {
-    if (isOpen) {
-      const prevOverflow = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
-      return () => {
-        document.body.style.overflow = prevOverflow;
-      };
-    }
-  }, [isOpen]);
+  // Lock background body scroll cleanly when modal is open to ensure pure, uninterrupted modal scrolling
+  useScrollLock(isOpen);
 
   if (!isOpen || !product) return null;
 
@@ -194,7 +187,8 @@ const CustomizationModal = ({ isOpen, onClose, product }) => {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={onClose}
-        className="fixed inset-0 bg-brand-plum/50 backdrop-blur-sm cursor-pointer"
+        onTouchMove={(e) => e.preventDefault()}
+        className="fixed inset-0 bg-brand-plum/50 backdrop-blur-sm cursor-pointer touch-none"
       />
 
       {/* Modal Container */}

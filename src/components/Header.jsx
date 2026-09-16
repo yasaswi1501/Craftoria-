@@ -11,6 +11,7 @@ import AuthModal from './AuthModal';
 import AccountMenu from './AccountMenu';
 import CartDrawer from './CartDrawer';
 import { useRouter } from '../context/RouterContext';
+import { useScrollLock } from '../utils/scrollLock';
 
 const Header = () => {
   const { isLoggedIn, user, logout, isAuthModalOpen, setIsAuthModalOpen } = useAuth();
@@ -86,17 +87,8 @@ const Header = () => {
     };
   }, [window.location.pathname]);
 
-  // Prevent scroll when mobile nav is open
-  useEffect(() => {
-    if (isNavOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [isNavOpen]);
+  // Lock background body scroll cleanly when mobile nav is open
+  useScrollLock(isNavOpen);
 
   const navLinks = [
     { name: 'Home', href: '#home' },
@@ -403,14 +395,15 @@ const Header = () => {
       {/* Mobile Drawer (Slide in from Left - Flipkart/Amazon style with Top Account Card) */}
       <AnimatePresence>
         {isNavOpen && (
-          <div className="fixed inset-0 z-50 flex">
+          <div className="fixed inset-0 z-50 flex" data-lenis-prevent="true">
             {/* Overlay */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsNavOpen(false)}
-              className="absolute inset-0 bg-brand-plum/45 backdrop-blur-xs cursor-pointer"
+              onTouchMove={(e) => e.preventDefault()}
+              className="fixed inset-0 bg-brand-plum/45 backdrop-blur-xs cursor-pointer touch-none"
             />
 
             {/* Nav Menu Content */}
@@ -419,7 +412,10 @@ const Header = () => {
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 220 }}
-              className="relative w-80 max-w-[88vw] h-full bg-[#FCF8FC] border-r border-brand-purple/20 shadow-[0_0_40px_rgba(75,46,93,0.15)] flex flex-col z-10 text-brand-dark p-4 sm:p-5 overflow-y-auto pb-safe"
+              onWheel={(e) => e.stopPropagation()}
+              data-lenis-prevent="true"
+              className="relative w-80 max-w-[88vw] h-full bg-[#FCF8FC] border-r border-brand-purple/20 shadow-[0_0_40px_rgba(75,46,93,0.15)] flex flex-col z-10 text-brand-dark p-4 sm:p-5 overflow-y-auto overscroll-contain custom-scrollbar pb-safe"
+              style={{ touchAction: 'pan-y' }}
             >
               {/* Drawer Top Row: Flipkart/Amazon Brand & Close */}
               <div className="flex items-center justify-between mb-4 pb-3 border-b border-brand-purple/10">

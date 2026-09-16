@@ -8,6 +8,7 @@ import { useAuth } from '../context/AuthContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
 import { supabase } from '../lib/supabase';
+import { useScrollLock } from '../utils/scrollLock';
 
 const AccountMenu = ({ isOpen, onClose, initialTab = 'menu' }) => {
   const { user, logout, updateUserProfile } = useAuth();
@@ -17,6 +18,9 @@ const AccountMenu = ({ isOpen, onClose, initialTab = 'menu' }) => {
   // Current tab: 'menu' | 'profile' | 'orders' | 'wishlist' | 'addresses'
   const [activeTab, setActiveTab] = useState(initialTab);
   const [orders, setOrders] = useState([]);
+
+  // Lock background body scroll cleanly when account drawer is open
+  useScrollLock(isOpen);
 
   useEffect(() => {
     if (isOpen) {
@@ -208,14 +212,15 @@ const AccountMenu = ({ isOpen, onClose, initialTab = 'menu' }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end">
+    <div className="fixed inset-0 z-50 flex justify-end" data-lenis-prevent="true">
       {/* Backdrop */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={onClose}
-        className="absolute inset-0 bg-brand-plum/40 backdrop-blur-xs cursor-pointer"
+        onTouchMove={(e) => e.preventDefault()}
+        className="fixed inset-0 bg-brand-plum/40 backdrop-blur-xs cursor-pointer touch-none"
       />
 
       {/* Account Drawer */}
@@ -224,10 +229,12 @@ const AccountMenu = ({ isOpen, onClose, initialTab = 'menu' }) => {
         animate={{ x: 0 }}
         exit={{ x: '100%' }}
         transition={{ type: 'spring', damping: 25, stiffness: 220 }}
-        className="relative w-full max-w-md h-full bg-[#FCF8FC] border-l border-brand-purple/20 shadow-[0_0_50px_rgba(75,46,93,0.15)] flex flex-col z-10 text-brand-dark pb-safe"
+        onWheel={(e) => e.stopPropagation()}
+        data-lenis-prevent="true"
+        className="relative w-full max-w-md h-full bg-[#FCF8FC] border-l border-brand-purple/20 shadow-[0_0_50px_rgba(75,46,93,0.15)] flex flex-col z-10 text-brand-dark pb-safe overscroll-contain"
       >
         {/* Header */}
-        <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-brand-purple/10 flex items-center justify-between">
+        <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-brand-purple/10 flex items-center justify-between flex-shrink-0">
           <div className="flex items-center gap-2">
             <User className="w-5 h-5 text-brand-plum" />
             <h2 className="font-serif text-base sm:text-lg font-bold">
@@ -248,7 +255,10 @@ const AccountMenu = ({ isOpen, onClose, initialTab = 'menu' }) => {
         </div>
 
         {/* Content */}
-        <div className="flex-grow overflow-y-auto px-4 sm:px-6 py-5 sm:py-6 text-left no-scrollbar">
+        <div 
+          className="flex-grow overflow-y-auto px-4 sm:px-6 py-5 sm:py-6 text-left custom-scrollbar overscroll-contain"
+          style={{ touchAction: 'pan-y' }}
+        >
           {/* MENU TAB */}
           {activeTab === 'menu' && (
             <div className="flex flex-col h-full justify-between">
