@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ShoppingBag, Plus, Minus, Trash2, ShieldCheck, MessageCircle, Sparkles } from 'lucide-react';
 import { useCart } from '../context/CartContext';
@@ -34,6 +34,17 @@ const CartDrawer = () => {
   const { navigate } = useRouter();
 
   const [showClearConfirm, setShowClearConfirm] = useState(false);
+
+  // Lock background body scroll when cart drawer is open
+  useEffect(() => {
+    if (isCartOpen) {
+      const prevOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = prevOverflow;
+      };
+    }
+  }, [isCartOpen]);
 
   const getProductImage = (item) => {
     const id = (typeof item === 'string' ? item : item?.id || '').toLowerCase();
@@ -73,14 +84,14 @@ const CartDrawer = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end">
+    <div className="fixed inset-0 z-50 flex justify-end" data-lenis-prevent="true">
       {/* Backdrop */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={handleClose}
-        className="absolute inset-0 bg-brand-plum/40 backdrop-blur-xs cursor-pointer"
+        className="fixed inset-0 bg-brand-plum/40 backdrop-blur-xs cursor-pointer"
       />
 
       {/* Drawer Body */}
@@ -89,10 +100,12 @@ const CartDrawer = () => {
         animate={{ x: 0 }}
         exit={{ x: '100%' }}
         transition={{ type: 'spring', damping: 25, stiffness: 220 }}
+        onWheel={(e) => e.stopPropagation()}
+        data-lenis-prevent="true"
         className="relative w-full max-w-md h-full bg-[#FCF8FC] border-l border-brand-purple/20 shadow-[0_0_50px_rgba(75,46,93,0.15)] flex flex-col z-10 text-brand-dark"
       >
         {/* Header */}
-        <div className="px-6 py-5 border-b border-brand-purple/10 flex items-center justify-between">
+        <div className="px-6 py-5 border-b border-brand-purple/10 flex items-center justify-between flex-shrink-0">
           <div className="flex items-center gap-2 text-left">
             <ShoppingBag className="w-5 h-5 text-brand-plum" />
             <h2 className="font-serif text-lg font-bold">
@@ -122,7 +135,7 @@ const CartDrawer = () => {
 
         {/* Clear Cart Confirmation Overlay */}
         {showClearConfirm && (
-          <div className="px-6 py-3 bg-red-50/90 border-b border-red-100 flex items-center justify-between text-xs text-left animate-fadeIn">
+          <div className="px-6 py-3 bg-red-50/90 border-b border-red-100 flex items-center justify-between text-xs text-left animate-fadeIn flex-shrink-0">
             <span className="font-semibold text-red-700">Remove all items from your cart?</span>
             <div className="flex gap-2">
               <button
@@ -145,7 +158,11 @@ const CartDrawer = () => {
         )}
 
         {/* Scrollable Cart Items */}
-        <div className="flex-grow overflow-y-auto px-6 py-6 custom-scrollbar">
+        <div 
+          className="flex-1 min-h-0 overflow-y-auto px-6 py-6 custom-scrollbar overscroll-contain"
+          data-lenis-prevent="true"
+          style={{ touchAction: 'pan-y' }}
+        >
           {cart.length === 0 && saveForLaterList.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-center py-20">
               <div className="w-16 h-16 rounded-full bg-brand-purple/10 flex items-center justify-center mb-4">

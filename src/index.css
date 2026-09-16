@@ -175,6 +175,27 @@
   background: rgba(75, 46, 93, 0.6);
 }
 
+/* Custom Modal & Drawer Scrollbar */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(139, 110, 174, 0.45) transparent;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(139, 110, 174, 0.4);
+  border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(75, 46, 93, 0.7);
+}
+
 /* Lenis scroll optimization */
 html.lenis, html.lenis body {
   height: auto;
@@ -184,8 +205,9 @@ html.lenis, html.lenis body {
   scroll-behavior: auto !important;
 }
 
+[data-lenis-prevent],
 .lenis-smooth [data-lenis-prevent] {
-  overscroll-behavior: contain;
+  overscroll-behavior: contain !important;
 }
 
 .lenis-stopped {

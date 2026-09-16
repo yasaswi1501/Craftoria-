@@ -73,6 +73,17 @@ const CustomizationModal = ({ isOpen, onClose, product }) => {
     }
   }, [product, isOpen]);
 
+  // Lock background body scroll when modal is open to ensure pure, uninterrupted modal scrolling
+  useEffect(() => {
+    if (isOpen) {
+      const prevOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = prevOverflow;
+      };
+    }
+  }, [isOpen]);
+
   if (!isOpen || !product) return null;
 
   const getProductImage = (prod) => {
@@ -133,14 +144,17 @@ const CustomizationModal = ({ isOpen, onClose, product }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6"
+      data-lenis-prevent="true"
+    >
       {/* Backdrop */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={onClose}
-        className="fixed inset-0 bg-brand-plum/45 backdrop-blur-sm cursor-pointer"
+        className="fixed inset-0 bg-brand-plum/50 backdrop-blur-sm cursor-pointer"
       />
 
       {/* Modal Container */}
@@ -149,12 +163,14 @@ const CustomizationModal = ({ isOpen, onClose, product }) => {
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-        className="relative w-full max-w-2xl max-h-[92vh] bg-[#FCF8FC] border border-brand-purple/20 rounded-[28px] shadow-[0_20px_60px_rgba(75,46,93,0.22)] overflow-hidden flex flex-col z-10 text-brand-dark text-left my-auto"
+        onWheel={(e) => e.stopPropagation()}
+        data-lenis-prevent="true"
+        className="relative w-full max-w-2xl max-h-[88vh] sm:max-h-[85vh] h-auto bg-[#FCF8FC] border border-brand-purple/20 rounded-[28px] shadow-[0_20px_60px_rgba(75,46,93,0.25)] overflow-hidden flex flex-col z-10 text-brand-dark text-left my-auto"
       >
-        {/* Header */}
-        <div className="px-5 sm:px-7 py-4 border-b border-brand-purple/10 bg-white/70 backdrop-blur-md flex items-center justify-between sticky top-0 z-20">
+        {/* Header (Sticky / Fixed at top of modal) */}
+        <div className="px-5 sm:px-7 py-4 border-b border-brand-purple/10 bg-white/80 backdrop-blur-md flex items-center justify-between flex-shrink-0 z-20">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-full bg-brand-purple/15 flex items-center justify-center text-brand-plum">
+            <div className="w-8 h-8 rounded-full bg-brand-purple/15 flex items-center justify-center text-brand-plum flex-shrink-0">
               <Sparkles className="w-4 h-4" />
             </div>
             <div>
@@ -169,7 +185,7 @@ const CustomizationModal = ({ isOpen, onClose, product }) => {
 
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-brand-purple/10 hover:bg-brand-purple/25 flex items-center justify-center text-brand-plum transition-colors cursor-pointer focus:outline-none"
+            className="w-8 h-8 rounded-full bg-brand-purple/10 hover:bg-brand-purple/25 flex items-center justify-center text-brand-plum transition-colors cursor-pointer focus:outline-none flex-shrink-0"
             aria-label="Close customization modal"
           >
             <X className="w-4 h-4" />
@@ -177,7 +193,11 @@ const CustomizationModal = ({ isOpen, onClose, product }) => {
         </div>
 
         {/* Scrollable Form Content */}
-        <div className="flex-grow overflow-y-auto p-5 sm:p-7 space-y-6 custom-scrollbar">
+        <div 
+          className="flex-1 min-h-0 overflow-y-auto p-5 sm:p-7 space-y-6 custom-scrollbar overscroll-contain"
+          data-lenis-prevent="true"
+          style={{ touchAction: 'pan-y' }}
+        >
           
           {/* Selected Product Summary Card */}
           <div className="glass-card p-3.5 sm:p-4 rounded-2xl border border-brand-purple/15 bg-white/60 flex items-center gap-3.5">
@@ -386,7 +406,7 @@ const CustomizationModal = ({ isOpen, onClose, product }) => {
         </div>
 
         {/* Footer: Quantity Stepper & Save & Add to Cart Button */}
-        <div className="px-5 sm:px-7 py-4 border-t border-brand-purple/15 bg-white/80 backdrop-blur-md flex flex-wrap items-center justify-between gap-4 sticky bottom-0 z-20">
+        <div className="px-5 sm:px-7 py-4 border-t border-brand-purple/15 bg-white/80 backdrop-blur-md flex flex-wrap items-center justify-between gap-4 flex-shrink-0 z-20">
           
           {/* Quantity Stepper */}
           <div className="flex items-center gap-2">
