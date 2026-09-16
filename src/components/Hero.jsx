@@ -103,30 +103,6 @@ const Hero = () => {
               <span>Custom Orders</span>
             </button>
           </motion.div>
-
-          {/* Happy Customers Social Proof */}
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.65, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            className="flex items-center gap-3 pt-2 border-t border-brand-purple/10 w-full sm:w-auto"
-          >
-            {/* Overlapping Avatars */}
-            <div className="flex -space-x-3">
-              <div className="w-8 sm:w-9 h-8 sm:h-9 rounded-full border border-white bg-gradient-to-tr from-brand-pink to-brand-purple flex items-center justify-center text-[10px] font-bold text-white shadow-sm">
-                AS
-              </div>
-              <div className="w-8 sm:w-9 h-8 sm:h-9 rounded-full border border-white bg-gradient-to-tr from-brand-purple to-brand-violet flex items-center justify-center text-[10px] font-bold text-white shadow-sm">
-                RV
-              </div>
-              <div className="w-8 sm:w-9 h-8 sm:h-9 rounded-full border border-white bg-gradient-to-tr from-brand-gold to-brand-pink flex items-center justify-center text-[10px] font-bold text-white shadow-sm">
-                MI
-              </div>
-            </div>
-            <span className="text-xs text-brand-dark/70 font-medium">
-              Loved by <span className="font-bold text-brand-plum">2,000+</span> happy customers
-            </span>
-          </motion.div>
         </div>
 
         {/* Right Content Column (Artistic Mockup Representation) */}
