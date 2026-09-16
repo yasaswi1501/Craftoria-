@@ -30,10 +30,19 @@ const Hero = () => {
       className="min-h-[620px] lg:min-h-[calc(100vh-80px)] lg:max-h-[760px] flex items-center justify-center pt-16 pb-10 px-6 relative overflow-hidden"
     >
       {/* Soft lavender/pink glow blobs behind the hero text and hero visual */}
-      <div className="absolute top-[20%] left-[8%] w-80 h-80 rounded-full bg-brand-purple/25 blur-[85px] -z-10 pointer-events-none" />
+      <div 
+        className="absolute top-[20%] left-[8%] w-80 h-80 rounded-full -z-10 pointer-events-none" 
+        style={{ background: 'radial-gradient(circle, rgba(200, 162, 200, 0.22) 0%, transparent 70%)', contain: 'strict' }}
+      />
       {/* Overlapping glows behind the card visual for atmospheric integration */}
-      <div className="absolute top-[12%] right-[2%] w-[420px] h-[420px] rounded-full bg-brand-purple/25 blur-[75px] -z-10 pointer-events-none" />
-      <div className="absolute top-[28%] right-[5%] w-[380px] h-[380px] rounded-full bg-brand-pink/20 blur-[85px] -z-10 pointer-events-none animate-[pulse_8s_infinite]" />
+      <div 
+        className="absolute top-[12%] right-[2%] w-[420px] h-[420px] rounded-full -z-10 pointer-events-none" 
+        style={{ background: 'radial-gradient(circle, rgba(200, 162, 200, 0.18) 0%, transparent 70%)', contain: 'strict' }}
+      />
+      <div 
+        className="absolute top-[28%] right-[5%] w-[380px] h-[380px] rounded-full -z-10 pointer-events-none" 
+        style={{ background: 'radial-gradient(circle, rgba(246, 221, 235, 0.20) 0%, transparent 70%)', contain: 'strict' }}
+      />
 
       <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
         {/* Left Content Column */}

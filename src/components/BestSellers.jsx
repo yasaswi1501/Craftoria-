@@ -63,13 +63,14 @@ const BestSellers = () => {
   const renderCard = (col, idx) => (
     <motion.div
       key={col.id}
-      initial={{ opacity: 0, scale: 0.94, y: 45 }}
-      whileInView={{ opacity: 1, scale: 1, y: 0 }}
-      viewport={{ once: true, margin: '-40px' }}
-      transition={{ duration: 0.7, delay: idx * 0.08, ease: [0.22, 1, 0.36, 1] }}
-      whileHover={{ y: -8, scale: 1.02, transition: { duration: 0.25 } }}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-20px' }}
+      transition={{ duration: 0.4, delay: idx * 0.05, ease: 'easeOut' }}
+      whileHover={{ y: -6, transition: { duration: 0.2 } }}
       onClick={() => navigate(`/collections/${col.id}`)}
-      className="flex flex-col w-full h-full bg-white/75 rounded-3xl border border-brand-purple/15 shadow-sm hover:shadow-xl hover:border-brand-purple/35 overflow-hidden group cursor-pointer transition-shadow duration-300"
+      className="flex flex-col w-full h-full bg-white/80 rounded-3xl border border-brand-purple/15 shadow-xs hover:shadow-lg hover:border-brand-purple/35 overflow-hidden group cursor-pointer transition-all duration-200"
+      style={{ contain: 'content' }}
     >
       {/* Top: Collection Image */}
       <div className="w-full relative pb-[75%] h-0 overflow-hidden border-b border-brand-purple/5">

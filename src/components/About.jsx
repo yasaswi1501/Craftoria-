@@ -46,8 +46,8 @@ const About = () => {
               
               {/* potter's wheel design (SVG/CSS illustration) */}
               <div className="relative flex flex-col items-center justify-center">
-                {/* Rotating wheel representer */}
-                <div className="w-48 h-10 bg-brand-dark/15 border-t border-brand-dark/25 rounded-[100%] shadow-inner flex items-center justify-center animate-[spin_12s_linear_infinite]">
+                {/* Potter's wheel base */}
+                <div className="w-48 h-10 bg-brand-dark/15 border-t border-brand-dark/25 rounded-[100%] shadow-inner flex items-center justify-center">
                   <div className="w-36 h-6 border border-brand-dark/20 rounded-[100%]" />
                 </div>
                 {/* Clay pot being molded on the wheel */}
