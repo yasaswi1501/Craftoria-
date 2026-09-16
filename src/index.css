@@ -108,56 +108,42 @@
   transform: translateZ(0);
 }
 
-/* Glassmorphism custom classes */
+/* Glassmorphism performance optimized classes */
 .glass-card {
-  background: rgba(255, 255, 255, 0.45);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(200, 162, 200, 0.2);
-  box-shadow: 0 8px 32px 0 rgba(139, 110, 174, 0.05);
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(200, 162, 200, 0.22);
+  box-shadow: 0 4px 20px 0 rgba(139, 110, 174, 0.04);
   transform: translateZ(0);
-}
-
-@media (min-width: 768px) {
-  .glass-card {
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-  }
 }
 
 .glass-nav {
-  background: rgba(252, 248, 252, 0.78);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(252, 248, 252, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border-bottom: 1px solid rgba(146, 112, 169, 0.12);
-  box-shadow: 0 4px 24px 0 rgba(146, 112, 169, 0.02);
+  box-shadow: 0 4px 20px 0 rgba(146, 112, 169, 0.03);
   transform: translateZ(0);
 }
 
-@media (min-width: 768px) {
-  .glass-nav {
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-  }
-}
-
 .glass-input {
-  background: rgba(255, 255, 255, 0.55);
+  background: rgba(255, 255, 255, 0.75);
   border: 1px solid rgba(200, 162, 200, 0.25);
   color: #2E2433;
 }
 
 .glass-input:focus {
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.95);
   border-color: #8B6FAE;
   outline: none;
   box-shadow: 0 0 0 2px rgba(139, 110, 174, 0.15);
 }
 
 /* Downstream Section Rendering Optimization */
-#whychoose, #gallery, #testimonials, #contact {
+#home, #about, #bestsellers, #whychoose, #gallery, #testimonials, #contact {
   content-visibility: auto;
-  contain-intrinsic-size: 1px 700px;
+  contain-intrinsic-size: 1px 600px;
 }
 
 /* Scroll Customization */

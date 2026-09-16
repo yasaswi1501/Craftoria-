@@ -8,7 +8,7 @@ export const HibiscusFlower = ({ className, stroke = "#76558F", opacity = 1, sty
     strokeWidth="1.2"
     strokeLinecap="round"
     strokeLinejoin="round"
-    style={{ opacity, zIndex: 2, willChange: 'transform', transform: 'translateZ(0)', ...style }}
+    style={{ opacity, zIndex: 2, transform: 'translateZ(0)', contain: 'paint', ...style }}
     aria-hidden="true"
   >
     {/* Center core */}
@@ -60,7 +60,7 @@ export const HibiscusFlower = ({ className, stroke = "#76558F", opacity = 1, sty
   </svg>
 );
 
-// Organic watercolor wash composed of overlapping nested shapes with hardware acceleration
+// High-performance hardware-accelerated Watercolor wash using CSS radial gradients
 export const WatercolorWash = ({ 
   className, 
   gradientId, 
@@ -74,56 +74,22 @@ export const WatercolorWash = ({
   opacity,
   style = {} 
 }) => {
-  const c1 = fromColor1 || color1 || 'rgba(214, 185, 225, 0.12)';
-  const c2 = fromColor2 || color2 || 'rgba(190, 154, 205, 0.10)';
-  const c3 = fromColor3 || color3 || 'rgba(233, 207, 228, 0.12)';
-  const targetOpacity = opacity !== undefined ? opacity : 1;
+  const c1 = fromColor1 || color1 || 'rgba(214, 185, 225, 0.22)';
+  const c2 = fromColor2 || color2 || 'rgba(190, 154, 205, 0.16)';
+  const targetOpacity = opacity !== undefined ? opacity : 0.85;
 
   return (
     <div
-      className={`absolute pointer-events-none ${className}`}
+      className={`absolute pointer-events-none rounded-full ${className}`}
       style={{
         opacity: targetOpacity,
+        background: `radial-gradient(ellipse at 45% 45%, ${c1} 0%, ${c2} 45%, transparent 72%)`,
         transform: `scale(${scale}) translateZ(0)`,
-        willChange: 'transform',
-        mixBlendMode: 'multiply',
         zIndex: 1,
+        contain: 'strict',
         ...style
       }}
-    >
-      {/* Sub-wash 1: Broad primary wash */}
-      <svg className="absolute inset-0 w-full h-full filter blur-[36px] sm:blur-[52px] opacity-[0.72]" viewBox="0 0 200 200">
-        <defs>
-          <radialGradient id={`${gradientId}-1`} cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor={c1} />
-            <stop offset="100%" stopColor="transparent" stopOpacity={0} />
-          </radialGradient>
-        </defs>
-        <path d="M 30,50 C 40,20 120,10 160,40 C 200,70 170,140 140,160 C 110,180 50,170 30,130 C 10,90 20,80 30,50 Z" fill={`url(#${gradientId}-1)`} />
-      </svg>
-
-      {/* Sub-wash 2: Offset secondary tone */}
-      <svg className="hidden sm:block absolute inset-0 w-full h-full filter blur-[44px] opacity-[0.62] transform translate-x-6 -translate-y-3 rotate-6" viewBox="0 0 200 200">
-        <defs>
-          <radialGradient id={`${gradientId}-2`} cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor={c2} />
-            <stop offset="100%" stopColor="transparent" stopOpacity={0} />
-          </radialGradient>
-        </defs>
-        <path d="M 40,60 C 50,30 110,20 150,50 C 180,80 160,130 130,150 C 100,170 60,160 45,130 C 30,100 30,90 40,60 Z" fill={`url(#${gradientId}-2)`} />
-      </svg>
-
-      {/* Sub-wash 3: Irregular wash highlight */}
-      <svg className="absolute inset-0 w-full h-full filter blur-[28px] sm:blur-[38px] opacity-[0.52] transform -translate-x-3 translate-y-6 -rotate-3" viewBox="0 0 200 200">
-        <defs>
-          <radialGradient id={`${gradientId}-3`} cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor={c3} />
-            <stop offset="100%" stopColor="transparent" stopOpacity={0} />
-          </radialGradient>
-        </defs>
-        <path d="M 20,40 C 30,10 130,30 150,60 C 170,90 140,150 110,170 C 80,190 30,160 20,130 C 10,100 10,70 20,40 Z" fill={`url(#${gradientId}-3)`} />
-      </svg>
-    </div>
+    />
   );
 };
 

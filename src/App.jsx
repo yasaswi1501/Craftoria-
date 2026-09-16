@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import Lenis from '@studio-freight/lenis';
 
 import Header from './components/Header';
 import Hero from './components/Hero';
@@ -100,36 +99,6 @@ function App() {
       }
     }
   }, [isLoggedIn]);
-
-  // Initialize smooth scrolling strictly for desktop mouse/trackpad environments
-  useEffect(() => {
-    const isDesktop = window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 1024px)').matches;
-    if (!isDesktop) return;
-
-    const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      orientation: 'vertical',
-      gestureOrientation: 'vertical',
-      smoothWheel: true,
-      wheelMultiplier: 1.05,
-      touchMultiplier: 0,
-      smoothTouch: false,
-    });
-
-    let rafId;
-    function raf(time) {
-      lenis.raf(time);
-      rafId = requestAnimationFrame(raf);
-    }
-
-    rafId = requestAnimationFrame(raf);
-
-    return () => {
-      lenis.destroy();
-      cancelAnimationFrame(rafId);
-    };
-  }, []);
 
   return (
     <div className="relative min-h-screen flex flex-col overflow-x-hidden max-w-full">

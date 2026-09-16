@@ -38,41 +38,15 @@ const Header = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Combined, rAF-throttled passive scroll listener
+  // High-performance scroll listener with IntersectionObserver for sections (zero layout thrashing)
   useEffect(() => {
     let ticking = false;
 
     const onScroll = () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
-          const scrollY = window.scrollY;
-          
-          // 1. Scrolled state check
-          const isScrolled = scrollY > 20;
+          const isScrolled = window.scrollY > 20;
           setScrolled(prev => (prev !== isScrolled ? isScrolled : prev));
-
-          // 2. Active section tracking on homepage
-          const currentPath = window.location.pathname;
-          if (currentPath !== '/') {
-            const targetSection = currentPath.startsWith('/collections') ? '#bestsellers' : '';
-            setActiveSection(prev => (prev !== targetSection ? targetSection : prev));
-          } else {
-            const sections = ['home', 'about', 'bestsellers', 'gallery', 'contact'];
-            const scrollPosition = scrollY + 200;
-
-            for (const section of sections) {
-              const el = document.getElementById(section);
-              if (el) {
-                const top = el.offsetTop;
-                const height = el.offsetHeight;
-                if (scrollPosition >= top && scrollPosition < top + height) {
-                  const newSection = `#${section}`;
-                  setActiveSection(prev => (prev !== newSection ? newSection : prev));
-                  break;
-                }
-              }
-            }
-          }
           ticking = false;
         });
         ticking = true;
@@ -82,8 +56,33 @@ const Header = () => {
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
 
+    let observer;
+    if (window.location.pathname === '/') {
+      const sectionIds = ['home', 'about', 'bestsellers', 'gallery', 'contact'];
+      observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              setActiveSection(`#${entry.target.id}`);
+            }
+          });
+        },
+        { threshold: 0.25, rootMargin: '-60px 0px -40% 0px' }
+      );
+
+      sectionIds.forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) observer.observe(el);
+      });
+    } else {
+      const currentPath = window.location.pathname;
+      const targetSection = currentPath.startsWith('/collections') ? '#bestsellers' : '';
+      setActiveSection(targetSection);
+    }
+
     return () => {
       window.removeEventListener('scroll', onScroll);
+      if (observer) observer.disconnect();
     };
   }, [window.location.pathname]);
 
