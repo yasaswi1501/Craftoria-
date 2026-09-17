@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
 import { X, Eye, EyeOff, Mail, Phone, Lock, User, ArrowLeft, Loader2, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -315,8 +316,10 @@ const AuthModal = ({ isOpen, onClose }) => {
     </svg>
   );
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-brand-plum/40 backdrop-blur-sm overflow-y-auto no-scrollbar pb-safe pt-safe" data-lenis-prevent="true">
+  if (!isOpen) return null;
+
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 bg-brand-plum/60 backdrop-blur-md overflow-y-auto no-scrollbar pb-safe pt-safe" data-lenis-prevent="true">
       <div 
         className="fixed inset-0 cursor-pointer touch-none" 
         onTouchMove={(e) => e.preventDefault()}
@@ -955,7 +958,8 @@ const AuthModal = ({ isOpen, onClose }) => {
           </div>
         )}
       </motion.div>
-    </div>
+    </div>,
+    document.body
   );
 };
 

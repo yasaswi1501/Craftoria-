@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ShoppingBag, Plus, Minus, Trash2, ShieldCheck, MessageCircle, Sparkles } from 'lucide-react';
 import { useCart } from '../context/CartContext';
@@ -95,8 +96,10 @@ const CartDrawer = () => {
     navigate('/checkout');
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex justify-end" data-lenis-prevent="true">
+  if (!isCartOpen) return null;
+
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] flex justify-end" data-lenis-prevent="true">
       {/* Backdrop */}
       <motion.div
         initial={{ opacity: 0 }}
@@ -104,7 +107,7 @@ const CartDrawer = () => {
         exit={{ opacity: 0 }}
         onClick={handleClose}
         onTouchMove={(e) => e.preventDefault()}
-        className="fixed inset-0 bg-brand-plum/40 backdrop-blur-xs cursor-pointer touch-none"
+        className="fixed inset-0 bg-brand-plum/60 backdrop-blur-sm cursor-pointer touch-none"
       />
 
       {/* Drawer Body */}
@@ -374,7 +377,8 @@ const CartDrawer = () => {
           </div>
         )}
       </motion.div>
-    </div>
+    </div>,
+    document.body
   );
 };
 

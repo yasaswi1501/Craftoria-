@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   X, Sparkles, Check, Heart, ShoppingBag, 
@@ -176,9 +177,9 @@ const CustomizationModal = ({ isOpen, onClose, product }) => {
     }, 1200);
   };
 
-  return (
+  return createPortal(
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-6"
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6 overflow-hidden"
       data-lenis-prevent="true"
     >
       {/* Backdrop */}
@@ -188,7 +189,7 @@ const CustomizationModal = ({ isOpen, onClose, product }) => {
         exit={{ opacity: 0 }}
         onClick={onClose}
         onTouchMove={(e) => e.preventDefault()}
-        className="fixed inset-0 bg-brand-plum/50 backdrop-blur-sm cursor-pointer touch-none"
+        className="fixed inset-0 bg-brand-plum/65 backdrop-blur-md cursor-pointer touch-none z-0"
       />
 
       {/* Modal Container */}
@@ -199,10 +200,10 @@ const CustomizationModal = ({ isOpen, onClose, product }) => {
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
         onWheel={(e) => e.stopPropagation()}
         data-lenis-prevent="true"
-        className="relative w-full max-w-2xl max-h-[92vh] sm:max-h-[85vh] h-auto bg-[#FCF8FC] border border-brand-purple/20 rounded-[24px] sm:rounded-[28px] shadow-[0_20px_60px_rgba(75,46,93,0.25)] overflow-hidden flex flex-col z-10 text-brand-dark text-left my-auto"
+        className="relative w-full max-w-2xl max-h-[92vh] sm:max-h-[85vh] h-auto bg-[#FCF8FC] border border-brand-purple/20 rounded-[24px] sm:rounded-[28px] shadow-[0_25px_70px_rgba(75,46,93,0.35)] overflow-hidden flex flex-col z-10 text-brand-dark text-left my-auto"
       >
         {/* Header (Sticky / Fixed at top of modal) */}
-        <div className="px-4 sm:px-7 py-3.5 sm:py-4 border-b border-brand-purple/10 bg-white/85 backdrop-blur-md flex items-center justify-between flex-shrink-0 z-20">
+        <div className="px-4 sm:px-7 py-3.5 sm:py-4 border-b border-brand-purple/10 bg-white/95 backdrop-blur-md flex items-center justify-between flex-shrink-0 z-20">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-full bg-brand-purple/15 flex items-center justify-center text-brand-plum flex-shrink-0">
               <Sparkles className="w-4 h-4" />
@@ -508,7 +509,8 @@ const CustomizationModal = ({ isOpen, onClose, product }) => {
         </div>
 
       </motion.div>
-    </div>
+    </div>,
+    document.body
   );
 };
 

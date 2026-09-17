@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   X, User, ShoppingBag, Heart, MapPin, LogOut, ChevronRight, 
@@ -205,8 +206,10 @@ const AccountMenu = ({ isOpen, onClose, initialTab = 'menu' }) => {
     saveAddressesToStorage(updated);
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex justify-end" data-lenis-prevent="true">
+  if (!isOpen) return null;
+
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] flex justify-end" data-lenis-prevent="true">
       {/* Backdrop */}
       <motion.div
         initial={{ opacity: 0 }}
@@ -214,7 +217,7 @@ const AccountMenu = ({ isOpen, onClose, initialTab = 'menu' }) => {
         exit={{ opacity: 0 }}
         onClick={onClose}
         onTouchMove={(e) => e.preventDefault()}
-        className="fixed inset-0 bg-brand-plum/40 backdrop-blur-xs cursor-pointer touch-none"
+        className="fixed inset-0 bg-brand-plum/60 backdrop-blur-sm cursor-pointer touch-none"
       />
 
       {/* Account Drawer */}
@@ -791,7 +794,8 @@ const AccountMenu = ({ isOpen, onClose, initialTab = 'menu' }) => {
           )}
         </div>
       </motion.div>
-    </div>
+    </div>,
+    document.body
   );
 };
 
