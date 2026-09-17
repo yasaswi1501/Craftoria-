@@ -85,7 +85,7 @@ export const getProductImage = (item) => {
   if (id.includes('vase')) return flowerVase;
   if (id.includes('blue-blossom')) return coverBlueFlowerKeychain;
   if (id.includes('heart-keychain') || id.includes('purple-heart')) return coverHeartKeychain;
-  if (id.includes('couple-embroidery') || id.includes('middle-frame')) return coverCoupleEmbroidery;
+  if (id.includes('couple-embroidery') || id.includes('middle-frame') || id.includes('small-frame') || id.includes('large-frame')) return coverCoupleEmbroidery;
   if (id.includes('9x1') || id.includes('9*1')) return photoFrame9x1;
   if (id.includes('child-frame') || id.includes('wooden-frame')) return coverChildFrame;
   if (id.includes('custom-bloom-bouquet')) return sellerBloomBouquets;
