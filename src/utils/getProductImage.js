@@ -3,6 +3,10 @@ import sellerEmbroideryHoop from '../assets/seller-embroidery-hoop.png';
 import sellerBloomBouquets from '../assets/seller-bloom-bouquets.png';
 import sellerBloomKeychains from '../assets/seller-bloom-keychains.png';
 import coverPolaroids from '../assets/polaroids-new.jpg';
+import polaroidsMusic from '../assets/polaroids-music.jpg';
+import polaroids1x2 from '../assets/polaroids-1x2.jpg';
+import polaroids1x3 from '../assets/polaroids-1x3.jpg';
+import polaroidsPack from '../assets/polaroids-pack.jpg';
 import coverClips from '../assets/clips-rubber-bands.jpg';
 import coverMacrame from '../assets/macrame-wall-hanging.jpg';
 import coverBouquets from '../assets/bloom-bouquets-cover.jpg';
@@ -38,6 +42,10 @@ export const getImageByFilename = (imgName) => {
     case 'seller-embroidery-hoop.png': return sellerEmbroideryHoop;
     case 'seller-bloom-keychains.png': return sellerBloomKeychains;
     case 'seller-bloom-bouquets.png': return sellerBloomBouquets;
+    case 'polaroids-music.jpg': return polaroidsMusic;
+    case 'polaroids-1x2.jpg': return polaroids1x2;
+    case 'polaroids-1x3.jpg': return polaroids1x3;
+    case 'polaroids-pack.jpg': return polaroidsPack;
     case 'polaroids-new.jpg':
     case 'gallery-1-polaroid.jpg': return coverPolaroids;
     case 'gallery-7-two-flower-keychain.jpg':
@@ -81,7 +89,11 @@ export const getProductImage = (item) => {
   if (id.includes('craftoria-bloom') || id.includes('bloom-bouquets') || cat === 'craftoria-bloom-bouquets') return coverBouquets;
   if (id.includes('macrame') || id.includes('decor') || cat === 'handmade-decor') return coverMacrame;
   if (id.includes('clip') || id.includes('rubber-band') || id.includes('accessories') || cat === 'clips-rubber-bands' || cat === 'accessories') return coverClips;
-  if (id.includes('polaroid') || cat === 'polaroids') return coverPolaroids;
+  if (id.includes('music') || id.includes('spotify')) return polaroidsMusic;
+  if (id.includes('1x2')) return polaroids1x2;
+  if (id.includes('1x3')) return polaroids1x3;
+  if (id.includes('pack9') || id.includes('pack15') || id.includes('single-pack')) return polaroidsPack;
+  if (id.includes('polaroid') || cat === 'polaroids') return polaroidsPack;
   if (id.includes('keychain') || cat === 'keychains') return sellerBloomKeychains;
   if (id.includes('embroidery') || id.includes('hoop') || cat === 'embroidery') return sellerEmbroideryHoop;
   if (id.includes('bouquet') || id.includes('gift')) return sellerBloomBouquets;
