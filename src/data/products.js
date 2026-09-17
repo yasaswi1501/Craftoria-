@@ -49,8 +49,8 @@ export const productsData = [
   {
     id: 'embroidery-small-frame',
     slug: 'embroidery-small-frame',
-    title: 'Small Embroidery Hoop Frame (6-inch)',
-    description: 'Compact 6-inch wooden embroidery hoop featuring delicate handcrafted floral knots, initials, and pastel thread details.',
+    title: 'Small Embroidery Hoop Frame',
+    description: 'Compact wooden embroidery hoop featuring delicate handcrafted floral knots, initials, and pastel thread details.',
     price: 599,
     rating: 4.9,
     reviewCount: 52,
@@ -71,8 +71,8 @@ export const productsData = [
   {
     id: 'embroidery-middle-frame',
     slug: 'embroidery-middle-frame',
-    title: 'Middle Embroidery Hoop Frame (8-inch)',
-    description: 'Medium 8-inch hoop art with intricate couple silhouettes, anniversary calendar dates, and botanical border stitchwork.',
+    title: 'Middle Embroidery Hoop Frame',
+    description: 'Medium hoop art with intricate couple silhouettes, anniversary calendar dates, and botanical border stitchwork.',
     price: 799,
     rating: 5.0,
     reviewCount: 68,
@@ -93,8 +93,8 @@ export const productsData = [
   {
     id: 'embroidery-large-frame',
     slug: 'embroidery-large-frame',
-    title: 'Large Embroidery Hoop Frame (10-inch)',
-    description: 'Grand 10-inch centerpiece embroidery hoop with elaborate floral wreaths, family monograms, and 3D woven stitch accents.',
+    title: 'Large Embroidery Hoop Frame',
+    description: 'Grand centerpiece embroidery hoop with elaborate floral wreaths, family monograms, and 3D woven stitch accents.',
     price: 999,
     rating: 4.9,
     reviewCount: 34,
