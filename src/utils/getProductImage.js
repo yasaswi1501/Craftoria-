@@ -25,6 +25,8 @@ import bouquet1Flower from '../assets/bouquet-1-flower.jpg';
 import bouquet3Flower from '../assets/bouquet-3-flower.jpg';
 import bouquet5Flower from '../assets/bouquet-5-flower.jpg';
 import customHomeDecor from '../assets/custom-home-decor.jpg';
+import potMagnetPinkBlossom from '../assets/pot-magnet-pink-blossom.jpg';
+import potMagnetLavenderTulip from '../assets/pot-magnet-lavender-tulip.jpg';
 import hairClips from '../assets/hair-clips.jpg';
 import customHairAccessories from '../assets/custom-hair-accessories.jpg';
 
@@ -33,6 +35,8 @@ import customHairAccessories from '../assets/custom-hair-accessories.jpg';
 // mapping only needs to change in one place.
 export const getImageByFilename = (imgName) => {
   switch (imgName) {
+    case 'pot-magnet-pink-blossom.jpg': return potMagnetPinkBlossom;
+    case 'pot-magnet-lavender-tulip.jpg': return potMagnetLavenderTulip;
     case 'hair-clips.jpg': return hairClips;
     case 'custom-hair-accessories.jpg': return customHairAccessories;
     case 'bouquet-1-flower.jpg': return bouquet1Flower;
@@ -87,7 +91,9 @@ export const getProductImage = (item) => {
   if (id === 'bloom-bouquet-5-flower') return bouquet5Flower;
   if (id.includes('custom-home-decor')) return customHomeDecor;
   if (id.includes('shirt')) return embroideryShirt;
-  if (id.includes('magnet')) return fridgeMagnets;
+  if (id.includes('pink-blossom-pot') || id.includes('pink-blossom')) return potMagnetPinkBlossom;
+  if (id.includes('lavender-tulip-pot') || id.includes('lavender-tulip')) return potMagnetLavenderTulip;
+  if (id.includes('magnet')) return potMagnetPinkBlossom;
   if (id.includes('vase')) return flowerVase;
   if (id.includes('red-velvet') || id.includes('red-flower')) return keychainRedFlower;
   if (id.includes('yellow-bloom') || id.includes('yellow-flower')) return keychainYellowBloom;
