@@ -338,21 +338,13 @@ const CollectionPage = ({ collectionId }) => {
                       className="glass-card rounded-[20px] sm:rounded-[24px] overflow-hidden flex flex-col group border border-brand-purple/20 shadow-xs hover:shadow-md relative bg-white/50 cursor-pointer min-h-[300px] sm:min-h-[340px] transition-all"
                     >
                       {/* Product Image */}
-                      <div className="h-[200px] sm:h-[200px] w-full border-b border-brand-purple/10 overflow-hidden relative bg-gradient-to-tr from-[#FCF7FF] via-[#F3E7FA] to-[#E9D7F5] flex items-center justify-center p-2.5 sm:p-4">
+                      <div className="h-[210px] sm:h-[220px] w-full border-b border-brand-purple/10 overflow-hidden relative bg-[#FDFBFD]">
                         <img
                           src={getProductImage(product)}
                           alt={product.title}
                           loading="lazy"
                           decoding="async"
-                          style={{
-                            objectFit: 'contain',
-                            objectPosition: 'center',
-                            width: '100%',
-                            height: '100%',
-                            maxWidth: collectionId === 'photo-frames' ? '96%' : collectionId === 'embroidery' ? '90%' : '84%',
-                            maxHeight: collectionId === 'photo-frames' ? '96%' : collectionId === 'embroidery' ? '90%' : '84%'
-                          }}
-                          className="select-none pointer-events-none group-hover:scale-105 transition-transform duration-500"
+                          className="w-full h-full object-cover select-none pointer-events-none group-hover:scale-108 transition-transform duration-700 ease-out"
                         />
 
                         {/* Wishlist Button */}
@@ -505,12 +497,12 @@ const CollectionPage = ({ collectionId }) => {
               transition={{ duration: 0.5, ease: 'easeOut' }}
               className="glass-card rounded-[24px] sm:rounded-[32px] overflow-hidden border border-brand-purple/25 shadow-sm bg-gradient-to-br from-white via-brand-cream/40 to-brand-purple/10 flex flex-col sm:flex-row items-center gap-5 sm:gap-8 p-5 sm:p-8"
             >
-              <div className="w-full sm:w-44 h-40 sm:h-44 rounded-2xl bg-gradient-to-tr from-[#FCF7FF] via-[#F3E7FA] to-[#E9D7F5] border border-brand-purple/15 flex items-center justify-center p-4 flex-shrink-0">
+              <div className="w-full sm:w-48 h-44 sm:h-48 rounded-2xl border border-brand-purple/15 overflow-hidden flex-shrink-0 relative">
                 <img
                   src={getProductImage(customPieceProduct)}
                   alt={`Custom ${collection.name}`}
                   loading="lazy"
-                  className="w-full h-full object-contain pointer-events-none select-none"
+                  className="w-full h-full object-cover pointer-events-none select-none"
                 />
               </div>
               <div className="flex-grow text-center sm:text-left">

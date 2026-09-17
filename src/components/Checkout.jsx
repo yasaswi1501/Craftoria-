@@ -550,9 +550,9 @@ const Checkout = () => {
                   <div key={item.id} className="flex flex-col gap-2 bg-white/60 p-3 rounded-2xl border border-brand-purple/10 text-left">
                     <div className="flex justify-between items-start gap-3">
                       <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-xl bg-white border border-brand-purple/10 overflow-hidden flex-shrink-0 flex items-center justify-center p-1">
+                        <div className="w-12 h-12 rounded-xl bg-white border border-brand-purple/10 overflow-hidden flex-shrink-0 flex items-center justify-center">
                           {img ? (
-                            <img src={img} alt={item.name} className="w-full h-full object-contain" />
+                            <img src={img} alt={item.name} className="w-full h-full object-cover" />
                           ) : (
                             <ShoppingBag className="w-4 h-4 text-brand-plum/50" />
                           )}

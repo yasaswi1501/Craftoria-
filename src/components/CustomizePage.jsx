@@ -337,12 +337,12 @@ const CustomizePage = ({ categoryId }) => {
           <div className="sticky top-28 space-y-4">
             {/* Preview Card */}
             <div className="glass-card rounded-[24px] border border-brand-purple/20 bg-white/60 shadow-sm overflow-hidden">
-              <div className="h-56 sm:h-64 w-full bg-gradient-to-tr from-[#FCF7FF] via-[#F3E7FA] to-[#E9D7F5] flex items-center justify-center p-6 relative">
+              <div className="h-56 sm:h-64 w-full relative overflow-hidden bg-[#FDFBFD]">
                 {basePieceProduct && (
                   <img
                     src={getProductImage(basePieceProduct)}
                     alt={`Custom ${collection?.name} preview`}
-                    className="w-full h-full object-contain pointer-events-none select-none"
+                    className="w-full h-full object-cover pointer-events-none select-none"
                   />
                 )}
                 {personalizationText.trim() && (

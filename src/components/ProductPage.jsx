@@ -110,7 +110,7 @@ const ProductPage = ({ productSlug }) => {
         
         {/* Left Column: Image Showcases (col-span-6) */}
         <div className="lg:col-span-6 space-y-3 sm:space-y-4">
-          <div className="h-[250px] sm:h-[400px] w-full rounded-[20px] sm:rounded-[24px] overflow-hidden bg-gradient-to-tr from-[#FCF7FF] via-[#F3E7FA] to-[#E9D7F5] flex items-center justify-center p-4 sm:p-6 border border-brand-purple/15 relative group">
+          <div className="h-[280px] sm:h-[420px] w-full rounded-[20px] sm:rounded-[24px] overflow-hidden border border-brand-purple/15 relative group bg-[#FDFBFD]">
             <motion.img
               key={activeImage}
               initial={{ opacity: 0 }}
@@ -118,15 +118,7 @@ const ProductPage = ({ productSlug }) => {
               src={getGalleryImageSrc(product.galleryImages[activeImage] || product.thumbnail)}
               alt={product.title}
               decoding="async"
-              style={{
-                objectFit: 'contain',
-                objectPosition: 'center',
-                width: '100%',
-                height: '100%',
-                maxWidth: '92%',
-                maxHeight: '92%'
-              }}
-              className="select-none pointer-events-none transition-transform duration-500 group-hover:scale-105"
+              className="w-full h-full object-cover select-none pointer-events-none transition-transform duration-500 group-hover:scale-105"
             />
             {product.discount > 0 && (
               <span className="absolute top-3 left-3 sm:top-4 sm:left-4 bg-emerald-500 text-white font-bold text-[8px] sm:text-[9px] uppercase tracking-wider px-2 py-0.5 rounded-md font-mono shadow-xs">
@@ -142,14 +134,14 @@ const ProductPage = ({ productSlug }) => {
                 <button
                   key={idx}
                   onClick={() => setActiveImage(idx)}
-                  className={`w-14 h-14 sm:w-20 sm:h-20 rounded-xl border-2 flex items-center justify-center p-1.5 sm:p-2 bg-white/60 cursor-pointer overflow-hidden flex-shrink-0 transition-all ${activeImage === idx ? 'border-brand-plum shadow-xs' : 'border-brand-purple/10 hover:border-brand-purple/40'}`}
+                  className={`w-14 h-14 sm:w-20 sm:h-20 rounded-xl border-2 overflow-hidden bg-white/60 cursor-pointer flex-shrink-0 transition-all ${activeImage === idx ? 'border-brand-plum shadow-xs' : 'border-brand-purple/10 hover:border-brand-purple/40'}`}
                 >
                   <img
                     src={getGalleryImageSrc(img)}
                     alt={`${product.title} view ${idx + 1}`}
                     loading="lazy"
                     decoding="async"
-                    className="w-full h-full object-contain pointer-events-none"
+                    className="w-full h-full object-cover pointer-events-none"
                   />
                 </button>
               ))}
@@ -355,12 +347,11 @@ const ProductPage = ({ productSlug }) => {
                 onClick={() => navigate(`/product/${p.slug}`)}
                 className="glass-card rounded-[20px] sm:rounded-[24px] overflow-hidden flex flex-col group border border-brand-purple/20 shadow-xs relative bg-white/60 cursor-pointer text-left p-2.5 sm:p-3.5 pb-3.5 sm:pb-4.5 hover:border-brand-purple/40 hover:shadow-md transition-all"
               >
-                <div className="h-32 sm:h-44 w-full rounded-xl sm:rounded-2xl overflow-hidden bg-gradient-to-tr from-[#FCF7FF] via-[#F3E7FA] to-[#E9D7F5] flex items-center justify-center p-2.5 sm:p-3 relative">
+                <div className="h-32 sm:h-44 w-full rounded-xl sm:rounded-2xl overflow-hidden relative bg-[#FDFBFD]">
                   <img
                     src={getGalleryImageSrc(p.thumbnail)}
                     alt={p.title}
-                    className="h-full object-contain pointer-events-none transition-transform duration-500 group-hover:scale-105"
-                    style={{ maxWidth: '88%', maxHeight: '88%' }}
+                    className="w-full h-full object-cover pointer-events-none transition-transform duration-500 group-hover:scale-105"
                   />
                 </div>
                 <div className="pt-2.5 sm:pt-3.5 px-0.5 flex flex-col gap-1 sm:gap-2">

@@ -86,19 +86,11 @@ const Wishlist = () => {
                 className="glass-card rounded-[20px] sm:rounded-[24px] overflow-hidden flex flex-col group border border-brand-purple/20 shadow-xs hover:shadow-md relative bg-white/50 cursor-pointer transition-all"
               >
                 {/* Product Image */}
-                <div className="h-[200px] sm:h-[220px] w-full border-b border-brand-purple/10 overflow-hidden relative bg-gradient-to-tr from-[#FCF7FF] via-[#F3E7FA] to-[#E9D7F5] flex items-center justify-center p-2.5 sm:p-4">
+                <div className="h-[210px] sm:h-[220px] w-full border-b border-brand-purple/10 overflow-hidden relative bg-[#FDFBFD]">
                   <img
                     src={getProductImage(item)}
                     alt={item.name}
-                    style={{
-                      objectFit: 'contain',
-                      objectPosition: 'center',
-                      width: '100%',
-                      height: '100%',
-                      maxWidth: (item.id === 'memory-canvas' || item.id.includes('canvas')) ? '96%' : (item.id === 'embroidery-hoop' || item.id.includes('hoop')) ? '90%' : '84%',
-                      maxHeight: (item.id === 'memory-canvas' || item.id.includes('canvas')) ? '96%' : (item.id === 'embroidery-hoop' || item.id.includes('hoop')) ? '90%' : '84%'
-                    }}
-                    className="select-none pointer-events-none group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover select-none pointer-events-none group-hover:scale-108 transition-transform duration-700 ease-out"
                   />
 
                   {/* Remove Button overlay */}

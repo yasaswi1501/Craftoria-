@@ -199,9 +199,9 @@ const CartDrawer = () => {
                         className="glass-card p-3 rounded-2xl flex gap-3 border border-brand-purple/10 text-left relative bg-white/40"
                       >
                         {/* Product Thumbnail */}
-                        <div className="w-16 h-16 rounded-xl bg-white border border-brand-purple/5 overflow-hidden flex-shrink-0 flex items-center justify-center p-1">
+                        <div className="w-16 h-16 rounded-xl bg-white border border-brand-purple/10 overflow-hidden flex-shrink-0 flex items-center justify-center">
                           {imgUrl ? (
-                            <img src={imgUrl} alt={item.name} className="w-full h-full object-contain" />
+                            <img src={imgUrl} alt={item.name} className="w-full h-full object-cover" />
                           ) : (
                             <ShoppingBag className="w-5 h-5 text-brand-plum/50" />
                           )}
@@ -308,9 +308,9 @@ const CartDrawer = () => {
                         className="glass-card p-3 rounded-2xl flex gap-3 border border-brand-purple/5 bg-brand-purple/5 relative text-left"
                       >
                         {/* Thumbnail */}
-                        <div className="w-14 h-14 rounded-xl bg-white border border-brand-purple/5 overflow-hidden flex-shrink-0 flex items-center justify-center p-1">
+                        <div className="w-14 h-14 rounded-xl bg-white border border-brand-purple/10 overflow-hidden flex-shrink-0 flex items-center justify-center">
                           {getProductImage(item) ? (
-                            <img src={getProductImage(item)} alt={item.name} className="w-full h-full object-contain" />
+                            <img src={getProductImage(item)} alt={item.name} className="w-full h-full object-cover" />
                           ) : (
                             <ShoppingBag className="w-4 h-4 text-brand-plum/50" />
                           )}
