@@ -4,6 +4,7 @@
  */
 
 export const WHATSAPP_PHONE_NUMBER = '919908860895';
+export const INSTAGRAM_URL = 'https://www.instagram.com/_.craftoria._26?stkn=MTlvZTVvaWJnNmdoaQ==';
 
 /**
  * Generate a clean, formatted WhatsApp order message string.

@@ -134,11 +134,11 @@ const Footer = () => {
             </span>
             <div className="flex gap-3">
               <a
-                href="https://instagram.com"
+                href="https://www.instagram.com/_.craftoria._26?stkn=MTlvZTVvaWJnNmdoaQ=="
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-8 h-8 rounded-full bg-brand-cream/90 border border-brand-purple/20 flex items-center justify-center text-brand-plum hover:bg-brand-purple hover:text-white hover:translate-y-[-2px] transition-all duration-300 shadow-xs"
-                aria-label="Follow us on Instagram"
+                aria-label="Follow us on Instagram @_.craftoria._26"
               >
                 <Instagram className="w-3.5 h-3.5" />
               </a>
