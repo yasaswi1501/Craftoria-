@@ -1,4 +1,4 @@
-import { Sparkles, Instagram, Facebook, Mail, Heart, Phone, MapPin } from 'lucide-react';
+import { Sparkles, Instagram, Mail, Heart, Phone, MapPin } from 'lucide-react';
 import { HibiscusFlower } from './PremiumBackground';
 import { useRouter } from '../context/RouterContext';
 
@@ -141,15 +141,6 @@ const Footer = () => {
                 aria-label="Follow us on Instagram @_.craftoria._26"
               >
                 <Instagram className="w-3.5 h-3.5" />
-              </a>
-              <a
-                href="https://facebook.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-8 h-8 rounded-full bg-brand-cream/90 border border-brand-purple/20 flex items-center justify-center text-brand-plum hover:bg-brand-purple hover:text-white hover:translate-y-[-2px] transition-all duration-300 shadow-xs"
-                aria-label="Like us on Facebook"
-              >
-                <Facebook className="w-3.5 h-3.5" />
               </a>
               <a
                 href="mailto:thecraftoriaaa26@gmail.com"
