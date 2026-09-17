@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
-  MapPin, Plus, Trash, ArrowLeft, ShoppingBag, MessageCircle, Sparkles
+  MapPin, Plus, Trash, ArrowLeft, ShoppingBag, MessageCircle, Sparkles, Check, AlertCircle
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart as useCartContext } from '../context/CartContext';
@@ -12,7 +12,14 @@ import ConfirmDialog from './ConfirmDialog';
 
 const Checkout = () => {
   const { user } = useAuth();
-  const { cart } = useCartContext();
+  const { cart, clearCart } = useCartContext();
+
+  // Set true only after the WhatsApp redirect has actually been dispatched
+  // (the cart is cleared at that same moment) -- distinguishes "cart is
+  // empty because the order just went through" from "cart is empty because
+  // the customer never added anything."
+  const [orderPlaced, setOrderPlaced] = useState(false);
+  const [orderError, setOrderError] = useState('');
 
   // Address list states
   const [addresses, setAddresses] = useState([]);
@@ -207,11 +214,63 @@ const Checkout = () => {
 
   const handleProceedToPaymentWhatsApp = (e) => {
     if (e) e.preventDefault();
+    setOrderError('');
     const activeAddress = addresses.find(a => a.id === selectedAddressId);
-    redirectToWhatsApp(cart, activeAddress, deliveryOption);
+    const dispatched = redirectToWhatsApp(cart, activeAddress, deliveryOption);
+
+    if (dispatched) {
+      // Only clear the cart once the order has actually been sent -- a
+      // failed/blocked redirect must leave the customer's items untouched.
+      setOrderPlaced(true);
+      clearCart();
+    } else {
+      setOrderError('Could not open WhatsApp to send your order. Please try again -- your cart has not been changed.');
+    }
   };
 
   const selectedAddress = addresses.find(a => a.id === selectedAddressId);
+
+  // Once the order is sent (or if the customer lands here with nothing in
+  // cart), show a dedicated state instead of empty address/order-item cards.
+  if (cart.length === 0) {
+    return (
+      <div className="min-h-screen bg-[#FDFBFD] pt-20 sm:pt-24 pb-16 px-3.5 sm:px-6 lg:px-8 text-brand-dark flex items-center justify-center">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="glass-card p-8 sm:p-10 rounded-[28px] border border-brand-purple/20 shadow-sm bg-white/40 text-center max-w-md w-full"
+        >
+          {orderPlaced ? (
+            <>
+              <div className="w-14 h-14 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-4">
+                <Check className="w-7 h-7" />
+              </div>
+              <h2 className="font-serif text-xl font-bold mb-2">Order Sent!</h2>
+              <p className="text-xs sm:text-sm text-brand-dark/70 leading-relaxed mb-6">
+                Your order details have been sent via WhatsApp. Our team will confirm final pricing and delivery with you shortly.
+              </p>
+            </>
+          ) : (
+            <>
+              <div className="w-14 h-14 rounded-full bg-brand-purple/10 text-brand-plum flex items-center justify-center mx-auto mb-4">
+                <ShoppingBag className="w-7 h-7" />
+              </div>
+              <h2 className="font-serif text-xl font-bold mb-2">Your cart is empty</h2>
+              <p className="text-xs sm:text-sm text-brand-dark/70 leading-relaxed mb-6">
+                Add a few handcrafted pieces to your cart before checking out.
+              </p>
+            </>
+          )}
+          <a
+            href="/collections"
+            className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-brand-plum hover:bg-brand-violet text-white font-semibold text-xs uppercase tracking-wider transition-all cursor-pointer"
+          >
+            Continue Shopping
+          </a>
+        </motion.div>
+      </div>
+    );
+  }
 
   // No logged-out gate needed here: App.jsx's route guard never mounts
   // Checkout unless the user is authenticated.
@@ -544,6 +603,11 @@ const Checkout = () => {
             <MessageCircle className="w-4 h-4" />
             <span>Place Order via WhatsApp</span>
           </button>
+          {orderError && (
+            <p className="flex items-center gap-1.5 text-xs font-semibold text-red-600">
+              <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" /> {orderError}
+            </p>
+          )}
         </div>
 
         {/* Sticky Order Summary Column (Right) */}

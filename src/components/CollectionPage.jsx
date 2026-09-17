@@ -387,11 +387,28 @@ const CollectionPage = ({ collectionId }) => {
                         </p>
 
                         {/* Price + Rating row */}
-                        <div className="flex items-center justify-between gap-2 mb-2.5">
-                          <span className="text-sm sm:text-base font-bold text-brand-plum font-serif">
-                            ₹{finalPrice.toLocaleString('en-IN')}
-                          </span>
-                          <div className="flex items-center gap-1">
+                        <div className="flex items-start justify-between gap-2 mb-2.5">
+                          <div className="flex flex-col gap-0.5 min-w-0">
+                            <span className="text-sm sm:text-base font-bold text-brand-plum font-serif truncate">
+                              {product.pricePrefix && (
+                                <span className="text-[8px] sm:text-[8.5px] font-semibold text-brand-dark/55 mr-1 uppercase tracking-wide align-middle">
+                                  {product.pricePrefix}
+                                </span>
+                              )}
+                              ₹{finalPrice.toLocaleString('en-IN')}
+                            </span>
+                            {product.packLabel && (
+                              <span className="text-[8px] sm:text-[8.5px] font-bold text-brand-plum/80 bg-brand-purple/10 px-1.5 py-0.5 rounded w-fit">
+                                {product.packLabel}
+                              </span>
+                            )}
+                            {!product.packLabel && product.priceNote && (
+                              <span className="text-[8px] sm:text-[8.5px] font-medium text-brand-dark/55 leading-snug line-clamp-1">
+                                {product.priceNote}
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-1 flex-shrink-0">
                             <div className="flex text-amber-400">
                               {[...Array(5)].map((_, i) => (
                                 <Star

@@ -28,6 +28,11 @@ const CartDrawer = () => {
   const { whatsappNumber } = useSettings();
 
   const [showClearConfirm, setShowClearConfirm] = useState(false);
+  // Distinguishes "bag is empty because an order was just sent" from a
+  // genuinely empty bag, and surfaces a failed WhatsApp redirect without
+  // touching the cart contents.
+  const [orderJustPlaced, setOrderJustPlaced] = useState(false);
+  const [orderError, setOrderError] = useState('');
 
   // Lock background body scroll cleanly when cart drawer is open
   useScrollLock(isCartOpen);
@@ -44,16 +49,29 @@ const CartDrawer = () => {
   const handleClose = () => {
     setIsCartOpen(false);
     setShowClearConfirm(false);
+    setOrderJustPlaced(false);
+    setOrderError('');
   };
 
   const handleContinueShopping = () => {
     setIsCartOpen(false);
     setShowClearConfirm(false);
+    setOrderJustPlaced(false);
+    setOrderError('');
     navigate('/collections');
   };
 
   const handleProceedToPayment = () => {
-    redirectToWhatsApp(cart, null, 'standard', whatsappNumber);
+    setOrderError('');
+    const dispatched = redirectToWhatsApp(cart, null, 'standard', whatsappNumber);
+    if (dispatched) {
+      // Cart is only cleared once the WhatsApp redirect has actually fired --
+      // a blocked/failed redirect must leave the customer's items in place.
+      setOrderJustPlaced(true);
+      clearCart();
+    } else {
+      setOrderError('Could not open WhatsApp to send your order. Please try again.');
+    }
   };
 
   const handleProceedToCheckout = () => {
@@ -146,12 +164,20 @@ const CartDrawer = () => {
         >
           {cart.length === 0 && saveForLaterList.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-center py-20">
-              <div className="w-16 h-16 rounded-full bg-brand-purple/10 flex items-center justify-center mb-4">
-                <ShoppingBag className="w-8 h-8 text-brand-plum/50" />
+              <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-4 ${orderJustPlaced ? 'bg-emerald-50' : 'bg-brand-purple/10'}`}>
+                {orderJustPlaced ? (
+                  <ShieldCheck className="w-8 h-8 text-emerald-600" />
+                ) : (
+                  <ShoppingBag className="w-8 h-8 text-brand-plum/50" />
+                )}
               </div>
-              <h3 className="font-serif text-lg font-bold text-brand-dark mb-1">Your bag is empty</h3>
+              <h3 className="font-serif text-lg font-bold text-brand-dark mb-1">
+                {orderJustPlaced ? 'Order Sent!' : 'Your bag is empty'}
+              </h3>
               <p className="text-xs text-brand-dark/65 max-w-xs mb-8 leading-relaxed">
-                Discover something handmade for you. Explore our artisan craft collections.
+                {orderJustPlaced
+                  ? "Your order details have been sent via WhatsApp. We'll confirm final pricing and delivery with you shortly."
+                  : 'Discover something handmade for you. Explore our artisan craft collections.'}
               </p>
               <button
                 onClick={handleContinueShopping}
@@ -352,6 +378,9 @@ const CartDrawer = () => {
               <MessageCircle className="w-4 h-4" />
               <span>Proceed to Payment</span>
             </button>
+            {orderError && (
+              <p className="text-[10px] font-semibold text-red-600 text-center -mt-1">{orderError}</p>
+            )}
 
             <button
               onClick={handleProceedToCheckout}

@@ -127,12 +127,19 @@ const WHATSAPP_REDIRECT_COOLDOWN_MS = 2000;
 
 /**
  * Redirect user to WhatsApp with the formatted order text.
+ *
+ * Returns true once the WhatsApp tab/redirect has actually been dispatched
+ * (the current app's only "order placed" confirmation signal, since there's
+ * no backend order record created from checkout) and false if nothing was
+ * sent (empty cart, double-submit cooldown, or the browser blocked both the
+ * popup and the location redirect) -- callers use this to decide whether
+ * it's safe to clear the cart.
  */
 export const redirectToWhatsApp = (cart, addressDetails = null, deliveryOption = 'standard', whatsappNumber = WHATSAPP_PHONE_NUMBER) => {
-  if (!cart || cart.length === 0) return;
+  if (!cart || cart.length === 0) return false;
 
   const now = Date.now();
-  if (now - lastWhatsAppRedirectAt < WHATSAPP_REDIRECT_COOLDOWN_MS) return;
+  if (now - lastWhatsAppRedirectAt < WHATSAPP_REDIRECT_COOLDOWN_MS) return false;
   lastWhatsAppRedirectAt = now;
 
   const text = generateWhatsAppOrderMessage(cart, addressDetails, deliveryOption);
@@ -144,8 +151,14 @@ export const redirectToWhatsApp = (cart, addressDetails = null, deliveryOption =
     if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
       window.location.href = whatsappUrl;
     }
+    return true;
   } catch {
-    window.location.href = whatsappUrl;
+    try {
+      window.location.href = whatsappUrl;
+      return true;
+    } catch {
+      return false;
+    }
   }
 };
 

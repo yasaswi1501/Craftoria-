@@ -38,15 +38,21 @@ const ProductPage = ({ productSlug }) => {
   const [quantity, setQuantity] = useState(1);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const [activeAccordion, setActiveAccordion] = useState('shipping'); // 'shipping' | 'warranty' | 'returns'
+  // Optional "with frame" add-on selection -- only meaningful for products
+  // that declare a frameAddOn (the embroidery hoop frames).
+  const [withFrame, setWithFrame] = useState(false);
 
   // Reset states on product changes
   useEffect(() => {
     setActiveImage(0);
     setQuantity(1);
     setIsAddedToCart(false);
+    setWithFrame(false);
     // Scroll view to top
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [productSlug]);
+
+  const unitPrice = product.price + (withFrame && product.frameAddOn ? product.frameAddOn.price : 0);
 
   // Filter out related products (in same category, excluding current product)
   const relatedProducts = useMemo(() => {
@@ -63,10 +69,14 @@ const ProductPage = ({ productSlug }) => {
   };
 
   const handleAddToCart = () => {
+    const hasFrame = withFrame && !!product.frameAddOn;
     const cartItem = {
-      id: product.id,
-      name: product.title,
-      price: product.price,
+      // Distinct id so "with frame" and "without frame" versions of the same
+      // product are kept as separate cart line items instead of merging
+      // (CartContext.addItemQuantity matches line items by this id).
+      id: hasFrame ? `${product.id}-with-frame` : product.id,
+      name: hasFrame ? `${product.title} (${product.frameAddOn.label})` : product.title,
+      price: unitPrice,
       desc: product.description,
       image: product.thumbnail,
       qty: quantity
@@ -177,6 +187,48 @@ const ProductPage = ({ productSlug }) => {
           <p className="text-xs sm:text-sm text-brand-dark/75 font-medium leading-relaxed pt-2 border-t border-brand-purple/10">
             {product.details || product.description}
           </p>
+
+          {/* Price block -- only shown for products that need a visible price
+              here: an optional paid add-on (frame) to select, a "starting
+              from" price, or a pack-size note. All other products keep the
+              price display purely on the collection cards, as before. */}
+          {(product.frameAddOn || product.pricePrefix || product.packLabel) && (
+            <div className="pt-3 border-t border-brand-purple/10 space-y-2.5">
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-xs font-bold text-brand-dark/75 font-mono">PRICE:</span>
+                <span className="font-serif text-lg sm:text-xl font-bold text-brand-plum text-right">
+                  {product.pricePrefix && (
+                    <span className="text-[10px] font-semibold text-brand-dark/60 mr-1.5 align-middle uppercase tracking-wide">
+                      {product.pricePrefix}
+                    </span>
+                  )}
+                  ₹{unitPrice.toLocaleString('en-IN')}
+                </span>
+              </div>
+
+              {product.frameAddOn && (
+                <label className="flex items-center gap-2 cursor-pointer select-none text-xs font-semibold text-brand-dark/80">
+                  <input
+                    type="checkbox"
+                    checked={withFrame}
+                    onChange={(e) => setWithFrame(e.target.checked)}
+                    className="accent-brand-plum w-4 h-4 rounded cursor-pointer"
+                  />
+                  <span>{product.frameAddOn.label} (+₹{product.frameAddOn.price.toLocaleString('en-IN')})</span>
+                </label>
+              )}
+
+              {product.packLabel && (
+                <span className="inline-block text-[10px] font-bold text-brand-plum bg-brand-purple/10 px-2.5 py-1 rounded-full">
+                  {product.packLabel}
+                </span>
+              )}
+
+              {product.priceNote && (
+                <p className="text-[10px] text-brand-dark/60 font-medium">{product.priceNote}</p>
+              )}
+            </div>
+          )}
 
           {/* Interactive Row: Quantity & Status */}
           <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4 pt-3 border-t border-brand-purple/10">
