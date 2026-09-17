@@ -3,6 +3,12 @@ import { supabase } from '../lib/supabase';
 
 const AuthContext = createContext();
 
+// Set once the `profiles` table is confirmed missing/unreachable (migrations
+// not applied, PostgREST schema cache stale, etc.) so we stop issuing more
+// GET/PATCH requests against it for the rest of this page session instead of
+// re-attempting -- and re-logging the same failure -- on every auth event.
+let profilesTableUnavailable = false;
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -17,17 +23,27 @@ export const AuthProvider = ({ children }) => {
       // that cares about role re-checks it server-side via RLS regardless;
       // this is only used for UI decisions (e.g. showing admin nav later).
       let role = 'customer';
-      try {
-        const { data: profile } = await supabase
+      if (!profilesTableUnavailable) {
+        // maybeSingle (not single): zero rows is an expected, valid outcome
+        // for a signed-in user whose profile row hasn't been created yet --
+        // that's not an error, it just means "customer" stays the role.
+        const { data: profile, error } = await supabase
           .from('profiles')
           .select('role')
           .eq('id', session.user.id)
-          .single();
-        if (profile?.role) role = profile.role;
-      } catch (err) {
-        // Table may not exist yet if migrations haven't been applied -- fail
-        // safe to the least-privileged role rather than breaking the app.
-        console.error('Could not load profile role:', err);
+          .maybeSingle();
+
+        if (error) {
+          // PGRST205 = table not in PostgREST's schema cache (migrations
+          // never applied, or need a schema reload). Any other error here
+          // is also non-fatal for the UI -- fail safe to 'customer' -- but
+          // only PGRST205 is treated as "stop asking for the rest of this
+          // session," since other errors could be transient.
+          if (error.code === 'PGRST205') profilesTableUnavailable = true;
+          console.error('Could not load profile role:', error.message);
+        } else if (profile?.role) {
+          role = profile.role;
+        }
       }
 
       const loggedUser = {
@@ -221,11 +237,16 @@ export const AuthProvider = ({ children }) => {
             phone: phone,
           }
         });
-        if (user?.id) {
-          await supabase.from('profiles').update({
+        // Skip the profiles PATCH entirely once we know that table is
+        // unreachable -- auth.updateUser() above already persisted the
+        // name/phone on the auth user, so there's nothing lost by not
+        // retrying a write that's guaranteed to fail.
+        if (user?.id && !profilesTableUnavailable) {
+          const { error } = await supabase.from('profiles').update({
             full_name: name,
             phone: phone,
           }).eq('id', user.id);
+          if (error?.code === 'PGRST205') profilesTableUnavailable = true;
         }
       } catch (e) {
         console.warn('Background profile update notice:', e);

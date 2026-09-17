@@ -2,9 +2,12 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, CheckCircle2, Sparkles, Mail, Phone, AlertCircle, MessageCircle } from 'lucide-react';
 import { HibiscusFlower, WatercolorWash } from './PremiumBackground';
-import { sendCustomRequestToWhatsApp, sendCustomRequestEmail, TARGET_CONTACT_EMAIL, WHATSAPP_PHONE_NUMBER } from '../utils/whatsapp';
+import { sendCustomRequestToWhatsApp, sendCustomRequestEmail, TARGET_CONTACT_EMAIL, formatPhoneForDisplay } from '../utils/whatsapp';
+import { useSettings } from '../context/SettingsContext';
 
 const Contact = () => {
+  const { whatsappNumber } = useSettings();
+  const contactPhone = formatPhoneForDisplay(whatsappNumber);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -51,13 +54,13 @@ const Contact = () => {
     if (!validateForm()) return;
 
     setIsSubmitting(true);
-    const submissionPayload = { ...formData };
+    const submissionPayload = { ...formData, whatsappNumber };
 
     try {
       // 1. Dispatch email to thecraftoriaaa26@gmail.com
       await sendCustomRequestEmail(submissionPayload);
 
-      // 2. Open WhatsApp pre-filled message to 9908860895
+      // 2. Open WhatsApp pre-filled message to the configured admin number
       sendCustomRequestToWhatsApp(submissionPayload);
     } catch (err) {
       console.warn('Dispatch note:', err);
@@ -151,13 +154,13 @@ const Contact = () => {
               </a>
 
               <a
-                href="tel:+919908860895"
+                href={contactPhone.tel}
                 className="inline-flex items-center gap-2.5 px-4.5 py-2.5 rounded-2xl bg-white/70 hover:bg-white border border-brand-purple/20 text-brand-plum text-xs font-semibold shadow-xs transition-all duration-200 flex-shrink-0"
               >
                 <div className="w-6 h-6 rounded-full bg-brand-purple/15 flex items-center justify-center flex-shrink-0">
                   <Phone className="w-3.5 h-3.5 text-brand-plum" />
                 </div>
-                <span>+91 99088 60895</span>
+                <span>{contactPhone.display}</span>
               </a>
             </div>
 
@@ -360,7 +363,7 @@ const Contact = () => {
                     </h3>
 
                     <p className="text-xs sm:text-sm text-brand-dark/80 max-w-md leading-relaxed">
-                      Your custom design request has been sent to our email (<span className="font-semibold text-brand-plum">thecraftoriaaa26@gmail.com</span>) and WhatsApp (<span className="font-semibold text-brand-plum">+91 99088 60895</span>). Our artisan team will review your requirements and respond promptly!
+                      Your custom design request has been sent to our email (<span className="font-semibold text-brand-plum">thecraftoriaaa26@gmail.com</span>) and WhatsApp (<span className="font-semibold text-brand-plum">{contactPhone.display}</span>). Our artisan team will review your requirements and respond promptly!
                     </p>
 
                     <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-cream border border-brand-purple/20 text-xs font-semibold text-brand-plum">
@@ -370,7 +373,7 @@ const Contact = () => {
 
                     <div className="pt-3 flex flex-wrap gap-3 items-center justify-center">
                       <a
-                        href={`https://wa.me/${WHATSAPP_PHONE_NUMBER}`}
+                        href={`https://wa.me/${whatsappNumber}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-emerald-600 text-white text-xs uppercase tracking-wider font-bold hover:bg-emerald-700 transition-all duration-200 shadow-sm cursor-pointer"

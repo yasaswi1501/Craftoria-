@@ -1,36 +1,14 @@
 import { useState, useMemo, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  ArrowLeft, Heart, ShoppingBag, Star, Check, Sparkles, ChevronDown, 
-  ChevronUp, Truck, ShieldCheck, RefreshCw, AlertCircle, Gift, Package, HelpCircle, MessageCircle 
+import { motion } from 'framer-motion';
+import {
+  ArrowLeft, Heart, ShoppingBag, Star, Check, Sparkles,
+  Truck, ShieldCheck, RefreshCw
 } from 'lucide-react';
 import { useRouter } from '../context/RouterContext';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { productsData, collectionsData } from '../data/products';
-import { OCCASIONS, PACKAGING_OPTIONS } from './CustomizationModal';
-
-import sellerMemoryCanvas from '../assets/seller-memory-canvas.png';
-import sellerEmbroideryHoop from '../assets/seller-embroidery-hoop.png';
-import sellerBloomBouquets from '../assets/seller-bloom-bouquets.png';
-import sellerBloomKeychains from '../assets/seller-bloom-keychains.png';
-import coverPolaroids from '../assets/polaroids-new.jpg';
-import coverClips from '../assets/clips-rubber-bands.jpg';
-import coverMacrame from '../assets/macrame-wall-hanging.jpg';
-import coverBouquets from '../assets/bloom-bouquets-cover.jpg';
-import coverChildFrame from '../assets/gallery-5-child-frame.jpg';
-import coverCoupleEmbroidery from '../assets/gallery-3-couple-embroidery.jpg';
-import coverBlueFlowerKeychain from '../assets/gallery-2-blue-flower-keychain.jpg';
-import coverHeartKeychain from '../assets/gallery-4-heart-keychain.jpg';
-import embroideryShirt from '../assets/embroidery-shirt.jpg';
-import fridgeMagnets from '../assets/fridge-magnets.jpg';
-import flowerVase from '../assets/flower-vase.jpg';
-import bouquet1Flower from '../assets/bouquet-1-flower.jpg';
-import bouquet3Flower from '../assets/bouquet-3-flower.jpg';
-import bouquet5Flower from '../assets/bouquet-5-flower.jpg';
-import customHomeDecor from '../assets/custom-home-decor.jpg';
-import hairClips from '../assets/hair-clips.jpg';
-import customHairAccessories from '../assets/custom-hair-accessories.jpg';
+import { getProductImage } from '../utils/getProductImage';
 
 const ProductPage = ({ productSlug }) => {
   const { navigate } = useRouter();
@@ -51,41 +29,13 @@ const ProductPage = ({ productSlug }) => {
     };
   }, [product.category]);
 
-  // Map image string to Vite imports
-  const getGalleryImageSrc = (imgName) => {
-    if (imgName === 'hair-clips.jpg') return hairClips;
-    if (imgName === 'custom-hair-accessories.jpg') return customHairAccessories;
-    if (imgName === 'bouquet-1-flower.jpg') return bouquet1Flower;
-    if (imgName === 'bouquet-3-flower.jpg') return bouquet3Flower;
-    if (imgName === 'bouquet-5-flower.jpg') return bouquet5Flower;
-    if (imgName === 'custom-home-decor.jpg') return customHomeDecor;
-    if (imgName === 'embroidery-shirt.jpg') return embroideryShirt;
-    if (imgName === 'fridge-magnets.jpg') return fridgeMagnets;
-    if (imgName === 'flower-vase.jpg') return flowerVase;
-    if (imgName === 'seller-memory-canvas.png') return sellerMemoryCanvas;
-    if (imgName === 'seller-embroidery-hoop.png') return sellerEmbroideryHoop;
-    if (imgName === 'seller-bloom-keychains.png') return sellerBloomKeychains;
-    if (imgName === 'seller-bloom-bouquets.png') return sellerBloomBouquets;
-    if (imgName === 'polaroids-new.jpg' || imgName === 'gallery-1-polaroid.jpg') return coverPolaroids;
-    if (imgName === 'gallery-7-two-flower-keychain.jpg' || imgName === 'clips-rubber-bands.jpg') return coverClips;
-    if (imgName === 'macrame-wall-hanging.jpg') return coverMacrame;
-    if (imgName === 'bloom-bouquets-cover.jpg') return coverBouquets;
-    if (imgName === 'gallery-5-child-frame.jpg') return coverChildFrame;
-    if (imgName === 'gallery-3-couple-embroidery.jpg') return coverCoupleEmbroidery;
-    if (imgName === 'gallery-2-blue-flower-keychain.jpg') return coverBlueFlowerKeychain;
-    if (imgName === 'gallery-4-heart-keychain.jpg') return coverHeartKeychain;
-    return sellerMemoryCanvas;
-  };
+  // Map an image filename (from product.galleryImages / product.thumbnail)
+  // to its Vite-bundled asset module.
+  const getGalleryImageSrc = (imgName) => getProductImage({ thumbnail: imgName });
 
   // State Management
   const [activeImage, setActiveImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  const [customizationText, setCustomizationText] = useState('');
-  const [selectedOccasion, setSelectedOccasion] = useState(OCCASIONS[0]);
-  const [giftNote, setGiftNote] = useState('');
-  const [packaging, setPackaging] = useState(PACKAGING_OPTIONS[0].label);
-  const [specialInstructions, setSpecialInstructions] = useState('');
-  const [customizationError, setCustomizationError] = useState('');
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const [activeAccordion, setActiveAccordion] = useState('shipping'); // 'shipping' | 'warranty' | 'returns'
 
@@ -93,12 +43,6 @@ const ProductPage = ({ productSlug }) => {
   useEffect(() => {
     setActiveImage(0);
     setQuantity(1);
-    setCustomizationText('');
-    setSelectedOccasion(OCCASIONS[0]);
-    setGiftNote('');
-    setPackaging(PACKAGING_OPTIONS[0].label);
-    setSpecialInstructions('');
-    setCustomizationError('');
     setIsAddedToCart(false);
     // Scroll view to top
     window.scrollTo({ top: 0, behavior: 'instant' });
@@ -119,32 +63,15 @@ const ProductPage = ({ productSlug }) => {
   };
 
   const handleAddToCart = () => {
-    if (!customizationText.trim()) {
-      setCustomizationError('Please enter your personalized name, initials, or custom text before adding to cart.');
-      return;
-    }
-    setCustomizationError('');
-
-    const customizationData = {
-      text: customizationText.trim(),
-      occasion: selectedOccasion,
-      giftNote: giftNote.trim() || undefined,
-      packaging: packaging,
-      specialNotes: specialInstructions.trim() || undefined,
-    };
-
     const cartItem = {
       id: product.id,
       name: product.title,
       price: product.price,
       desc: product.description,
       image: product.thumbnail,
-      customText: customizationText.trim(),
-      customization: customizationData,
       qty: quantity
     };
 
-    // Call global Context addToCart helper
     addToCart(cartItem, quantity);
     setIsAddedToCart(true);
     setTimeout(() => setIsAddedToCart(false), 2000);
@@ -250,135 +177,6 @@ const ProductPage = ({ productSlug }) => {
           <p className="text-xs sm:text-sm text-brand-dark/75 font-medium leading-relaxed pt-2 border-t border-brand-purple/10">
             {product.details || product.description}
           </p>
-
-          {/* Interactive Customization Studio Section */}
-          <div className="space-y-4 pt-3 border-t border-brand-purple/10">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-brand-dark flex items-center gap-1.5 font-serif">
-                <Sparkles className="w-4 h-4 text-brand-plum" />
-                <span>Customization Options</span>
-              </span>
-              <span className="text-[10px] text-brand-plum font-mono uppercase tracking-wider font-bold bg-brand-purple/10 px-2 py-0.5 rounded-full">
-                Handcrafted for You
-              </span>
-            </div>
-
-            {/* 1. Personalized Text Field */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-brand-dark/85 flex items-center justify-between">
-                <span>1. Personalization Text / Monogram <span className="text-rose-500 font-normal">*Required</span></span>
-              </label>
-              <textarea
-                value={customizationText}
-                onChange={(e) => {
-                  setCustomizationText(e.target.value);
-                  if (e.target.value.trim()) setCustomizationError('');
-                }}
-                placeholder="e.g. Names ('Aarav & Priya'), Monogram Initials ('S & R'), Special Date ('14.02.2026'), or Custom Quote..."
-                rows={2}
-                className={`w-full text-xs p-3 rounded-2xl border bg-white/70 focus:outline-none focus:ring-2 focus:ring-brand-plum/30 resize-none leading-relaxed transition-all ${
-                  customizationError ? 'border-rose-400 bg-rose-50/40' : 'border-brand-purple/20 focus:border-brand-purple'
-                }`}
-              />
-              {customizationError && (
-                <div className="flex items-center gap-1.5 text-[11px] font-semibold text-rose-600">
-                  <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
-                  <span>{customizationError}</span>
-                </div>
-              )}
-            </div>
-
-            {/* 2. Occasion Selector */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-brand-dark/85 flex items-center gap-1.5">
-                <Gift className="w-3.5 h-3.5 text-brand-plum" />
-                <span>2. Occasion / Purpose</span>
-              </label>
-              <div className="flex flex-wrap gap-1.5">
-                {OCCASIONS.map((occ) => {
-                  const isSelected = selectedOccasion === occ;
-                  return (
-                    <button
-                      key={occ}
-                      type="button"
-                      onClick={() => setSelectedOccasion(occ)}
-                      className={`px-2.5 py-1 rounded-full text-[10px] font-semibold cursor-pointer transition-all ${
-                        isSelected
-                          ? 'bg-brand-plum text-white shadow-xs'
-                          : 'bg-white/70 border border-brand-purple/15 text-brand-dark/80 hover:bg-white hover:text-brand-plum'
-                      }`}
-                    >
-                      {occ}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* 3. Gift Note & Packaging */}
-            <div className="space-y-2 pt-1 border-t border-brand-purple/10">
-              <label className="text-xs font-bold text-brand-dark/85 flex items-center justify-between">
-                <span className="flex items-center gap-1.5">
-                  <Package className="w-3.5 h-3.5 text-brand-plum" />
-                  <span>3. Handwritten Gift Note & Packaging</span>
-                </span>
-                <span className="text-[10px] font-normal text-brand-dark/50">(Optional)</span>
-              </label>
-              <textarea
-                value={giftNote}
-                onChange={(e) => setGiftNote(e.target.value)}
-                placeholder="Include a heartfelt handwritten gift note to your loved one..."
-                rows={2}
-                className="w-full text-xs p-2.5 rounded-xl border border-brand-purple/20 bg-white/70 focus:outline-none focus:border-brand-purple resize-none leading-relaxed"
-              />
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {PACKAGING_OPTIONS.map((pkg) => {
-                  const isSelected = packaging === pkg.label;
-                  return (
-                    <button
-                      key={pkg.id}
-                      type="button"
-                      onClick={() => setPackaging(pkg.label)}
-                      className={`p-2 rounded-xl border text-left cursor-pointer transition-all ${
-                        isSelected
-                          ? 'bg-brand-purple/15 border-brand-plum ring-1 ring-brand-plum/40'
-                          : 'bg-white/60 border-brand-purple/15 hover:bg-white'
-                      }`}
-                    >
-                      <span className="text-[10px] font-bold text-brand-dark block">{pkg.label}</span>
-                      <span className="text-[9px] text-brand-dark/60 block">{pkg.note}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* 4. Special Instructions */}
-            <div className="space-y-1">
-              <label className="text-xs font-bold text-brand-dark/85 flex items-center justify-between">
-                <span className="flex items-center gap-1.5">
-                  <HelpCircle className="w-3.5 h-3.5 text-brand-plum" />
-                  <span>4. Special Artisan Instructions</span>
-                </span>
-                <span className="text-[10px] font-normal text-brand-dark/50">(Optional)</span>
-              </label>
-              <textarea
-                value={specialInstructions}
-                onChange={(e) => setSpecialInstructions(e.target.value)}
-                placeholder="Any special placement, charm colors, or design requests..."
-                rows={1}
-                className="w-full text-xs p-2.5 rounded-xl border border-brand-purple/20 bg-white/70 focus:outline-none focus:border-brand-purple resize-none leading-relaxed"
-              />
-            </div>
-
-            {/* 6. Photo Reference Tip via WhatsApp */}
-            <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/25 flex items-start gap-2.5 text-left">
-              <MessageCircle className="w-4 h-4 text-emerald-700 flex-shrink-0 mt-0.5" />
-              <div className="text-[10px] leading-relaxed text-emerald-900">
-                <strong>Have photo references?</strong> Share your portraits/photos directly with our artists on WhatsApp (+91 99088 60895) after placing the order!
-              </div>
-            </div>
-          </div>
 
           {/* Interactive Row: Quantity & Status */}
           <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4 pt-3 border-t border-brand-purple/10">
@@ -517,6 +315,9 @@ const ProductPage = ({ productSlug }) => {
                   <h4 className="font-serif text-xs sm:text-sm font-bold text-brand-dark leading-snug line-clamp-1 group-hover:text-brand-plum transition-colors">
                     {p.title}
                   </h4>
+                  <span className="text-xs sm:text-sm font-bold text-brand-plum">
+                    ₹{(p.price - (p.discount || 0)).toLocaleString('en-IN')}
+                  </span>
                   <div className="text-[10px] sm:text-xs font-semibold text-brand-plum flex items-center gap-1 group-hover:underline group-hover:translate-x-0.5 transition-transform">
                     View Craft &rarr;
                   </div>

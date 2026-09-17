@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, Suspense, lazy } from 'react';
 
 import Header from './components/Header';
 import Hero from './components/Hero';
@@ -10,15 +10,27 @@ import Testimonials from './components/Testimonials';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import PremiumBackground from './components/PremiumBackground';
-import ResetPassword from './components/ResetPassword';
-import Checkout from './components/Checkout';
-import Wishlist from './components/Wishlist';
-import CollectionPage from './components/CollectionPage';
-import ProductPage from './components/ProductPage';
 import NotFound from './components/NotFound';
 import { useRouter } from './context/RouterContext';
 import { useAuth } from './context/AuthContext';
 import { collectionsData, productsData } from './data/products';
+
+// Route-only components: code-split out of the initial bundle since the
+// homepage (the most-visited route) never needs them on first paint.
+const ResetPassword = lazy(() => import('./components/ResetPassword'));
+const Checkout = lazy(() => import('./components/Checkout'));
+const Wishlist = lazy(() => import('./components/Wishlist'));
+const Collections = lazy(() => import('./components/Collections'));
+const CollectionPage = lazy(() => import('./components/CollectionPage'));
+const ProductPage = lazy(() => import('./components/ProductPage'));
+const CustomizePage = lazy(() => import('./components/CustomizePage'));
+const AdminPanel = lazy(() => import('./components/admin/AdminPanel'));
+
+const RouteLoadingFallback = () => (
+  <div className="min-h-[60vh] flex items-center justify-center">
+    <div className="w-8 h-8 rounded-full border-2 border-brand-purple/20 border-t-brand-plum animate-spin" />
+  </div>
+);
 
 const PROTECTED_PATHS = ['/checkout', '/wishlist'];
 
@@ -36,6 +48,7 @@ function App() {
   const isWishlistPage = pathname === '/wishlist' && !blockedByAuth;
   
   // Route matching with database existence validation
+  const isCollectionsIndexPage = pathname === '/collections';
   const isCollectionsPage = pathname.startsWith('/collections/');
   const rawCollectionId = isCollectionsPage ? pathname.split('/')[2] : null;
   const effectiveCollectionId = rawCollectionId === 'clips-rubber-bands' ? 'accessories' : rawCollectionId;
@@ -47,8 +60,20 @@ function App() {
   const validProduct = isProductPage ? productsData.find(p => p.slug === rawProductSlug) : null;
   const isInvalidProduct = isProductPage && !validProduct;
 
+  const isCustomizePage = pathname === '/customize' || pathname.startsWith('/customize/');
+  const rawCustomizeCategoryId = isCustomizePage ? pathname.split('/')[2] : null;
+
+  // Access is gated inside AdminPanel itself (distinct "sign in" vs.
+  // "signed in but not admin" states), not by the blanket bounce-home logic
+  // below -- so this route is simply excluded from isNotFound, same as any
+  // other real page.
+  const isAdminPage = pathname === '/admin' || pathname.startsWith('/admin/');
+
   const isHomePage = pathname === '/' || pathname === '';
-  const isNotFound = isInvalidCollection || isInvalidProduct || (!isHomePage && !isResetPage && !isCheckoutPage && !isWishlistPage && !isCollectionsPage && !isProductPage);
+  const isNotFound = isInvalidCollection || isInvalidProduct || (
+    !isHomePage && !isResetPage && !isCheckoutPage && !isWishlistPage &&
+    !isCollectionsIndexPage && !isCollectionsPage && !isProductPage && !isCustomizePage && !isAdminPage
+  );
 
   // Dynamic document title and meta description updates
   useEffect(() => {
@@ -64,6 +89,14 @@ function App() {
     } else if (validCollection) {
       title = `${validCollection.name} Collection | Craftoria`;
       description = validCollection.desc || description;
+    } else if (isCollectionsIndexPage) {
+      title = 'All Collections | Craftoria';
+      description = 'Browse every Craftoria collection -- handmade frames, embroidery, keychains, polaroids, bouquets, decor, and accessories.';
+    } else if (isCustomizePage) {
+      title = 'Custom Order | Craftoria';
+      description = 'Design a fully custom handcrafted piece -- choose your style, material, colour, and personalization.';
+    } else if (isAdminPage) {
+      title = 'Admin Panel | Craftoria';
     } else if (isWishlistPage) {
       title = 'My Wishlist | Craftoria';
       description = 'View and manage your saved handcrafted favorites on Craftoria.';
@@ -81,7 +114,7 @@ function App() {
     if (metaDesc) {
       metaDesc.setAttribute('content', description);
     }
-  }, [pathname, isNotFound, validProduct, validCollection, isWishlistPage, isCheckoutPage, isResetPage]);
+  }, [pathname, isNotFound, validProduct, validCollection, isCollectionsIndexPage, isCustomizePage, isAdminPage, isWishlistPage, isCheckoutPage, isResetPage]);
 
   // Protected routes: bounce logged-out visitors home and prompt login
   useEffect(() => {
@@ -115,26 +148,36 @@ function App() {
         <main className="flex-grow">
           {isNotFound ? (
             <NotFound />
-          ) : isResetPage ? (
-            <ResetPassword />
-          ) : isCheckoutPage ? (
-            <Checkout />
-          ) : isWishlistPage ? (
-            <Wishlist />
-          ) : validCollection ? (
-            <CollectionPage collectionId={effectiveCollectionId || rawCollectionId} />
-          ) : validProduct ? (
-            <ProductPage productSlug={rawProductSlug} />
           ) : (
-            <>
-              <Hero />
-              <About />
-              <BestSellers />
-              <WhyChoose />
-              <Gallery />
-              <Testimonials />
-              <Contact />
-            </>
+            <Suspense fallback={<RouteLoadingFallback />}>
+              {isResetPage ? (
+                <ResetPassword />
+              ) : isCheckoutPage ? (
+                <Checkout />
+              ) : isWishlistPage ? (
+                <Wishlist />
+              ) : isCollectionsIndexPage ? (
+                <Collections />
+              ) : validCollection ? (
+                <CollectionPage collectionId={effectiveCollectionId || rawCollectionId} />
+              ) : validProduct ? (
+                <ProductPage productSlug={rawProductSlug} />
+              ) : isCustomizePage ? (
+                <CustomizePage categoryId={rawCustomizeCategoryId} />
+              ) : isAdminPage ? (
+                <AdminPanel />
+              ) : (
+                <>
+                  <Hero />
+                  <About />
+                  <BestSellers />
+                  <WhyChoose />
+                  <Gallery />
+                  <Testimonials />
+                  <Contact />
+                </>
+              )}
+            </Suspense>
           )}
         </main>
 

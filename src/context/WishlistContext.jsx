@@ -1,11 +1,12 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { useAuth } from './AuthContext';
 
 const WishlistContext = createContext();
 
 export const WishlistProvider = ({ children }) => {
   const { user } = useAuth();
-  
+  const mergedUserIdRef = useRef(null);
+
   // Initialize state directly from localStorage on first render to prevent race conditions
   const [wishlist, setWishlist] = useState(() => {
     try {
@@ -17,8 +18,7 @@ export const WishlistProvider = ({ children }) => {
   });
 
   // Sync wishlist to storage whenever it changes
-  const saveWishlistToStorage = (updatedWishlist) => {
-    setWishlist(updatedWishlist);
+  const persistWishlist = (updatedWishlist) => {
     try {
       localStorage.setItem('craftoria_wishlist', JSON.stringify(updatedWishlist));
       if (user && user.email) {
@@ -29,9 +29,21 @@ export const WishlistProvider = ({ children }) => {
     }
   };
 
-  // Merge guest wishlist with user wishlist on login
+  // Merge guest wishlist with user wishlist on login. Guarded by
+  // mergedUserIdRef (same pattern as CartContext) so this only runs once per
+  // signed-in user -- not on every onAuthStateChange event (token refresh,
+  // tab refocus), which would otherwise re-run and rewrite localStorage on
+  // every silent refresh since AuthContext produces a new `user` object
+  // reference each time regardless of whether the underlying user changed.
   useEffect(() => {
-    if (user && user.email) {
+    if (!user) {
+      mergedUserIdRef.current = null;
+      return;
+    }
+    if (mergedUserIdRef.current === user.id) return;
+    mergedUserIdRef.current = user.id;
+
+    if (user.email) {
       const userWishlistKey = `craftoria_wishlist_${user.email}`;
       let userSavedWishlist = [];
       try {
@@ -41,47 +53,53 @@ export const WishlistProvider = ({ children }) => {
         userSavedWishlist = [];
       }
 
-      // Merge current local wishlist with user's saved wishlist
-      const mergedMap = new Map();
-      wishlist.forEach(item => {
-        if (item && item.id) {
-          mergedMap.set(item.id, { ...item });
-        }
-      });
-      userSavedWishlist.forEach(savedItem => {
-        if (savedItem && savedItem.id) {
-          mergedMap.set(savedItem.id, { ...savedItem });
-        }
-      });
+      setWishlist((currentWishlist) => {
+        // Merge current local wishlist with user's saved wishlist
+        const mergedMap = new Map();
+        currentWishlist.forEach(item => {
+          if (item && item.id) {
+            mergedMap.set(item.id, { ...item });
+          }
+        });
+        userSavedWishlist.forEach(savedItem => {
+          if (savedItem && savedItem.id) {
+            mergedMap.set(savedItem.id, { ...savedItem });
+          }
+        });
 
-      const mergedWishlist = Array.from(mergedMap.values());
-      setWishlist(mergedWishlist);
-      try {
-        localStorage.setItem('craftoria_wishlist', JSON.stringify(mergedWishlist));
-        localStorage.setItem(userWishlistKey, JSON.stringify(mergedWishlist));
-      } catch (e) {
-        console.error('Failed to save merged wishlist:', e);
-      }
+        const mergedWishlist = Array.from(mergedMap.values());
+        persistWishlist(mergedWishlist);
+        return mergedWishlist;
+      });
     }
   }, [user]);
 
   const addToWishlist = (product) => {
-    if (wishlist.some(item => item.id === product.id)) return;
-    const updated = [...wishlist, product];
-    saveWishlistToStorage(updated);
+    setWishlist((prevWishlist) => {
+      if (prevWishlist.some(item => item.id === product.id)) return prevWishlist;
+      const updated = [...prevWishlist, product];
+      persistWishlist(updated);
+      return updated;
+    });
   };
 
   const removeFromWishlist = (productId) => {
-    const updated = wishlist.filter(item => item.id !== productId);
-    saveWishlistToStorage(updated);
+    setWishlist((prevWishlist) => {
+      const updated = prevWishlist.filter(item => item.id !== productId);
+      persistWishlist(updated);
+      return updated;
+    });
   };
 
   const toggleWishlist = (product) => {
-    if (wishlist.some(item => item.id === product.id)) {
-      removeFromWishlist(product.id);
-    } else {
-      addToWishlist(product);
-    }
+    setWishlist((prevWishlist) => {
+      const exists = prevWishlist.some(item => item.id === product.id);
+      const updated = exists
+        ? prevWishlist.filter(item => item.id !== product.id)
+        : [...prevWishlist, product];
+      persistWishlist(updated);
+      return updated;
+    });
   };
 
   const isInWishlist = (productId) => {

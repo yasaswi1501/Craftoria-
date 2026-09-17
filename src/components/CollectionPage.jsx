@@ -1,46 +1,30 @@
 import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
+import {
   ArrowLeft, Heart, ShoppingBag, Search, SlidersHorizontal, X,
-  Star, Check, Sparkles, Filter, Eye, Minus, Plus
+  Star, Check, Sparkles, Filter, Eye, Minus, Plus, Paintbrush, ArrowRight
 } from 'lucide-react';
 import { useRouter } from '../context/RouterContext';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { productsData, collectionsData } from '../data/products';
-import CustomizationModal from './CustomizationModal';
 import { useScrollLock } from '../utils/scrollLock';
+import { useEscapeKey } from '../utils/useEscapeKey';
+import { getProductImage } from '../utils/getProductImage';
 
-import sellerMemoryCanvas from '../assets/seller-memory-canvas.png';
-import sellerEmbroideryHoop from '../assets/seller-embroidery-hoop.png';
-import sellerBloomBouquets from '../assets/seller-bloom-bouquets.png';
-import sellerBloomKeychains from '../assets/seller-bloom-keychains.png';
-import coverPolaroids from '../assets/polaroids-new.jpg';
-import coverClips from '../assets/clips-rubber-bands.jpg';
-import coverMacrame from '../assets/macrame-wall-hanging.jpg';
-import coverBouquets from '../assets/bloom-bouquets-cover.jpg';
-import coverChildFrame from '../assets/gallery-5-child-frame.jpg';
-import coverCoupleEmbroidery from '../assets/gallery-3-couple-embroidery.jpg';
-import coverBlueFlowerKeychain from '../assets/gallery-2-blue-flower-keychain.jpg';
-import coverHeartKeychain from '../assets/gallery-4-heart-keychain.jpg';
-import embroideryShirt from '../assets/embroidery-shirt.jpg';
-import fridgeMagnets from '../assets/fridge-magnets.jpg';
-import flowerVase from '../assets/flower-vase.jpg';
-import bouquet1Flower from '../assets/bouquet-1-flower.jpg';
-import bouquet3Flower from '../assets/bouquet-3-flower.jpg';
-import bouquet5Flower from '../assets/bouquet-5-flower.jpg';
-import customHomeDecor from '../assets/custom-home-decor.jpg';
-import hairClips from '../assets/hair-clips.jpg';
-import customHairAccessories from '../assets/custom-hair-accessories.jpg';
+const SORT_OPTIONS = [
+  { id: 'featured', label: 'Featured' },
+  { id: 'price-asc', label: 'Price: Low to High' },
+  { id: 'price-desc', label: 'Price: High to Low' },
+  { id: 'rating-desc', label: 'Rating: High to Low' },
+];
 
 const CollectionPage = ({ collectionId }) => {
   const { navigate } = useRouter();
   const { addToCart, cart, updateQuantity } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
 
-  // Customization modal state
-  const [customizingProduct, setCustomizingProduct] = useState(null);
-  const [isCustomizeOpen, setIsCustomizeOpen] = useState(false);
+  const [sortBy, setSortBy] = useState('featured');
 
   // Mobile filter drawer visibility
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
@@ -49,12 +33,12 @@ const CollectionPage = ({ collectionId }) => {
 
   // Lock background body scroll cleanly when filter drawer is open
   useScrollLock(isFilterDrawerOpen);
+  useEscapeKey(isFilterDrawerOpen, () => setIsFilterDrawerOpen(false));
 
   // Filters State
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTags, setSelectedTags] = useState([]);
   const [onlyInStock, setOnlyInStock] = useState(false);
-  const [onlyCustomizable, setOnlyCustomizable] = useState(false);
   const [minRating, setMinRating] = useState(0);
 
   const targetCategory = collectionId === 'clips-rubber-bands' ? 'accessories' : collectionId;
@@ -63,8 +47,8 @@ const CollectionPage = ({ collectionId }) => {
     setSearchQuery('');
     setSelectedTags([]);
     setOnlyInStock(false);
-    setOnlyCustomizable(false);
     setMinRating(0);
+    setSortBy('featured');
   }, [collectionId]);
 
   // Load collection metadata
@@ -77,39 +61,20 @@ const CollectionPage = ({ collectionId }) => {
     };
   }, [collectionId, targetCategory]);
 
-  // Get matching product image helper
-  const getProductImage = (product) => {
-    const id = (product?.id || '').toLowerCase();
-    const cat = (product?.category || '').toLowerCase();
-    const imgName = product?.thumbnail || product?.image || '';
+  // The one "build your own" product per category (id always starts with
+  // "custom-") is surfaced separately as a single dedicated CTA card, never
+  // inside the regular ready-made grid.
+  const customPieceProduct = useMemo(() => {
+    return productsData.find(p =>
+      (p.category === targetCategory || p.category === collectionId) && p.id.startsWith('custom-')
+    );
+  }, [collectionId, targetCategory]);
 
-    if (imgName === 'hair-clips.jpg' || id === 'accessories-clips') return hairClips;
-    if (imgName === 'custom-hair-accessories.jpg' || id.includes('custom-accessories')) return customHairAccessories;
-    if (imgName === 'bouquet-1-flower.jpg' || id === 'bloom-bouquet-1-flower') return bouquet1Flower;
-    if (imgName === 'bouquet-3-flower.jpg' || id === 'bloom-bouquet-3-flower') return bouquet3Flower;
-    if (imgName === 'bouquet-5-flower.jpg' || id === 'bloom-bouquet-5-flower') return bouquet5Flower;
-    if (imgName === 'custom-home-decor.jpg' || id.includes('custom-home-decor')) return customHomeDecor;
-    if (imgName === 'embroidery-shirt.jpg' || id.includes('shirt')) return embroideryShirt;
-    if (imgName === 'fridge-magnets.jpg' || id.includes('magnet')) return fridgeMagnets;
-    if (imgName === 'flower-vase.jpg' || id.includes('vase')) return flowerVase;
-    if (imgName === 'gallery-2-blue-flower-keychain.jpg' || id.includes('blue-blossom')) return coverBlueFlowerKeychain;
-    if (imgName === 'gallery-4-heart-keychain.jpg' || id.includes('heart-keychain') || id.includes('purple-heart')) return coverHeartKeychain;
-    if (imgName === 'gallery-3-couple-embroidery.jpg' || id.includes('couple-embroidery') || id.includes('middle-frame')) return coverCoupleEmbroidery;
-    if (imgName === 'gallery-5-child-frame.jpg' || id.includes('child-frame') || id.includes('wooden-frame')) return coverChildFrame;
-    if (imgName === 'seller-bloom-bouquets.png' || id.includes('custom-bloom-bouquet')) return sellerBloomBouquets;
-    if (imgName === 'bloom-bouquets-cover.jpg' || cat === 'craftoria-bloom-bouquets') return coverBouquets;
-    if (imgName === 'macrame-wall-hanging.jpg' || cat === 'handmade-decor') return coverMacrame;
-    if (imgName === 'clips-rubber-bands.jpg' || cat === 'clips-rubber-bands' || cat === 'accessories') return coverClips;
-    if (imgName === 'polaroids-new.jpg' || cat === 'polaroids') return coverPolaroids;
-    if (imgName === 'seller-bloom-keychains.png' || cat === 'keychains') return sellerBloomKeychains;
-    if (imgName === 'seller-embroidery-hoop.png' || cat === 'embroidery') return sellerEmbroideryHoop;
-    if (imgName === 'seller-memory-canvas.png' || cat === 'photo-frames') return sellerMemoryCanvas;
-    return sellerMemoryCanvas;
-  };
-
-  // Collect all unique tags for filter checkboxes
+  // Collect all unique tags for filter checkboxes (ready-made products only)
   const uniqueTags = useMemo(() => {
-    const colProducts = productsData.filter(p => p.category === targetCategory || p.category === collectionId);
+    const colProducts = productsData.filter(p =>
+      (p.category === targetCategory || p.category === collectionId) && !p.id.startsWith('custom-')
+    );
     const tagsSet = new Set();
     colProducts.forEach(p => p.tags && p.tags.forEach(t => tagsSet.add(t)));
     return Array.from(tagsSet);
@@ -117,8 +82,11 @@ const CollectionPage = ({ collectionId }) => {
 
   // Filtering & Sorting Products logic
   const filteredProducts = useMemo(() => {
-    // 1. Strict category partition check (reusable database category matching)
-    let result = productsData.filter(p => p.category === targetCategory || p.category === collectionId);
+    // 1. Strict category partition, ready-made products only (the custom
+    // piece is shown once, separately, as its own CTA card below)
+    let result = productsData.filter(p =>
+      (p.category === targetCategory || p.category === collectionId) && !p.id.startsWith('custom-')
+    );
 
     // 2. Search query
     if (searchQuery.trim()) {
@@ -131,23 +99,28 @@ const CollectionPage = ({ collectionId }) => {
       result = result.filter(p => p.stock > 0);
     }
 
-    // 4. Customization
-    if (onlyCustomizable) {
-      result = result.filter(p => p.customizable);
-    }
-
-    // 5. Minimum Rating
+    // 4. Minimum Rating
     if (minRating > 0) {
       result = result.filter(p => p.rating >= minRating);
     }
 
-    // 6. Tags checkboxes
+    // 5. Tags checkboxes
     if (selectedTags.length > 0) {
       result = result.filter(p => p.tags && p.tags.some(t => selectedTags.includes(t)));
     }
 
-    return result;
-  }, [collectionId, searchQuery, onlyInStock, onlyCustomizable, minRating, selectedTags]);
+    // 6. Sort
+    const sorted = [...result];
+    if (sortBy === 'price-asc') {
+      sorted.sort((a, b) => (a.price - (a.discount || 0)) - (b.price - (b.discount || 0)));
+    } else if (sortBy === 'price-desc') {
+      sorted.sort((a, b) => (b.price - (b.discount || 0)) - (a.price - (a.discount || 0)));
+    } else if (sortBy === 'rating-desc') {
+      sorted.sort((a, b) => b.rating - a.rating);
+    }
+
+    return sorted;
+  }, [collectionId, searchQuery, onlyInStock, minRating, selectedTags, sortBy]);
 
   const handleAddToCart = (product, e) => {
     e.stopPropagation();
@@ -170,8 +143,8 @@ const CollectionPage = ({ collectionId }) => {
     setSearchQuery('');
     setSelectedTags([]);
     setOnlyInStock(false);
-    setOnlyCustomizable(false);
     setMinRating(0);
+    setSortBy('featured');
   };
 
   return (
@@ -202,10 +175,10 @@ const CollectionPage = ({ collectionId }) => {
         </div>
       </div>
 
-      {/* Toolbar: Search & Mobile Filter Toggle */}
-      <div className="flex gap-2 sm:gap-4 justify-between items-center bg-white/50 border border-brand-purple/15 p-2.5 sm:p-4 rounded-[20px] sm:rounded-[24px] mb-6 sm:mb-8 shadow-xs">
+      {/* Toolbar: Search, Sort & Mobile Filter Toggle */}
+      <div className="flex flex-wrap gap-2 sm:gap-4 justify-between items-center bg-white/50 border border-brand-purple/15 p-2.5 sm:p-4 rounded-[20px] sm:rounded-[24px] mb-6 sm:mb-8 shadow-xs">
         {/* Search Input */}
-        <div className="relative flex-1 sm:max-w-xs">
+        <div className="relative flex-1 min-w-[140px] sm:max-w-xs">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-brand-dark/45" />
           <input
             type="text"
@@ -216,13 +189,31 @@ const CollectionPage = ({ collectionId }) => {
           />
         </div>
 
-        {/* Mobile Filter Button */}
-        <button
-          onClick={() => setIsFilterDrawerOpen(true)}
-          className="lg:hidden flex items-center justify-center gap-1.5 px-3.5 h-9 rounded-full border border-brand-purple/20 bg-white text-xs font-bold text-brand-plum cursor-pointer flex-shrink-0 shadow-2xs hover:bg-brand-purple/5"
-        >
-          <SlidersHorizontal className="w-3.5 h-3.5" /> <span>Filters</span>
-        </button>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {/* Sort Dropdown */}
+          <label className="relative flex-shrink-0">
+            <span className="sr-only">Sort products</span>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              aria-label="Sort products"
+              className="appearance-none pl-3 pr-8 h-9 rounded-full border border-brand-purple/20 bg-white text-xs font-semibold text-brand-dark cursor-pointer focus:outline-none focus:border-brand-purple"
+            >
+              {SORT_OPTIONS.map((opt) => (
+                <option key={opt.id} value={opt.id}>{opt.label}</option>
+              ))}
+            </select>
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-brand-plum text-[9px]">▼</div>
+          </label>
+
+          {/* Mobile Filter Button */}
+          <button
+            onClick={() => setIsFilterDrawerOpen(true)}
+            className="lg:hidden flex items-center justify-center gap-1.5 px-3.5 h-9 rounded-full border border-brand-purple/20 bg-white text-xs font-bold text-brand-plum cursor-pointer flex-shrink-0 shadow-2xs hover:bg-brand-purple/5"
+          >
+            <SlidersHorizontal className="w-3.5 h-3.5" /> <span>Filters</span>
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -286,7 +277,7 @@ const CollectionPage = ({ collectionId }) => {
               )}
             </div>
 
-            {/* C. Availability & Customization switches */}
+            {/* C. Availability switch */}
             <div className="space-y-3 pt-3 border-t border-brand-purple/10 text-xs">
               <label className="flex items-center gap-2 cursor-pointer select-none">
                 <input
@@ -297,22 +288,12 @@ const CollectionPage = ({ collectionId }) => {
                 />
                 <span className="font-medium text-brand-dark/75">In Stock Only</span>
               </label>
-
-              <label className="flex items-center gap-2 cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  checked={onlyCustomizable}
-                  onChange={(e) => setOnlyCustomizable(e.target.checked)}
-                  className="accent-brand-plum cursor-pointer rounded w-4 h-4"
-                />
-                <span className="font-medium text-brand-dark/75">Customization Available</span>
-              </label>
             </div>
           </div>
         </aside>
 
         {/* 2. PRODUCT GRID SECTION */}
-        <section className="lg:col-span-9 w-full">
+        <section className="lg:col-span-9 w-full space-y-8 sm:space-y-10">
           <AnimatePresence mode="wait">
             {filteredProducts.length === 0 ? (
               <motion.div
@@ -338,12 +319,13 @@ const CollectionPage = ({ collectionId }) => {
             ) : (
               <motion.div
                 layout
-                className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6"
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6"
               >
                 {filteredProducts.map((product) => {
                   const isFav = isInWishlist(product.id);
                   const isAdded = addedStates[product.id];
                   const cartQty = cart.find((item) => item.id === product.id)?.quantity || 0;
+                  const finalPrice = product.price - (product.discount || 0);
 
                   return (
                     <motion.div
@@ -356,7 +338,7 @@ const CollectionPage = ({ collectionId }) => {
                       className="glass-card rounded-[20px] sm:rounded-[24px] overflow-hidden flex flex-col group border border-brand-purple/20 shadow-xs hover:shadow-md relative bg-white/50 cursor-pointer min-h-[300px] sm:min-h-[340px] transition-all"
                     >
                       {/* Product Image */}
-                      <div className="h-[135px] sm:h-[200px] w-full border-b border-brand-purple/10 overflow-hidden relative bg-gradient-to-tr from-[#FCF7FF] via-[#F3E7FA] to-[#E9D7F5] flex items-center justify-center p-2.5 sm:p-4">
+                      <div className="h-[200px] sm:h-[200px] w-full border-b border-brand-purple/10 overflow-hidden relative bg-gradient-to-tr from-[#FCF7FF] via-[#F3E7FA] to-[#E9D7F5] flex items-center justify-center p-2.5 sm:p-4">
                         <img
                           src={getProductImage(product)}
                           alt={product.title}
@@ -372,7 +354,7 @@ const CollectionPage = ({ collectionId }) => {
                           }}
                           className="select-none pointer-events-none group-hover:scale-105 transition-transform duration-500"
                         />
-                        
+
                         {/* Wishlist Button */}
                         <button
                           onClick={(e) => {
@@ -404,35 +386,26 @@ const CollectionPage = ({ collectionId }) => {
                           {product.description}
                         </p>
 
-                        {/* Rating row */}
-                        <div className="flex items-center gap-1 mb-2.5">
-                          <div className="flex text-amber-400">
-                            {[...Array(5)].map((_, i) => (
-                              <Star
-                                key={i}
-                                className={`w-2.5 h-2.5 ${i < Math.floor(product.rating) ? 'fill-amber-400' : 'text-gray-300'}`}
-                              />
-                            ))}
+                        {/* Price + Rating row */}
+                        <div className="flex items-center justify-between gap-2 mb-2.5">
+                          <span className="text-sm sm:text-base font-bold text-brand-plum font-serif">
+                            ₹{finalPrice.toLocaleString('en-IN')}
+                          </span>
+                          <div className="flex items-center gap-1">
+                            <div className="flex text-amber-400">
+                              {[...Array(5)].map((_, i) => (
+                                <Star
+                                  key={i}
+                                  className={`w-2.5 h-2.5 ${i < Math.floor(product.rating) ? 'fill-amber-400' : 'text-gray-300'}`}
+                                />
+                              ))}
+                            </div>
+                            <span className="text-[8.5px] sm:text-[9px] font-bold text-brand-dark/50">({product.reviewCount})</span>
                           </div>
-                          <span className="text-[8.5px] sm:text-[9px] font-bold text-brand-dark/50">({product.reviewCount})</span>
                         </div>
 
                         {/* Action buttons row */}
                         <div className="flex flex-col gap-1.5 sm:gap-2 mt-auto pt-2 border-t border-brand-purple/10">
-                          {/* 1. Primary Customize button */}
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setCustomizingProduct(product);
-                              setIsCustomizeOpen(true);
-                            }}
-                            className="w-full inline-flex items-center justify-center gap-1 py-1 px-2 sm:px-3 rounded-full bg-gradient-to-r from-brand-plum to-brand-violet hover:from-brand-violet hover:to-brand-plum text-white text-[9px] sm:text-[10px] font-bold uppercase tracking-wider h-7.5 sm:h-8 shadow-2xs cursor-pointer transition-all duration-300 hover:shadow-md"
-                          >
-                            <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-amber-200" />
-                            <span className="truncate">Customize</span>
-                          </button>
-
-                          {/* 2. Quick Add / Stepper + Details Row */}
                           <div className="flex gap-1.5 sm:gap-2">
                             {/* Add to Cart button / Quantity stepper */}
                             {cartQty > 0 ? (
@@ -504,6 +477,46 @@ const CollectionPage = ({ collectionId }) => {
               </motion.div>
             )}
           </AnimatePresence>
+
+          {/* One dedicated "Create Your Custom [Category]" CTA card -- never
+              repeated per product, shown once at the end of every category page. */}
+          {customPieceProduct && (
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-40px' }}
+              transition={{ duration: 0.5, ease: 'easeOut' }}
+              className="glass-card rounded-[24px] sm:rounded-[32px] overflow-hidden border border-brand-purple/25 shadow-sm bg-gradient-to-br from-white via-brand-cream/40 to-brand-purple/10 flex flex-col sm:flex-row items-center gap-5 sm:gap-8 p-5 sm:p-8"
+            >
+              <div className="w-full sm:w-44 h-40 sm:h-44 rounded-2xl bg-gradient-to-tr from-[#FCF7FF] via-[#F3E7FA] to-[#E9D7F5] border border-brand-purple/15 flex items-center justify-center p-4 flex-shrink-0">
+                <img
+                  src={getProductImage(customPieceProduct)}
+                  alt={`Custom ${collection.name}`}
+                  loading="lazy"
+                  className="w-full h-full object-contain pointer-events-none select-none"
+                />
+              </div>
+              <div className="flex-grow text-center sm:text-left">
+                <span className="inline-flex items-center gap-1.5 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-brand-plum bg-brand-purple/10 px-3 py-1 rounded-full font-mono mb-2.5">
+                  <Sparkles className="w-3 h-3" /> Bespoke Commission
+                </span>
+                <h3 className="font-serif text-lg sm:text-xl font-bold text-brand-dark mb-1.5">
+                  Create Your Custom {collection.name}
+                </h3>
+                <p className="text-xs sm:text-sm text-brand-dark/70 leading-relaxed max-w-lg mx-auto sm:mx-0 mb-4">
+                  Design a one-of-a-kind piece from scratch -- pick your style, material, colour, and add a personal message. Our artisans hand-craft it just for you.
+                </p>
+                <button
+                  onClick={() => navigate(`/customize/${collectionId}`)}
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-brand-plum hover:bg-brand-violet text-white font-semibold text-xs uppercase tracking-wider transition-all duration-300 shadow-md hover:shadow-lg cursor-pointer h-11"
+                >
+                  <Paintbrush className="w-4 h-4" />
+                  <span>Customize Now</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </motion.div>
+          )}
         </section>
       </div>
 
@@ -591,16 +604,6 @@ const CollectionPage = ({ collectionId }) => {
                     />
                     <span className="font-medium text-brand-dark/75">In Stock Only</span>
                   </label>
-
-                  <label className="flex items-center gap-2 cursor-pointer select-none">
-                    <input
-                      type="checkbox"
-                      checked={onlyCustomizable}
-                      onChange={(e) => setOnlyCustomizable(e.target.checked)}
-                      className="accent-brand-plum cursor-pointer rounded w-4 h-4"
-                    />
-                    <span className="font-medium text-brand-dark/75">Customization Available</span>
-                  </label>
                 </div>
               </div>
 
@@ -622,17 +625,6 @@ const CollectionPage = ({ collectionId }) => {
           </div>
         )}
       </AnimatePresence>
-
-      {/* 4. CUSTOMIZATION MODAL */}
-      <CustomizationModal
-        isOpen={isCustomizeOpen}
-        onClose={() => {
-          setIsCustomizeOpen(false);
-          setCustomizingProduct(null);
-        }}
-        product={customizingProduct}
-      />
-
     </div>
   );
 };

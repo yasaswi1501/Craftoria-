@@ -73,7 +73,7 @@ const NotFound = () => {
           </button>
           
           <button
-            onClick={() => navigate('/#bestsellers')}
+            onClick={() => navigate('/collections')}
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full bg-white/70 hover:bg-white border border-brand-purple/30 text-brand-plum font-semibold text-xs uppercase tracking-wider transition-all duration-300 shadow-xs cursor-pointer"
           >
             <ShoppingBag className="w-4 h-4 text-brand-purple" />

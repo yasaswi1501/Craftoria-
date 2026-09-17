@@ -1,64 +1,11 @@
 import { motion } from 'framer-motion';
 import { useRouter } from '../context/RouterContext';
 import { HibiscusFlower } from './PremiumBackground';
-
-import sellerMemoryCanvas from '../assets/seller-memory-canvas.png';
-import sellerEmbroideryHoop from '../assets/seller-embroidery-hoop.png';
-import sellerBloomKeychains from '../assets/seller-bloom-keychains.png';
-import coverPolaroids from '../assets/polaroids-new.jpg';
-import coverClips from '../assets/clips-rubber-bands.jpg';
-import coverMacrame from '../assets/macrame-wall-hanging.jpg';
-import sellerBloomBouquets from '../assets/seller-bloom-bouquets.png';
-import coverBouquets from '../assets/bloom-bouquets-cover.jpg';
+import { collectionsData } from '../data/products';
+import { getImageByFilename } from '../utils/getProductImage';
 
 const BestSellers = () => {
   const { navigate } = useRouter();
-
-  // The 7 collections in the exact request catalog order:
-  const collections = [
-    {
-      id: 'photo-frames',
-      name: 'Photo Frames',
-      desc: 'Handmade frames designed to preserve your sweetest memories.',
-      image: sellerMemoryCanvas,
-    },
-    {
-      id: 'embroidery',
-      name: 'Embroidery',
-      desc: 'Soft, detailed threadwork crafted with patience and love.',
-      image: sellerEmbroideryHoop,
-    },
-    {
-      id: 'keychains',
-      name: 'Key Chains',
-      desc: 'Cute handmade keychains made for everyday joy.',
-      image: sellerBloomKeychains,
-    },
-    {
-      id: 'polaroids',
-      name: 'Polaroids',
-      desc: 'Aesthetic memory-style polaroids for gifts and decor.',
-      image: coverPolaroids,
-    },
-    {
-      id: 'craftoria-bloom-bouquets',
-      name: 'Craftoria Bloom Bouquets',
-      desc: 'Handcrafted everlasting bouquets made with premium pipe cleaners, designed to celebrate every special moment.',
-      image: coverBouquets,
-    },
-    {
-      id: 'handmade-decor',
-      name: 'Home Decor',
-      desc: 'Artisanal fridge magnets, flower vases, and keepsakes to add warmth to your space.',
-      image: coverMacrame,
-    },
-    {
-      id: 'accessories',
-      name: 'Accessories',
-      desc: 'Stylish handmade hair clips and personalized hair accessories for everyday charm.',
-      image: coverClips,
-    },
-  ];
 
   const renderCard = (col, idx) => (
     <motion.div
@@ -75,7 +22,7 @@ const BestSellers = () => {
       {/* Top: Collection Image */}
       <div className="w-full relative pb-[75%] h-0 overflow-hidden border-b border-brand-purple/5">
         <img
-          src={col.image}
+          src={getImageByFilename(col.image)}
           alt={col.name}
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-108"
           loading="lazy"
@@ -143,7 +90,7 @@ const BestSellers = () => {
 
         {/* Categories Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8">
-          {collections.map((col, idx) => renderCard(col, idx))}
+          {collectionsData.map((col, idx) => renderCard(col, idx))}
         </div>
       </div>
     </section>

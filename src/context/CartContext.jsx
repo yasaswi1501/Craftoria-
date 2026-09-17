@@ -83,9 +83,10 @@ export const CartProvider = ({ children }) => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [toast, setToast] = useState(null);
 
-  // Sync cart to state and localStorage
-  const saveCartToStorage = (updatedCart) => {
-    setCart(updatedCart);
+  // Persist a cart array to localStorage (state update is the caller's job,
+  // via the functional setCart form, so a stale closure can never overwrite
+  // a more recent in-flight update).
+  const persistCart = (updatedCart) => {
     try {
       localStorage.setItem('craftoria_cart', JSON.stringify(updatedCart));
       if (user && user.email) {
@@ -96,9 +97,7 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  // Sync saved for later to state and localStorage
-  const saveSaveLaterToStorage = (updatedList) => {
-    setSaveForLaterList(updatedList);
+  const persistSaveLater = (updatedList) => {
     try {
       localStorage.setItem('craftoria_save_later', JSON.stringify(updatedList));
       if (user && user.email) {
@@ -128,7 +127,8 @@ export const CartProvider = ({ children }) => {
 
       if (currentActiveCart.length === 0 && userSavedCart.length > 0) {
         // Restore user's previous saved cart
-        saveCartToStorage(userSavedCart);
+        setCart(userSavedCart);
+        persistCart(userSavedCart);
       } else if (currentActiveCart.length > 0 && userSavedCart.length > 0) {
         // Merge without summing quantities if same items exist
         const cartMap = new Map();
@@ -142,7 +142,8 @@ export const CartProvider = ({ children }) => {
           }
         });
         const merged = Array.from(cartMap.values());
-        saveCartToStorage(merged);
+        setCart(merged);
+        persistCart(merged);
       } else if (currentActiveCart.length > 0) {
         // Save current active cart to user key
         localStorage.setItem(userCartKey, JSON.stringify(currentActiveCart));
@@ -158,19 +159,20 @@ export const CartProvider = ({ children }) => {
         const savedLaterRaw = localStorage.getItem(userSaveLaterKey);
         const userSavedLater = savedLaterRaw ? JSON.parse(savedLaterRaw) : [];
 
-        const saveLaterMap = new Map();
-        saveForLaterList.forEach((item) => {
-          if (item && item.id) saveLaterMap.set(item.id, { ...item });
+        setSaveForLaterList((currentSaveForLaterList) => {
+          const saveLaterMap = new Map();
+          currentSaveForLaterList.forEach((item) => {
+            if (item && item.id) saveLaterMap.set(item.id, { ...item });
+          });
+          userSavedLater.forEach((savedItem) => {
+            if (savedItem && savedItem.id) {
+              saveLaterMap.set(savedItem.id, { ...savedItem });
+            }
+          });
+          const mergedSaveLater = Array.from(saveLaterMap.values());
+          persistSaveLater(mergedSaveLater);
+          return mergedSaveLater;
         });
-        userSavedLater.forEach((savedItem) => {
-          if (savedItem && savedItem.id) {
-            saveLaterMap.set(savedItem.id, { ...savedItem });
-          }
-        });
-        const mergedSaveLater = Array.from(saveLaterMap.values());
-        setSaveForLaterList(mergedSaveLater);
-        localStorage.setItem('craftoria_save_later', JSON.stringify(mergedSaveLater));
-        localStorage.setItem(userSaveLaterKey, JSON.stringify(mergedSaveLater));
       } catch (e) {}
     }
   }, [user]);
@@ -227,14 +229,7 @@ export const CartProvider = ({ children }) => {
           },
         ];
       }
-      try {
-        localStorage.setItem('craftoria_cart', JSON.stringify(updated));
-        if (user && user.email) {
-          localStorage.setItem(`craftoria_cart_${user.email}`, JSON.stringify(updated));
-        }
-      } catch (e) {
-        console.error('Failed to write cart to storage:', e);
-      }
+      persistCart(updated);
       return updated;
     });
 
@@ -267,8 +262,11 @@ export const CartProvider = ({ children }) => {
   };
 
   const removeFromCart = (lineItemId) => {
-    const updated = cart.filter((item) => item.id !== lineItemId);
-    saveCartToStorage(updated);
+    setCart((prevCart) => {
+      const updated = prevCart.filter((item) => item.id !== lineItemId);
+      persistCart(updated);
+      return updated;
+    });
   };
 
   const updateQuantity = (lineItemId, newQuantity) => {
@@ -278,40 +276,58 @@ export const CartProvider = ({ children }) => {
       return;
     }
 
-    const updated = cart.map((item) =>
-      item.id === lineItemId ? { ...item, quantity: parsedQty } : item
-    );
-    saveCartToStorage(updated);
+    setCart((prevCart) => {
+      const updated = prevCart.map((item) =>
+        item.id === lineItemId ? { ...item, quantity: parsedQty } : item
+      );
+      persistCart(updated);
+      return updated;
+    });
   };
 
   const clearCart = () => {
-    saveCartToStorage([]);
+    setCart([]);
+    persistCart([]);
   };
 
   // Save for Later Actions
   const saveForLater = (productId) => {
-    const itemToSave = cart.find((item) => item.id === productId);
-    if (!itemToSave) return;
+    setCart((prevCart) => {
+      const itemToSave = prevCart.find((item) => item.id === productId);
+      if (!itemToSave) return prevCart;
 
-    removeFromCart(productId);
+      const updatedCart = prevCart.filter((item) => item.id !== productId);
+      persistCart(updatedCart);
 
-    const exists = saveForLaterList.some((item) => item.id === productId);
-    if (!exists) {
-      saveSaveLaterToStorage([...saveForLaterList, itemToSave]);
-    }
+      setSaveForLaterList((prevSaveForLater) => {
+        if (prevSaveForLater.some((item) => item.id === productId)) return prevSaveForLater;
+        const updatedSaveForLater = [...prevSaveForLater, itemToSave];
+        persistSaveLater(updatedSaveForLater);
+        return updatedSaveForLater;
+      });
+
+      return updatedCart;
+    });
   };
 
   const moveToCart = (productId) => {
-    const itemToMove = saveForLaterList.find((item) => item.id === productId);
-    if (!itemToMove) return;
+    setSaveForLaterList((prevSaveForLater) => {
+      const itemToMove = prevSaveForLater.find((item) => item.id === productId);
+      if (!itemToMove) return prevSaveForLater;
 
-    saveSaveLaterToStorage(saveForLaterList.filter((item) => item.id !== productId));
-    addItemQuantity(itemToMove, itemToMove.quantity || 1);
+      const updated = prevSaveForLater.filter((item) => item.id !== productId);
+      persistSaveLater(updated);
+      addItemQuantity(itemToMove, itemToMove.quantity || 1);
+      return updated;
+    });
   };
 
   const removeFromSaveForLater = (productId) => {
-    const updatedList = saveForLaterList.filter((item) => item.id !== productId);
-    saveSaveLaterToStorage(updatedList);
+    setSaveForLaterList((prevSaveForLater) => {
+      const updated = prevSaveForLater.filter((item) => item.id !== productId);
+      persistSaveLater(updated);
+      return updated;
+    });
   };
 
   return (

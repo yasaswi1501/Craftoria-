@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /checkout
+Disallow: /reset-password
+
+Sitemap: https://craftoria-nine.vercel.app/sitemap.xml

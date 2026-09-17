@@ -83,7 +83,6 @@ create table public.invoices (
   issued_at timestamptz not null default now()
 );
 
-create index invoices_order_idx on public.invoices(order_id);
 
 alter table public.shipments enable row level security;
 alter table public.returns enable row level security;

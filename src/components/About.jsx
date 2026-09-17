@@ -101,7 +101,7 @@ const About = () => {
               
               <div className="pt-4">
                 <button
-                  onClick={() => navigate('/#bestsellers')}
+                  onClick={() => navigate('/collections')}
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-brand-plum text-white font-semibold text-xs tracking-wider uppercase hover:bg-brand-violet hover:translate-y-[-2px] transition-all duration-300 shadow-md hover:shadow-lg cursor-pointer"
                 >
                   <span>Explore Collections</span>

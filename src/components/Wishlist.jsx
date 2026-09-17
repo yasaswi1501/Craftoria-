@@ -1,69 +1,16 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, ShoppingBag, Trash, ArrowLeft, Check, Sparkles, Minus, Plus } from 'lucide-react';
+import { Heart, ShoppingBag, Trash, ArrowLeft, Check, Sparkles, Minus, Plus, Eye } from 'lucide-react';
 import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
 import { useRouter } from '../context/RouterContext';
-import CustomizationModal from './CustomizationModal';
-
-import sellerMemoryCanvas from '../assets/seller-memory-canvas.png';
-import sellerEmbroideryHoop from '../assets/seller-embroidery-hoop.png';
-import sellerBloomBouquets from '../assets/seller-bloom-bouquets.png';
-import sellerBloomKeychains from '../assets/seller-bloom-keychains.png';
-import coverPolaroids from '../assets/polaroids-new.jpg';
-import coverClips from '../assets/clips-rubber-bands.jpg';
-import coverMacrame from '../assets/macrame-wall-hanging.jpg';
-import coverBouquets from '../assets/bloom-bouquets-cover.jpg';
-import coverChildFrame from '../assets/gallery-5-child-frame.jpg';
-import coverCoupleEmbroidery from '../assets/gallery-3-couple-embroidery.jpg';
-import coverBlueFlowerKeychain from '../assets/gallery-2-blue-flower-keychain.jpg';
-import coverHeartKeychain from '../assets/gallery-4-heart-keychain.jpg';
-import embroideryShirt from '../assets/embroidery-shirt.jpg';
-import fridgeMagnets from '../assets/fridge-magnets.jpg';
-import flowerVase from '../assets/flower-vase.jpg';
-import bouquet1Flower from '../assets/bouquet-1-flower.jpg';
-import bouquet3Flower from '../assets/bouquet-3-flower.jpg';
-import bouquet5Flower from '../assets/bouquet-5-flower.jpg';
-import customHomeDecor from '../assets/custom-home-decor.jpg';
-import hairClips from '../assets/hair-clips.jpg';
-import customHairAccessories from '../assets/custom-hair-accessories.jpg';
+import { getProductImage } from '../utils/getProductImage';
 
 const Wishlist = () => {
   const { wishlist, removeFromWishlist } = useWishlist();
   const { addToCart, cart, updateQuantity } = useCart();
   const { navigate } = useRouter();
   const [cartStates, setCartStates] = useState({}); // { productId: boolean }
-  const [customizingProduct, setCustomizingProduct] = useState(null);
-  const [isCustomizeOpen, setIsCustomizeOpen] = useState(false);
-
-  const getProductImage = (id, savedImage) => {
-    const rawId = (id || '').toLowerCase();
-    const rawSaved = savedImage || '';
-
-    if (rawSaved === 'hair-clips.jpg' || rawId === 'accessories-clips') return hairClips;
-    if (rawSaved === 'custom-hair-accessories.jpg' || rawId.includes('custom-accessories')) return customHairAccessories;
-    if (rawSaved === 'bouquet-1-flower.jpg' || rawId === 'bloom-bouquet-1-flower') return bouquet1Flower;
-    if (rawSaved === 'bouquet-3-flower.jpg' || rawId === 'bloom-bouquet-3-flower') return bouquet3Flower;
-    if (rawSaved === 'bouquet-5-flower.jpg' || rawId === 'bloom-bouquet-5-flower') return bouquet5Flower;
-    if (rawSaved === 'custom-home-decor.jpg' || rawId.includes('custom-home-decor')) return customHomeDecor;
-    if (rawSaved === 'embroidery-shirt.jpg' || rawId.includes('shirt')) return embroideryShirt;
-    if (rawSaved === 'fridge-magnets.jpg' || rawId.includes('magnet')) return fridgeMagnets;
-    if (rawSaved === 'flower-vase.jpg' || rawId.includes('vase')) return flowerVase;
-    if (rawSaved === 'gallery-2-blue-flower-keychain.jpg' || rawId.includes('blue-blossom')) return coverBlueFlowerKeychain;
-    if (rawSaved === 'gallery-4-heart-keychain.jpg' || rawId.includes('heart-keychain') || rawId.includes('purple-heart')) return coverHeartKeychain;
-    if (rawSaved === 'gallery-3-couple-embroidery.jpg' || rawId.includes('couple-embroidery') || rawId.includes('middle-frame')) return coverCoupleEmbroidery;
-    if (rawSaved === 'gallery-5-child-frame.jpg' || rawId.includes('child-frame') || rawId.includes('wooden-frame')) return coverChildFrame;
-    if (rawSaved === 'seller-bloom-bouquets.png' || rawId.includes('custom-bloom-bouquet')) return sellerBloomBouquets;
-    if (rawSaved === 'bloom-bouquets-cover.jpg' || rawId.includes('craftoria-bloom') || rawId.includes('bloom-bouquets')) return coverBouquets;
-    if (rawSaved === 'macrame-wall-hanging.jpg' || rawId.includes('macrame') || rawId.includes('decor')) return coverMacrame;
-    if (rawSaved === 'clips-rubber-bands.jpg' || rawId.includes('clip') || rawId.includes('rubber-band') || rawId.includes('accessories')) return coverClips;
-    if (rawSaved === 'polaroids-new.jpg' || rawSaved === 'gallery-1-polaroid.jpg' || rawId.includes('polaroid')) return coverPolaroids;
-    if (rawSaved === 'seller-bloom-keychains.png' || rawId.includes('keychain')) return sellerBloomKeychains;
-    if (rawSaved === 'seller-embroidery-hoop.png' || rawId.includes('embroidery') || rawId.includes('hoop')) return sellerEmbroideryHoop;
-    if (rawSaved === 'seller-bloom-bouquets.png' || rawId.includes('bouquet') || rawId.includes('gift')) return sellerBloomBouquets;
-    if (rawSaved === 'seller-memory-canvas.png' || rawId.includes('canvas') || rawId.includes('frame')) return sellerMemoryCanvas;
-    return sellerMemoryCanvas;
-  };
 
   const handleAddToCart = (item) => {
     addToCart(item);
@@ -112,19 +59,19 @@ const Wishlist = () => {
             <p className="text-xs text-brand-dark/70 leading-relaxed mb-6 sm:mb-8 max-w-xs">
               Save the handcrafted pieces you love and come back to them anytime.
             </p>
-            <a
-              href="/#collections"
-              className="px-6 sm:px-8 py-3 sm:py-3.5 rounded-full bg-brand-plum hover:bg-brand-violet text-white font-semibold text-xs uppercase tracking-widest hover:shadow-md transition-all duration-300"
+            <button
+              onClick={() => navigate('/collections')}
+              className="px-6 sm:px-8 py-3 sm:py-3.5 rounded-full bg-brand-plum hover:bg-brand-violet text-white font-semibold text-xs uppercase tracking-widest hover:shadow-md transition-all duration-300 cursor-pointer"
             >
               Explore Collections
-            </a>
+            </button>
           </motion.div>
         ) : (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6 lg:gap-7"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-7"
           >
             {wishlist.map(item => {
               const cartQty = cart.find((c) => c.id === item.id)?.quantity || 0;
@@ -139,9 +86,9 @@ const Wishlist = () => {
                 className="glass-card rounded-[20px] sm:rounded-[24px] overflow-hidden flex flex-col group border border-brand-purple/20 shadow-xs hover:shadow-md relative bg-white/50 cursor-pointer transition-all"
               >
                 {/* Product Image */}
-                <div className="h-[135px] sm:h-[220px] w-full border-b border-brand-purple/10 overflow-hidden relative bg-gradient-to-tr from-[#FCF7FF] via-[#F3E7FA] to-[#E9D7F5] flex items-center justify-center p-2.5 sm:p-4">
+                <div className="h-[200px] sm:h-[220px] w-full border-b border-brand-purple/10 overflow-hidden relative bg-gradient-to-tr from-[#FCF7FF] via-[#F3E7FA] to-[#E9D7F5] flex items-center justify-center p-2.5 sm:p-4">
                   <img
-                    src={getProductImage(item.id, item.image)}
+                    src={getProductImage(item)}
                     alt={item.name}
                     style={{
                       objectFit: 'contain',
@@ -153,7 +100,7 @@ const Wishlist = () => {
                     }}
                     className="select-none pointer-events-none group-hover:scale-105 transition-transform duration-500"
                   />
-                  
+
                   {/* Remove Button overlay */}
                   <button
                     onClick={(e) => {
@@ -175,38 +122,22 @@ const Wishlist = () => {
                   <h3 className="font-serif text-xs sm:text-lg font-bold text-brand-dark mb-1 line-clamp-1">
                     {item.name}
                   </h3>
+                  {typeof item.price === 'number' && (
+                    <span className="text-sm sm:text-base font-bold text-brand-plum mb-1.5 sm:mb-2">
+                      ₹{item.price.toLocaleString('en-IN')}
+                    </span>
+                  )}
 
                   <div className="text-[9.5px] sm:text-xs font-semibold text-emerald-600 mb-2 sm:mb-3 flex items-center gap-1">
                     <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-emerald-500 animate-pulse flex-shrink-0" /> <span className="truncate">In Stock</span>
                   </div>
 
                   {/* Actions */}
-                  <div className="flex flex-col gap-1.5 sm:gap-2 mt-auto">
-                    {/* Primary Customize Button */}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setCustomizingProduct({
-                          id: item.id,
-                          title: item.name,
-                          name: item.name,
-                          description: item.desc,
-                          desc: item.desc,
-                          thumbnail: item.image,
-                          image: item.image,
-                        });
-                        setIsCustomizeOpen(true);
-                      }}
-                      className="w-full inline-flex items-center justify-center gap-1 py-1 px-2 sm:px-3 rounded-full bg-gradient-to-r from-brand-plum to-brand-violet hover:from-brand-violet hover:to-brand-plum text-white text-[9px] sm:text-[10px] font-bold uppercase tracking-wider h-7.5 sm:h-8 shadow-2xs cursor-pointer transition-all duration-300 hover:shadow-md"
-                    >
-                      <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-amber-200" />
-                      <span className="truncate">Customize</span>
-                    </button>
-
+                  <div className="flex gap-1.5 sm:gap-2 mt-auto">
                     {cartQty > 0 ? (
                       <div
                         onClick={(e) => e.stopPropagation()}
-                        className="w-full inline-flex items-center justify-between rounded-full bg-brand-plum/90 text-white h-7.5 sm:h-8 px-2"
+                        className="flex-grow inline-flex items-center justify-between rounded-full bg-brand-plum/90 text-white h-7.5 sm:h-8 px-2"
                       >
                         <button
                           onClick={(e) => {
@@ -236,7 +167,7 @@ const Wishlist = () => {
                           e.stopPropagation();
                           handleAddToCart(item);
                         }}
-                        className="w-full inline-flex items-center justify-center gap-1 py-1 rounded-full border border-brand-purple/25 bg-white hover:bg-brand-purple/10 text-brand-plum font-semibold text-[8.5px] sm:text-[10px] uppercase tracking-wider transition-colors cursor-pointer h-7.5 sm:h-8 shadow-2xs"
+                        className="flex-grow inline-flex items-center justify-center gap-1 py-1 rounded-full border border-brand-purple/25 bg-white hover:bg-brand-purple/10 text-brand-plum font-semibold text-[8.5px] sm:text-[10px] uppercase tracking-wider transition-colors cursor-pointer h-7.5 sm:h-8 shadow-2xs"
                       >
                         {cartStates[item.id] ? (
                           <>
@@ -251,6 +182,18 @@ const Wishlist = () => {
                         )}
                       </button>
                     )}
+
+                    {/* View details button */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/product/${item.id}`);
+                      }}
+                      className="p-1 rounded-full border border-brand-purple/20 text-brand-plum hover:bg-brand-purple/10 flex items-center justify-center h-7.5 w-7.5 sm:h-8 sm:w-8 cursor-pointer focus:outline-none flex-shrink-0"
+                      title="View Product details"
+                    >
+                      <Eye className="w-3.5 h-3.5" />
+                    </button>
                   </div>
                 </div>
               </motion.div>
@@ -259,16 +202,6 @@ const Wishlist = () => {
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Customization Modal */}
-      <CustomizationModal
-        isOpen={isCustomizeOpen}
-        onClose={() => {
-          setIsCustomizeOpen(false);
-          setCustomizingProduct(null);
-        }}
-        product={customizingProduct}
-      />
     </div>
   );
 };

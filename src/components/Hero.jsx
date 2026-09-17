@@ -1,28 +1,10 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Heart, Sparkles, ArrowRight, Paintbrush } from 'lucide-react';
 import heroCraftShowcase from '../assets/hero-craft-showcase.jpg';
-import CustomizationModal from './CustomizationModal';
-
-const bespokeCustomProduct = {
-  id: 'bespoke-custom-order',
-  name: 'Bespoke Custom Handcrafted Order',
-  title: 'Bespoke Custom Handcrafted Order',
-  desc: 'Custom personalized piece tailored to your story & requested details',
-  description: 'Custom personalized piece tailored to your story & requested details',
-  thumbnail: 'seller-bloom-bouquets.png',
-  category: 'custom-orders',
-};
+import { useRouter } from '../context/RouterContext';
 
 const Hero = () => {
-  const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
-
-  const handleScroll = (id) => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
+  const { navigate } = useRouter();
 
   return (
     <section
@@ -89,14 +71,14 @@ const Hero = () => {
             className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mb-6 sm:mb-8 w-full sm:w-auto"
           >
             <button
-              onClick={() => handleScroll('bestsellers')}
+              onClick={() => navigate('/collections')}
               className="inline-flex items-center justify-center gap-2 px-6 sm:px-7 py-3.5 rounded-full bg-brand-plum text-white font-semibold hover:bg-brand-violet hover:translate-y-[-2px] transition-all duration-300 shadow-md hover:shadow-lg text-xs uppercase tracking-wider cursor-pointer h-12"
             >
               <span>Explore Collection</span>
               <ArrowRight className="w-4 h-4" />
             </button>
             <button
-              onClick={() => setIsCustomModalOpen(true)}
+              onClick={() => navigate('/customize')}
               className="inline-flex items-center justify-center gap-2 px-6 sm:px-7 py-3.5 rounded-full bg-brand-cream/70 border border-brand-purple/35 text-brand-plum font-semibold hover:bg-brand-purple/10 hover:translate-y-[-2px] transition-all duration-300 text-xs uppercase tracking-wider cursor-pointer h-12"
             >
               <Paintbrush className="w-4 h-4 text-brand-purple" />
@@ -163,17 +145,6 @@ const Hero = () => {
           </motion.div>
         </div>
       </div>
-
-      {/* Bespoke Custom Orders Pop-up Modal */}
-      <AnimatePresence>
-        {isCustomModalOpen && (
-          <CustomizationModal
-            isOpen={isCustomModalOpen}
-            onClose={() => setIsCustomModalOpen(false)}
-            product={bespokeCustomProduct}
-          />
-        )}
-      </AnimatePresence>
     </section>
   );
 };

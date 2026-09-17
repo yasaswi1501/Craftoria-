@@ -1,18 +1,23 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  X, User, ShoppingBag, Heart, MapPin, LogOut, ChevronRight, 
+import {
+  X, User, ShoppingBag, Heart, MapPin, LogOut, ChevronRight,
   Trash, Edit2, Plus, Check, Save, AlertCircle, Phone, Mail, Home, Briefcase
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
+import { useRouter } from '../context/RouterContext';
 import { supabase } from '../lib/supabase';
 import { useScrollLock } from '../utils/scrollLock';
+import { useEscapeKey } from '../utils/useEscapeKey';
+import ConfirmDialog from './ConfirmDialog';
+import Avatar from './Avatar';
 
 const AccountMenu = ({ isOpen, onClose, initialTab = 'menu' }) => {
   const { user, logout, updateUserProfile } = useAuth();
+  const { navigate } = useRouter();
   const { wishlist, removeFromWishlist } = useWishlist();
   const { addToCart } = useCart();
   
@@ -22,6 +27,7 @@ const AccountMenu = ({ isOpen, onClose, initialTab = 'menu' }) => {
 
   // Lock background body scroll cleanly when account drawer is open
   useScrollLock(isOpen);
+  useEscapeKey(isOpen, onClose);
 
   useEffect(() => {
     if (isOpen) {
@@ -34,6 +40,12 @@ const AccountMenu = ({ isOpen, onClose, initialTab = 'menu' }) => {
   const [profileName, setProfileName] = useState(user?.name || '');
   const [profilePhone, setProfilePhone] = useState(user?.phone || '');
   const [profileSaveStatus, setProfileSaveStatus] = useState(null); // 'saving' | 'saved' | 'error'
+  const [profilePicFailed, setProfilePicFailed] = useState(false);
+
+  // --- Address Delete Confirmation ---
+  const [addressPendingDelete, setAddressPendingDelete] = useState(null);
+  const [isDeletingAddress, setIsDeletingAddress] = useState(false);
+  const [deleteAddressError, setDeleteAddressError] = useState('');
 
   // --- Addresses State ---
   const getInitialAddresses = () => {
@@ -201,15 +213,36 @@ const AccountMenu = ({ isOpen, onClose, initialTab = 'menu' }) => {
     setEditingAddressId(null);
   };
 
-  const handleDeleteAddress = (id) => {
-    const updated = addresses.filter((a) => a.id !== id);
-    saveAddressesToStorage(updated);
+  const handleRequestDeleteAddress = (adr) => {
+    setDeleteAddressError('');
+    setAddressPendingDelete(adr);
+  };
+
+  const handleCancelDeleteAddress = () => {
+    if (isDeletingAddress) return;
+    setAddressPendingDelete(null);
+    setDeleteAddressError('');
+  };
+
+  const handleConfirmDeleteAddress = async () => {
+    if (!addressPendingDelete) return;
+    setIsDeletingAddress(true);
+    setDeleteAddressError('');
+    try {
+      const updated = addresses.filter((a) => a.id !== addressPendingDelete.id);
+      saveAddressesToStorage(updated);
+      setAddressPendingDelete(null);
+    } catch (err) {
+      setDeleteAddressError('Could not delete this address. Please try again.');
+    } finally {
+      setIsDeletingAddress(false);
+    }
   };
 
   if (!isOpen) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[9999] flex justify-end" data-lenis-prevent="true">
+    <div className="fixed inset-0 z-[9999] flex justify-end" role="dialog" aria-modal="true" aria-label="My Account" data-lenis-prevent="true">
       {/* Backdrop */}
       <motion.div
         initial={{ opacity: 0 }}
@@ -264,11 +297,7 @@ const AccountMenu = ({ isOpen, onClose, initialTab = 'menu' }) => {
                 <div className="glass-card p-5 rounded-[24px] border border-brand-purple/25 flex items-center justify-between gap-3 bg-white/40 shadow-xs">
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-full border border-brand-purple/10 overflow-hidden bg-brand-plum text-white flex items-center justify-center font-serif text-lg font-bold flex-shrink-0">
-                      {user?.picture ? (
-                        <img src={user.picture} alt={user.name} className="w-full h-full object-cover" />
-                      ) : (
-                        user?.name ? user.name[0].toUpperCase() : '👤'
-                      )}
+                      <Avatar src={user?.picture} name={user?.name} className="w-full h-full object-cover" />
                     </div>
                     <div className="flex flex-col">
                       <span className="text-[10px] text-brand-dark/60 font-semibold uppercase tracking-wider font-mono">Welcome back,</span>
@@ -447,12 +476,13 @@ const AccountMenu = ({ isOpen, onClose, initialTab = 'menu' }) => {
               ) : (
                 /* Profile View Details */
                 <div className="flex flex-col gap-4 bg-white/70 p-5 rounded-[24px] border border-brand-purple/20 shadow-xs">
-                  {user?.picture && (
+                  {user?.picture && !profilePicFailed && (
                     <div className="flex flex-col items-center pb-4 border-b border-brand-purple/10">
-                      <img 
-                        src={user.picture} 
-                        alt={user.name} 
-                        className="w-20 h-20 rounded-full object-cover border-2 border-brand-purple/35 shadow-sm" 
+                      <img
+                        src={user.picture}
+                        alt={user.name}
+                        className="w-20 h-20 rounded-full object-cover border-2 border-brand-purple/35 shadow-sm"
+                        onError={() => setProfilePicFailed(true)}
                       />
                       <span className="text-[9px] bg-brand-purple/15 text-brand-plum font-bold px-2.5 py-0.5 rounded-full mt-2.5 uppercase tracking-wider inline-flex items-center gap-1">
                         Verified Member
@@ -539,13 +569,15 @@ const AccountMenu = ({ isOpen, onClose, initialTab = 'menu' }) => {
                 <div className="flex flex-col items-center justify-center text-center py-16">
                   <Heart className="w-10 h-10 text-brand-plum/45 mb-3" />
                   <span className="text-xs font-semibold text-brand-dark/70">Your Wishlist is empty.</span>
-                  <a
-                    href="/#collections"
-                    onClick={onClose}
+                  <button
+                    onClick={() => {
+                      onClose();
+                      navigate('/collections');
+                    }}
                     className="text-[10px] font-bold text-brand-plum hover:underline mt-2 cursor-pointer"
                   >
                     Explore Collections
-                  </a>
+                  </button>
                 </div>
               ) : (
                 <div className="flex flex-col gap-3 max-h-[360px] overflow-y-auto pr-1">
@@ -763,7 +795,7 @@ const AccountMenu = ({ isOpen, onClose, initialTab = 'menu' }) => {
                               <Edit2 className="w-3.5 h-3.5" />
                             </button>
                             <button
-                              onClick={() => handleDeleteAddress(adr.id)}
+                              onClick={() => handleRequestDeleteAddress(adr)}
                               className="p-1.5 rounded-full hover:bg-red-50 text-red-500 cursor-pointer transition-colors"
                               title="Delete Address"
                               aria-label="Delete Address"
@@ -794,6 +826,19 @@ const AccountMenu = ({ isOpen, onClose, initialTab = 'menu' }) => {
           )}
         </div>
       </motion.div>
+
+      {/* Delete Address Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={!!addressPendingDelete}
+        title="Delete this address?"
+        message={addressPendingDelete ? `"${addressPendingDelete.recipientName || addressPendingDelete.type + ' Address'}" — ${addressPendingDelete.building}, ${addressPendingDelete.city} will be permanently removed.` : ''}
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        isLoading={isDeletingAddress}
+        errorMessage={deleteAddressError}
+        onConfirm={handleConfirmDeleteAddress}
+        onCancel={handleCancelDeleteAddress}
+      />
     </div>,
     document.body
   );

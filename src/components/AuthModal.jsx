@@ -4,14 +4,16 @@ import { motion } from 'framer-motion';
 import { X, Eye, EyeOff, Mail, Phone, Lock, User, ArrowLeft, Loader2, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useScrollLock } from '../utils/scrollLock';
+import { useEscapeKey } from '../utils/useEscapeKey';
 
 const AuthModal = ({ isOpen, onClose }) => {
   const { login, signup, loginWithGoogle, forgotPassword } = useAuth();
   const [view, setView] = useState('login'); // 'login' | 'signup' | 'forgot'
-  
+
   // Lock background body scroll cleanly when auth modal is open
   useScrollLock(isOpen);
-  
+  useEscapeKey(isOpen, onClose);
+
   // Form fields
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -319,7 +321,7 @@ const AuthModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 bg-brand-plum/60 backdrop-blur-md overflow-y-auto no-scrollbar pb-safe pt-safe" data-lenis-prevent="true">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 bg-brand-plum/60 backdrop-blur-md overflow-y-auto no-scrollbar pb-safe pt-safe" role="dialog" aria-modal="true" aria-label="Sign in to Craftoria" data-lenis-prevent="true">
       <div 
         className="fixed inset-0 cursor-pointer touch-none" 
         onTouchMove={(e) => e.preventDefault()}

@@ -1,9 +1,13 @@
 import { Sparkles, Instagram, Mail, Heart, Phone, MapPin } from 'lucide-react';
 import { HibiscusFlower } from './PremiumBackground';
 import { useRouter } from '../context/RouterContext';
+import { useSettings } from '../context/SettingsContext';
+import { formatPhoneForDisplay } from '../utils/whatsapp';
 
 const Footer = () => {
   const { navigate } = useRouter();
+  const { whatsappNumber } = useSettings();
+  const contactPhone = formatPhoneForDisplay(whatsappNumber);
 
   const handleLinkNavigation = (e, href) => {
     e.preventDefault();
@@ -75,8 +79,11 @@ const Footer = () => {
               About Us
             </a>
             <a
-              href="#bestsellers"
-              onClick={(e) => handleLinkNavigation(e, '#bestsellers')}
+              href="/collections"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate('/collections');
+              }}
               className="text-xs sm:text-sm text-brand-dark/75 hover:text-brand-violet transition-colors duration-200"
             >
               Explore Collections
@@ -107,13 +114,13 @@ const Footer = () => {
           <div className="flex flex-col gap-2 text-xs sm:text-sm">
             {/* Clickable Phone Number */}
             <a
-              href="tel:+919908860895"
+              href={contactPhone.tel}
               className="inline-flex items-center gap-2.5 text-brand-dark/80 hover:text-brand-plum font-semibold transition-colors group"
             >
               <div className="w-7 h-7 rounded-full bg-brand-purple/10 flex items-center justify-center group-hover:bg-brand-purple/20 transition-colors">
                 <Phone className="w-3.5 h-3.5 text-brand-plum" />
               </div>
-              <span>+91 99088 60895</span>
+              <span>{contactPhone.display}</span>
             </a>
 
             {/* Clickable Email Address */}

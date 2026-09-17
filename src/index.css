@@ -232,3 +232,18 @@ html.lenis, html.lenis body {
 .mb-safe {
   margin-bottom: env(safe-area-inset-bottom, 0px);
 }
+
+/* Global reduced-motion safety net: MotionConfig (main.jsx) handles every
+   framer-motion animation, but this catches Tailwind's built-in animate-*
+   utilities (animate-pulse, animate-bounce, animate-spin) used on smaller
+   elements like badges and loaders throughout the app. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,20 +1,26 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Menu, X, Sparkles, Heart, ShoppingBag, User, Phone, Mail, ChevronRight, 
-  ChevronDown, MapPin, LogOut, Package, Edit2 
+import {
+  Menu, X, Sparkles, Heart, ShoppingBag, User, Phone, Mail, ChevronRight,
+  ChevronDown, MapPin, LogOut, Package, Edit2, Paintbrush, ShieldCheck
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
+import { useSettings } from '../context/SettingsContext';
 import AuthModal from './AuthModal';
 import AccountMenu from './AccountMenu';
 import CartDrawer from './CartDrawer';
 import { useRouter } from '../context/RouterContext';
 import { useScrollLock } from '../utils/scrollLock';
+import { useEscapeKey } from '../utils/useEscapeKey';
+import { formatPhoneForDisplay } from '../utils/whatsapp';
+import Avatar from './Avatar';
 
 const Header = () => {
-  const { isLoggedIn, user, logout, isAuthModalOpen, setIsAuthModalOpen } = useAuth();
+  const { isLoggedIn, user, logout, isAdmin, isAuthModalOpen, setIsAuthModalOpen } = useAuth();
+  const { whatsappNumber } = useSettings();
+  const contactPhone = formatPhoneForDisplay(whatsappNumber);
   const { cart, setIsCartOpen } = useCart();
   const { wishlist } = useWishlist();
   const { navigate } = useRouter();
@@ -76,9 +82,7 @@ const Header = () => {
         if (el) observer.observe(el);
       });
     } else {
-      const currentPath = window.location.pathname;
-      const targetSection = currentPath.startsWith('/collections') ? '#bestsellers' : '';
-      setActiveSection(targetSection);
+      setActiveSection('');
     }
 
     return () => {
@@ -89,19 +93,34 @@ const Header = () => {
 
   // Lock background body scroll cleanly when mobile nav is open
   useScrollLock(isNavOpen);
+  useEscapeKey(isNavOpen, () => setIsNavOpen(false));
+  useEscapeKey(isAccountDropdownOpen, () => setIsAccountDropdownOpen(false));
 
+  const currentPathname = window.location.pathname;
+
+  // Mix of same-page section anchors (only meaningful on the homepage) and
+  // real routed pages -- each carries its own navigation + active-state logic.
   const navLinks = [
-    { name: 'Home', href: '#home' },
-    { name: 'About', href: '#about' },
-    { name: 'Collections', href: '#bestsellers' },
-    { name: 'Gallery', href: '#gallery' },
-    { name: 'Contact', href: '#contact' },
+    { name: 'Home', type: 'anchor', href: '#home' },
+    { name: 'About', type: 'anchor', href: '#about' },
+    { name: 'Collections', type: 'route', path: '/collections', isActive: currentPathname === '/collections' || currentPathname.startsWith('/collections/') },
+    { name: 'Custom', type: 'route', path: '/customize', isActive: currentPathname.startsWith('/customize') },
+    { name: 'Gallery', type: 'anchor', href: '#gallery' },
+    { name: 'Contact', type: 'anchor', href: '#contact' },
   ];
 
-  const handleLinkClick = (e, href) => {
+  const isLinkActive = (link) => link.type === 'route' ? link.isActive : activeSection === link.href;
+
+  const handleLinkClick = (e, link) => {
     e.preventDefault();
     setIsNavOpen(false);
-    
+
+    if (link.type === 'route') {
+      navigate(link.path);
+      return;
+    }
+
+    const href = link.href;
     if (window.location.pathname !== '/') {
       navigate('/' + href);
     } else {
@@ -183,8 +202,12 @@ const Header = () => {
 
             {/* Brand Logo & Tagline */}
             <a
-              href="#home"
-              onClick={(e) => handleLinkClick(e, '#home')}
+              href="/"
+              onClick={(e) => {
+                e.preventDefault();
+                setIsNavOpen(false);
+                navigate('/');
+              }}
               className="flex items-center gap-2 group"
             >
               <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-brand-purple/15 flex items-center justify-center group-hover:bg-brand-purple/25 transition-colors duration-300 flex-shrink-0">
@@ -206,15 +229,15 @@ const Header = () => {
             {navLinks.map((link) => (
               <a
                 key={link.name}
-                href={link.href}
-                onClick={(e) => handleLinkClick(e, link.href)}
+                href={link.type === 'route' ? link.path : link.href}
+                onClick={(e) => handleLinkClick(e, link)}
                 className={`text-xs font-semibold uppercase tracking-wider transition-colors duration-200 relative group py-1 ${
-                  activeSection === link.href ? 'text-brand-plum font-bold' : 'text-brand-dark hover:text-brand-violet'
+                  isLinkActive(link) ? 'text-brand-plum font-bold' : 'text-brand-dark hover:text-brand-violet'
                 }`}
               >
                 {link.name}
                 <span className={`absolute bottom-0 left-0 h-0.5 bg-brand-purple transition-all duration-300 ${
-                  activeSection === link.href ? 'w-full' : 'w-0 group-hover:w-full'
+                  isLinkActive(link) ? 'w-full' : 'w-0 group-hover:w-full'
                 }`} />
               </a>
             ))}
@@ -236,10 +259,8 @@ const Header = () => {
                 aria-expanded={isAccountDropdownOpen}
               >
                 <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-brand-plum/10 text-brand-plum flex items-center justify-center text-[10px] font-bold flex-shrink-0">
-                  {isLoggedIn && user?.picture ? (
-                    <img src={user.picture} alt={user.name} className="w-full h-full rounded-full object-cover" />
-                  ) : isLoggedIn && user?.name ? (
-                    user.name[0].toUpperCase()
+                  {isLoggedIn ? (
+                    <Avatar src={user?.picture} name={user?.name} className="w-full h-full rounded-full object-cover" />
                   ) : (
                     <User className="w-3.5 h-3.5 text-brand-plum" />
                   )}
@@ -265,11 +286,7 @@ const Header = () => {
                       <div className="p-3 bg-brand-purple/10 rounded-2xl mb-2 flex items-center justify-between gap-2.5">
                         <div className="flex items-center gap-3 min-w-0">
                           <div className="w-10 h-10 rounded-full bg-brand-plum text-white font-bold flex items-center justify-center text-sm flex-shrink-0 overflow-hidden">
-                            {user?.picture ? (
-                              <img src={user.picture} alt={user.name} className="w-full h-full object-cover" />
-                            ) : (
-                              user?.name ? user.name[0].toUpperCase() : '👤'
-                            )}
+                            <Avatar src={user?.picture} name={user?.name} className="w-full h-full object-cover" />
                           </div>
                           <div className="flex flex-col min-w-0">
                             <span className="text-xs font-bold text-brand-dark truncate">{user?.name || 'Customer'}</span>
@@ -353,6 +370,21 @@ const Header = () => {
                         </div>
                         <span className="text-[10px] text-brand-plum/80 font-mono font-bold">Edit</span>
                       </button>
+
+                      {isAdmin && (
+                        <button
+                          onClick={() => {
+                            setIsAccountDropdownOpen(false);
+                            navigate('/admin');
+                          }}
+                          className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-brand-purple/10 transition-colors cursor-pointer text-left"
+                        >
+                          <div className="flex items-center gap-2.5">
+                            <ShieldCheck className="w-4 h-4 text-brand-plum" />
+                            <span>Admin Panel</span>
+                          </div>
+                        </button>
+                      )}
                     </div>
 
                     {/* Logout Option (if logged in) */}
@@ -457,11 +489,7 @@ const Header = () => {
                     <div className="flex items-center justify-between gap-3 mb-2.5">
                       <div className="flex items-center gap-2.5 min-w-0">
                         <div className="w-10 h-10 rounded-full bg-brand-plum text-white font-bold flex items-center justify-center text-sm flex-shrink-0 overflow-hidden shadow-xs">
-                          {user?.picture ? (
-                            <img src={user.picture} alt={user.name} className="w-full h-full object-cover" />
-                          ) : (
-                            user?.name ? user.name[0].toUpperCase() : '👤'
-                          )}
+                          <Avatar src={user?.picture} name={user?.name} className="w-full h-full object-cover" />
                         </div>
                         <div className="flex flex-col min-w-0">
                           <span className="text-[9px] text-brand-dark/60 font-semibold uppercase tracking-wider font-mono">Hello,</span>
@@ -491,6 +519,17 @@ const Header = () => {
                       >
                         <MapPin className="w-3.5 h-3.5" /> Addresses
                       </button>
+                      {isAdmin && (
+                        <button
+                          onClick={() => {
+                            setIsNavOpen(false);
+                            navigate('/admin');
+                          }}
+                          className="col-span-2 py-1.5 px-2 rounded-xl bg-brand-purple/10 hover:bg-brand-purple/20 text-brand-plum flex items-center justify-center gap-1.5 cursor-pointer"
+                        >
+                          <ShieldCheck className="w-3.5 h-3.5" /> Admin Panel
+                        </button>
+                      )}
                     </div>
                   </div>
                 ) : (
@@ -525,13 +564,16 @@ const Header = () => {
                 {navLinks.map((link) => (
                   <a
                     key={link.name}
-                    href={link.href}
-                    onClick={(e) => handleLinkClick(e, link.href)}
+                    href={link.type === 'route' ? link.path : link.href}
+                    onClick={(e) => handleLinkClick(e, link)}
                     className={`text-xs font-bold uppercase tracking-wider transition-colors duration-200 py-2 px-3 rounded-xl flex items-center justify-between ${
-                      activeSection === link.href ? 'text-brand-plum bg-brand-purple/15' : 'text-brand-dark hover:bg-brand-purple/5'
+                      isLinkActive(link) ? 'text-brand-plum bg-brand-purple/15' : 'text-brand-dark hover:bg-brand-purple/5'
                     }`}
                   >
-                    <span>{link.name}</span>
+                    <span className="inline-flex items-center gap-1.5">
+                      {link.name === 'Custom' && <Paintbrush className="w-3.5 h-3.5" />}
+                      {link.name}
+                    </span>
                     <ChevronRight className="w-3.5 h-3.5 opacity-40" />
                   </a>
                 ))}
@@ -587,11 +629,11 @@ const Header = () => {
               <div className="mt-auto pt-3.5 pb-2 border-t border-brand-purple/10 text-left space-y-1.5 flex-shrink-0">
                 <span className="text-[9px] uppercase font-bold text-brand-plum/80 tracking-widest block">Customer Support</span>
                 <a
-                  href="tel:+919908860895"
+                  href={contactPhone.tel}
                   className="flex items-center gap-2 text-xs font-semibold text-brand-dark hover:text-brand-plum transition-colors py-0.5"
                 >
                   <Phone className="w-3.5 h-3.5 text-brand-plum" />
-                  <span>+91 99088 60895</span>
+                  <span>{contactPhone.display}</span>
                 </a>
                 <a
                   href="mailto:thecraftoriaaa26@gmail.com"

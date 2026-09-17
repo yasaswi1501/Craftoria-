@@ -63,10 +63,16 @@ security definer
 set search_path = public
 as $$
 begin
+  -- profiles.email is NOT NULL, but auth.users.email is nullable (phone/OTP
+  -- or some OAuth configurations can leave it null) -- coalesce to '' so a
+  -- future non-email signup method can't fail this insert and, with it, the
+  -- entire auth.users row creation (this trigger runs inside that same
+  -- transaction). The app's current signup paths (email/password, Google
+  -- OAuth) always populate it, so this only matters if that ever changes.
   insert into public.profiles (id, email, full_name, phone)
   values (
     new.id,
-    new.email,
+    coalesce(new.email, ''),
     coalesce(new.raw_user_meta_data->>'full_name', split_part(new.email, '@', 1)),
     coalesce(new.raw_user_meta_data->>'phone', new.phone)
   )

@@ -4,30 +4,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, ShoppingBag, Plus, Minus, Trash2, ShieldCheck, MessageCircle, Sparkles } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useRouter } from '../context/RouterContext';
+import { useSettings } from '../context/SettingsContext';
 import { redirectToWhatsApp } from '../utils/whatsapp';
 import { useScrollLock } from '../utils/scrollLock';
-
-import sellerMemoryCanvas from '../assets/seller-memory-canvas.png';
-import sellerEmbroideryHoop from '../assets/seller-embroidery-hoop.png';
-import sellerBloomBouquets from '../assets/seller-bloom-bouquets.png';
-import sellerBloomKeychains from '../assets/seller-bloom-keychains.png';
-import coverPolaroids from '../assets/polaroids-new.jpg';
-import coverClips from '../assets/clips-rubber-bands.jpg';
-import coverMacrame from '../assets/macrame-wall-hanging.jpg';
-import coverBouquets from '../assets/bloom-bouquets-cover.jpg';
-import coverChildFrame from '../assets/gallery-5-child-frame.jpg';
-import coverCoupleEmbroidery from '../assets/gallery-3-couple-embroidery.jpg';
-import coverBlueFlowerKeychain from '../assets/gallery-2-blue-flower-keychain.jpg';
-import coverHeartKeychain from '../assets/gallery-4-heart-keychain.jpg';
-import embroideryShirt from '../assets/embroidery-shirt.jpg';
-import fridgeMagnets from '../assets/fridge-magnets.jpg';
-import flowerVase from '../assets/flower-vase.jpg';
-import bouquet1Flower from '../assets/bouquet-1-flower.jpg';
-import bouquet3Flower from '../assets/bouquet-3-flower.jpg';
-import bouquet5Flower from '../assets/bouquet-5-flower.jpg';
-import customHomeDecor from '../assets/custom-home-decor.jpg';
-import hairClips from '../assets/hair-clips.jpg';
-import customHairAccessories from '../assets/custom-hair-accessories.jpg';
+import { useEscapeKey } from '../utils/useEscapeKey';
+import { getProductImage } from '../utils/getProductImage';
+import { calculateOrderTotals, formatINR } from '../utils/pricing';
 
 const CartDrawer = () => {
   const { 
@@ -43,52 +25,35 @@ const CartDrawer = () => {
     removeFromSaveForLater
   } = useCart();
   const { navigate } = useRouter();
+  const { whatsappNumber } = useSettings();
 
   const [showClearConfirm, setShowClearConfirm] = useState(false);
 
   // Lock background body scroll cleanly when cart drawer is open
   useScrollLock(isCartOpen);
-
-  const getProductImage = (item) => {
-    const id = (typeof item === 'string' ? item : item?.id || '').toLowerCase();
-    const imgName = typeof item === 'object' ? item?.image || item?.thumbnail || '' : '';
-
-    if (imgName === 'hair-clips.jpg' || id === 'accessories-clips') return hairClips;
-    if (imgName === 'custom-hair-accessories.jpg' || id.includes('custom-accessories')) return customHairAccessories;
-    if (imgName === 'bouquet-1-flower.jpg' || id === 'bloom-bouquet-1-flower') return bouquet1Flower;
-    if (imgName === 'bouquet-3-flower.jpg' || id === 'bloom-bouquet-3-flower') return bouquet3Flower;
-    if (imgName === 'bouquet-5-flower.jpg' || id === 'bloom-bouquet-5-flower') return bouquet5Flower;
-    if (imgName === 'custom-home-decor.jpg' || id.includes('custom-home-decor')) return customHomeDecor;
-    if (imgName === 'embroidery-shirt.jpg' || id.includes('shirt')) return embroideryShirt;
-    if (imgName === 'fridge-magnets.jpg' || id.includes('magnet')) return fridgeMagnets;
-    if (imgName === 'flower-vase.jpg' || id.includes('vase')) return flowerVase;
-    if (imgName === 'gallery-2-blue-flower-keychain.jpg' || id.includes('blue-blossom')) return coverBlueFlowerKeychain;
-    if (imgName === 'gallery-4-heart-keychain.jpg' || id.includes('heart-keychain') || id.includes('purple-heart')) return coverHeartKeychain;
-    if (imgName === 'gallery-3-couple-embroidery.jpg' || id.includes('couple-embroidery') || id.includes('middle-frame')) return coverCoupleEmbroidery;
-    if (imgName === 'gallery-5-child-frame.jpg' || id.includes('child-frame') || id.includes('wooden-frame')) return coverChildFrame;
-    if (imgName === 'seller-bloom-bouquets.png' || id.includes('custom-bloom-bouquet')) return sellerBloomBouquets;
-    if (imgName === 'bloom-bouquets-cover.jpg' || id.includes('craftoria-bloom') || id.includes('bloom-bouquets')) return coverBouquets;
-    if (imgName === 'macrame-wall-hanging.jpg' || id.includes('macrame') || id.includes('decor')) return coverMacrame;
-    if (imgName === 'clips-rubber-bands.jpg' || id.includes('clip') || id.includes('rubber-band') || id.includes('accessories')) return coverClips;
-    if (imgName === 'polaroids-new.jpg' || imgName === 'gallery-1-polaroid.jpg' || id.includes('polaroid')) return coverPolaroids;
-    if (imgName === 'seller-bloom-keychains.png' || id.includes('keychain')) return sellerBloomKeychains;
-    if (imgName === 'seller-embroidery-hoop.png' || id.includes('embroidery') || id.includes('hoop')) return sellerEmbroideryHoop;
-    if (imgName === 'seller-bloom-bouquets.png' || id.includes('bouquet') || id.includes('gift')) return sellerBloomBouquets;
-    if (imgName === 'seller-memory-canvas.png' || id.includes('canvas') || id.includes('frame')) return sellerMemoryCanvas;
-    return sellerMemoryCanvas;
-  };
+  useEscapeKey(isCartOpen, () => {
+    setIsCartOpen(false);
+    setShowClearConfirm(false);
+  });
 
   if (!isCartOpen) return null;
 
   const totalItemsCount = cart.reduce((acc, item) => acc + item.quantity, 0);
+  const { subtotal: cartSubtotal, deliveryFee: DELIVERY_ESTIMATE, total: cartTotal } = calculateOrderTotals(cart, 'standard');
 
   const handleClose = () => {
     setIsCartOpen(false);
     setShowClearConfirm(false);
   };
 
+  const handleContinueShopping = () => {
+    setIsCartOpen(false);
+    setShowClearConfirm(false);
+    navigate('/collections');
+  };
+
   const handleProceedToPayment = () => {
-    redirectToWhatsApp(cart);
+    redirectToWhatsApp(cart, null, 'standard', whatsappNumber);
   };
 
   const handleProceedToCheckout = () => {
@@ -99,7 +64,7 @@ const CartDrawer = () => {
   if (!isCartOpen) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[9999] flex justify-end" data-lenis-prevent="true">
+    <div className="fixed inset-0 z-[9999] flex justify-end" role="dialog" aria-modal="true" aria-label="Shopping bag" data-lenis-prevent="true">
       {/* Backdrop */}
       <motion.div
         initial={{ opacity: 0 }}
@@ -189,7 +154,7 @@ const CartDrawer = () => {
                 Discover something handmade for you. Explore our artisan craft collections.
               </p>
               <button
-                onClick={handleClose}
+                onClick={handleContinueShopping}
                 className="px-8 py-3.5 rounded-full bg-brand-plum hover:bg-brand-violet text-white font-semibold text-xs uppercase tracking-widest transition-all cursor-pointer"
               >
                 Continue Shopping
@@ -224,6 +189,12 @@ const CartDrawer = () => {
                           <h4 className="font-serif text-xs font-bold text-brand-dark leading-tight mt-0.5 mb-1 line-clamp-1">
                             {item.name}
                           </h4>
+                          <span className="text-xs font-bold text-brand-plum">
+                            ₹{(item.price || 0).toLocaleString('en-IN')}
+                            {item.quantity > 1 && (
+                              <span className="text-[10px] font-medium text-brand-dark/50"> &times; {item.quantity} = ₹{((item.price || 0) * item.quantity).toLocaleString('en-IN')}</span>
+                            )}
+                          </span>
 
                           {/* Customization Details Badges */}
                           {(item.customText || item.customization) && (
@@ -354,11 +325,25 @@ const CartDrawer = () => {
         {/* Footer */}
         {cart.length > 0 && (
           <div className="px-4 sm:px-6 py-4 sm:py-5 border-t border-brand-purple/15 bg-white/60 backdrop-blur-md flex flex-col gap-3 text-left pb-safe flex-shrink-0">
-            <div className="flex items-center justify-between text-xs font-semibold">
-              <span className="text-brand-dark/75">Total Items:</span>
-              <span className="text-sm font-bold text-brand-plum">{totalItemsCount} {totalItemsCount === 1 ? 'item' : 'items'}</span>
+            <div className="flex flex-col gap-1 pb-2 border-b border-brand-purple/10 text-xs font-semibold">
+              <div className="flex items-center justify-between">
+                <span className="text-brand-dark/75">Total Items:</span>
+                <span className="font-bold text-brand-dark">{totalItemsCount} {totalItemsCount === 1 ? 'item' : 'items'}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-brand-dark/75">Subtotal:</span>
+                <span className="font-bold text-brand-dark">{formatINR(cartSubtotal)}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-brand-dark/75">Delivery Estimate:</span>
+                <span className="font-bold text-brand-dark">{DELIVERY_ESTIMATE > 0 ? formatINR(DELIVERY_ESTIMATE) : 'FREE'}</span>
+              </div>
+              <div className="flex items-center justify-between pt-1">
+                <span className="text-brand-dark font-bold">Total:</span>
+                <span className="text-base font-bold text-brand-plum">{formatINR(cartTotal)}</span>
+              </div>
             </div>
-            
+
             <button
               onClick={handleProceedToPayment}
               disabled={cart.length === 0}

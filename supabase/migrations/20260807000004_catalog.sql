@@ -102,7 +102,15 @@ create policy "product_variants_public_read_active" on public.product_variants
 create policy "product_variants_admin_write" on public.product_variants
   for all using (public.is_admin()) with check (public.is_admin());
 
+-- Gated on the parent product's `active` flag (like every other catalog
+-- table here) so an inactive/unpublished product's image URLs aren't
+-- readable by guessing/enumerating a product_id.
 create policy "product_images_public_read" on public.product_images
-  for select using (true);
+  for select using (
+    public.is_staff() or exists (
+      select 1 from public.products p
+      where p.id = product_images.product_id and p.active
+    )
+  );
 create policy "product_images_admin_write" on public.product_images
   for all using (public.is_admin()) with check (public.is_admin());

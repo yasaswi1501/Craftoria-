@@ -614,6 +614,7 @@ export const collectionsData = [
     name: 'Photo Frames',
     desc: 'Handmade frames designed to preserve your sweetest memories.',
     count: 2,
+    image: 'seller-memory-canvas.png',
     descriptionLong: 'Our signature memory canvas frames capture life\'s sweetest moments in high-end displays incorporating photo frames, calligraphy, and dried floral arrangements.'
   },
   {
@@ -621,6 +622,7 @@ export const collectionsData = [
     name: 'Embroidery',
     desc: 'Soft, detailed threadwork crafted with patience and love.',
     count: 5,
+    image: 'seller-embroidery-hoop.png',
     descriptionLong: 'Meticulously hand-stitched silk threads on small, middle, and large wooden frames, plus custom embroidered apparel. Celebrate silhouettes, dates, and botanical illustrations in relief threadwork.'
   },
   {
@@ -628,6 +630,7 @@ export const collectionsData = [
     name: 'Key Chains',
     desc: 'Cute handmade keychains made for everyday joy.',
     count: 5,
+    image: 'seller-bloom-keychains.png',
     descriptionLong: 'Cute, fluffy chenille wire flowers, leaves, and hearts assembled onto antique hook clasps. Add a splash of pastel color and artisan warmth to bags and key sets.'
   },
   {
@@ -635,6 +638,7 @@ export const collectionsData = [
     name: 'Polaroids',
     desc: 'Aesthetic memory-style polaroids for gifts and decor.',
     count: 6,
+    image: 'polaroids-new.jpg',
     descriptionLong: 'Retro vintage mini polaroids, 1x2 photo strips, 1x3 photo strips, and Spotify music polaroid prints on thick photo stock, complete with clips and keepsake styling.'
   },
   {
@@ -642,6 +646,7 @@ export const collectionsData = [
     name: 'Craftoria Bloom Bouquets',
     desc: 'Premium handcrafted pipe cleaner flower bouquets designed for gifting, home décor, and unforgettable memories.',
     count: 4,
+    image: 'bloom-bouquets-cover.jpg',
     descriptionLong: 'Hand-shaped plush pipe cleaner stems arranged into everlasting 1-flower, 3-flower, and 5-flower floral bouquets. Free from fading or maintenance, wrapped beautifully in textured craft paper sheets.'
   },
   {
@@ -649,6 +654,7 @@ export const collectionsData = [
     name: 'Home Decor',
     desc: 'Elegant craft pieces to add warmth to your space.',
     count: 3,
+    image: 'macrame-wall-hanging.jpg',
     descriptionLong: 'Artisanal floral fridge magnets, handcrafted ceramic flower vases, and aesthetic room keepsakes designed to bring charm and cozy warmth to your living space.'
   },
   {
@@ -656,6 +662,7 @@ export const collectionsData = [
     name: 'Accessories',
     desc: 'Stylish handmade hair clips and personalized hair accessories for everyday charm.',
     count: 2,
+    image: 'clips-rubber-bands.jpg',
     descriptionLong: 'Handcrafted floral snap clips and bespoke initial charm hair accessories made with exquisite attention to detail.'
   }
 ];
