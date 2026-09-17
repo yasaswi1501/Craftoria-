@@ -10,6 +10,7 @@ import polaroidsPack from '../assets/polaroids-pack.jpg';
 import coverClips from '../assets/clips-rubber-bands.jpg';
 import coverMacrame from '../assets/macrame-wall-hanging.jpg';
 import coverBouquets from '../assets/bloom-bouquets-cover.jpg';
+import photoFrame9x1 from '../assets/photo-frame-9x1.jpg';
 import coverChildFrame from '../assets/gallery-5-child-frame.jpg';
 import coverCoupleEmbroidery from '../assets/gallery-3-couple-embroidery.jpg';
 import coverBlueFlowerKeychain from '../assets/gallery-2-blue-flower-keychain.jpg';
@@ -42,6 +43,7 @@ export const getImageByFilename = (imgName) => {
     case 'seller-embroidery-hoop.png': return sellerEmbroideryHoop;
     case 'seller-bloom-keychains.png': return sellerBloomKeychains;
     case 'seller-bloom-bouquets.png': return sellerBloomBouquets;
+    case 'photo-frame-9x1.jpg': return photoFrame9x1;
     case 'polaroids-music.jpg': return polaroidsMusic;
     case 'polaroids-1x2.jpg': return polaroids1x2;
     case 'polaroids-1x3.jpg': return polaroids1x3;
@@ -84,6 +86,7 @@ export const getProductImage = (item) => {
   if (id.includes('blue-blossom')) return coverBlueFlowerKeychain;
   if (id.includes('heart-keychain') || id.includes('purple-heart')) return coverHeartKeychain;
   if (id.includes('couple-embroidery') || id.includes('middle-frame')) return coverCoupleEmbroidery;
+  if (id.includes('9x1') || id.includes('9*1')) return photoFrame9x1;
   if (id.includes('child-frame') || id.includes('wooden-frame')) return coverChildFrame;
   if (id.includes('custom-bloom-bouquet')) return sellerBloomBouquets;
   if (id.includes('craftoria-bloom') || id.includes('bloom-bouquets') || cat === 'craftoria-bloom-bouquets') return coverBouquets;
