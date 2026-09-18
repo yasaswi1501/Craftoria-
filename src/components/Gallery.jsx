@@ -1,20 +1,20 @@
 import { motion } from 'framer-motion';
 import { HibiscusFlower, WatercolorWash } from './PremiumBackground';
 
-import gallery1Polaroid from '../assets/gallery-1-polaroid.jpg';
+import hairbandMagentaDaisy from '../assets/hairband-magenta-daisy.jpg';
 import gallery2BlueFlowerKeychain from '../assets/gallery-2-blue-flower-keychain.jpg';
 import gallery3CoupleEmbroidery from '../assets/gallery-3-couple-embroidery.jpg';
 import gallery4HeartKeychain from '../assets/gallery-4-heart-keychain.jpg';
 import gallery5ChildFrame from '../assets/gallery-5-child-frame.jpg';
 import gallery6PinkBouquetKeychain from '../assets/gallery-6-pink-bouquet-keychain.jpg';
-import gallery7TwoFlowerKeychain from '../assets/gallery-7-two-flower-keychain.jpg';
+import potMagnetPinkBlossom from '../assets/pot-magnet-pink-blossom.jpg';
 
 const Gallery = () => {
   const items = [
     {
       id: 1,
-      src: gallery1Polaroid,
-      alt: 'Lavender flat-lay with Polaroid photographs, candles, books, and flowers',
+      src: hairbandMagentaDaisy,
+      alt: 'Magenta Daisy Hair Band with bright yellow center and green leaves on lavender satin',
       objectPosition: 'center',
     },
     {
@@ -49,8 +49,8 @@ const Gallery = () => {
     },
     {
       id: 7,
-      src: gallery7TwoFlowerKeychain,
-      alt: 'Wrapped two-flower bouquet keychain with purple and pink flowers on brass hook',
+      src: potMagnetPinkBlossom,
+      alt: 'Pink Blossom Flower Pot Fridge Magnet with daisies and pearl centers on lavender satin',
       objectPosition: 'center',
     },
   ];
