@@ -362,7 +362,7 @@ const CartDrawer = () => {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-brand-dark/75">Delivery:</span>
-                <span className="font-bold text-brand-dark">{deliveryFeeAmount > 0 ? formatINR(deliveryFeeAmount) : 'FREE'}</span>
+                <span className="font-bold text-emerald-600">{deliveryFeeAmount > 0 ? formatINR(deliveryFeeAmount) : 'FREE'}</span>
               </div>
               <div className="flex items-center justify-between pt-1">
                 <span className="text-brand-dark font-bold">Total:</span>
