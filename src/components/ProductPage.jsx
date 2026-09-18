@@ -1,14 +1,15 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import {
-  ArrowLeft, Heart, ShoppingBag, Star, Check, Sparkles,
-  Truck, ShieldCheck, RefreshCw
+  ArrowLeft, Heart, ShoppingBag, Star, Check,
+  Truck, ShieldCheck, RefreshCw, Maximize2
 } from 'lucide-react';
 import { useRouter } from '../context/RouterContext';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { productsData, collectionsData } from '../data/products';
 import { getProductImage } from '../utils/getProductImage';
+import ProductImageViewer from './ProductImageViewer';
 
 const ProductPage = ({ productSlug }) => {
   const { navigate } = useRouter();
@@ -33,11 +34,19 @@ const ProductPage = ({ productSlug }) => {
   // to its Vite-bundled asset module.
   const getGalleryImageSrc = (imgName) => getProductImage({ thumbnail: imgName });
 
+  // Resolved list the full-screen viewer navigates through -- falls back to
+  // just the thumbnail if a product has no separate gallery images.
+  const resolvedGalleryImages = useMemo(() => {
+    const list = product.galleryImages && product.galleryImages.length > 0 ? product.galleryImages : [product.thumbnail];
+    return list.map(getGalleryImageSrc);
+  }, [product]);
+
   // State Management
   const [activeImage, setActiveImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const [activeAccordion, setActiveAccordion] = useState('shipping'); // 'shipping' | 'warranty' | 'returns'
+  const [isImageViewerOpen, setIsImageViewerOpen] = useState(false);
   // Optional "with frame" add-on selection -- only meaningful for products
   // that declare a frameAddOn (the embroidery hoop frames).
   const [withFrame, setWithFrame] = useState(false);
@@ -48,11 +57,22 @@ const ProductPage = ({ productSlug }) => {
     setQuantity(1);
     setIsAddedToCart(false);
     setWithFrame(false);
+    setIsImageViewerOpen(false);
     // Scroll view to top
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [productSlug]);
 
+  // Tracks the "Added to Cart" flash-reset timer so it can be cancelled if
+  // the component unmounts (or the product changes) before it fires --
+  // otherwise it calls setState on an unmounted component.
+  const addedToCartTimeoutRef = useRef(null);
+  useEffect(() => () => clearTimeout(addedToCartTimeoutRef.current), []);
+
   const unitPrice = product.price + (withFrame && product.frameAddOn ? product.frameAddOn.price : 0);
+
+  const handleImageViewerNavigate = (delta) => {
+    setActiveImage((prev) => (prev + delta + resolvedGalleryImages.length) % resolvedGalleryImages.length);
+  };
 
   // Filter out related products (in same category, excluding current product)
   const relatedProducts = useMemo(() => {
@@ -84,7 +104,8 @@ const ProductPage = ({ productSlug }) => {
 
     addToCart(cartItem, quantity);
     setIsAddedToCart(true);
-    setTimeout(() => setIsAddedToCart(false), 2000);
+    clearTimeout(addedToCartTimeoutRef.current);
+    addedToCartTimeoutRef.current = setTimeout(() => setIsAddedToCart(false), 2000);
   };
 
   return (
@@ -110,21 +131,48 @@ const ProductPage = ({ productSlug }) => {
         
         {/* Left Column: Image Showcases (col-span-6) */}
         <div className="lg:col-span-6 space-y-3 sm:space-y-4">
-          <div className="h-[280px] sm:h-[420px] w-full rounded-[20px] sm:rounded-[24px] overflow-hidden border border-brand-purple/15 relative group bg-[#FDFBFD]">
+          {/* object-fit: contain (not cover) so the complete image is always
+              visible -- portrait, landscape, and square photos all letterbox
+              cleanly inside this box instead of having their top/bottom or
+              sides cropped off. */}
+          <div
+            className="h-[280px] sm:h-[420px] w-full rounded-[20px] sm:rounded-[24px] overflow-hidden border border-brand-purple/15 relative group bg-gradient-to-tr from-[#FCF7FF] via-[#F3E7FA] to-[#E9D7F5] flex items-center justify-center p-4 sm:p-8 cursor-zoom-in"
+            onClick={() => setIsImageViewerOpen(true)}
+            role="button"
+            tabIndex={0}
+            aria-label={`View full-size image of ${product.title}`}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setIsImageViewerOpen(true);
+              }
+            }}
+          >
             <motion.img
               key={activeImage}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              src={getGalleryImageSrc(product.galleryImages[activeImage] || product.thumbnail)}
+              src={resolvedGalleryImages[activeImage]}
               alt={product.title}
               decoding="async"
-              className="w-full h-full object-cover select-none pointer-events-none transition-transform duration-500 group-hover:scale-105"
+              style={{
+                objectFit: 'contain',
+                objectPosition: 'center',
+                width: '100%',
+                height: '100%',
+                maxWidth: '92%',
+                maxHeight: '92%'
+              }}
+              className="select-none transition-transform duration-500 group-hover:scale-105"
             />
             {product.discount > 0 && (
               <span className="absolute top-3 left-3 sm:top-4 sm:left-4 bg-emerald-500 text-white font-bold text-[8px] sm:text-[9px] uppercase tracking-wider px-2 py-0.5 rounded-md font-mono shadow-xs">
                 Offer Active
               </span>
             )}
+            <span className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/70 group-hover:bg-white/90 text-brand-plum flex items-center justify-center shadow-xs transition-colors pointer-events-none">
+              <Maximize2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            </span>
           </div>
 
           {/* Gallery Thumbnails List */}
@@ -135,10 +183,12 @@ const ProductPage = ({ productSlug }) => {
                   key={idx}
                   onClick={() => setActiveImage(idx)}
                   className={`w-14 h-14 sm:w-20 sm:h-20 rounded-xl border-2 overflow-hidden bg-white/60 cursor-pointer flex-shrink-0 transition-all ${activeImage === idx ? 'border-brand-plum shadow-xs' : 'border-brand-purple/10 hover:border-brand-purple/40'}`}
+                  aria-label={`View image ${idx + 1} of ${product.title}`}
+                  aria-current={activeImage === idx}
                 >
                   <img
                     src={getGalleryImageSrc(img)}
-                    alt={`${product.title} view ${idx + 1}`}
+                    alt=""
                     loading="lazy"
                     decoding="async"
                     className="w-full h-full object-cover pointer-events-none"
@@ -315,9 +365,6 @@ const ProductPage = ({ productSlug }) => {
               {activeAccordion === 'shipping' && (
                 <div className="space-y-1.5">
                   <p>{product.shippingDetails || 'Bespoke wrapped packaging in reinforced boxes to prevent physical damage.'}</p>
-                  <p className="font-bold text-brand-plum font-mono flex items-center gap-1">
-                    <Sparkles className="w-3.5 h-3.5" /> Estimated Delivery: {product.estimatedDelivery || '3-5 Business Days'}
-                  </p>
                 </div>
               )}
               {activeAccordion === 'returns' && (
@@ -369,6 +416,16 @@ const ProductPage = ({ productSlug }) => {
             ))}
           </div>
         </div>
+      )}
+
+      {isImageViewerOpen && (
+        <ProductImageViewer
+          images={resolvedGalleryImages}
+          activeIndex={activeImage}
+          onClose={() => setIsImageViewerOpen(false)}
+          onNavigate={handleImageViewerNavigate}
+          altText={product.title}
+        />
       )}
 
     </div>

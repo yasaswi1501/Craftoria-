@@ -13,8 +13,8 @@ const Gallery = () => {
   const items = [
     {
       id: 1,
-      src: hairbandMagentaDaisy,
-      alt: 'Magenta Daisy Hair Band with bright yellow center and green leaves on lavender satin',
+      src: potMagnetPinkBlossom,
+      alt: 'Pink Blossom Flower Pot Fridge Magnet with daisies and pearl centers on lavender satin',
       objectPosition: 'center',
     },
     {
@@ -49,8 +49,8 @@ const Gallery = () => {
     },
     {
       id: 7,
-      src: potMagnetPinkBlossom,
-      alt: 'Pink Blossom Flower Pot Fridge Magnet with daisies and pearl centers on lavender satin',
+      src: hairbandMagentaDaisy,
+      alt: 'Magenta Daisy Hair Band with bright yellow center and green leaves on lavender satin',
       objectPosition: 'center',
     },
   ];
@@ -105,13 +105,12 @@ const Gallery = () => {
               whileInView={{ opacity: 1, scale: 1, y: 0 }}
               viewport={{ once: true, margin: '-40px' }}
               transition={{ duration: 0.65, delay: idx * 0.08, ease: [0.22, 1, 0.36, 1] }}
-              whileHover={{ 
-                y: -8, 
+              whileHover={{
+                y: -8,
                 scale: 1.04,
-                boxShadow: "0 20px 35px -10px rgba(118, 85, 143, 0.32)",
                 transition: { duration: 0.25 }
               }}
-              className={`relative rounded-[20px] sm:rounded-[24px] overflow-hidden group border border-brand-purple/15 shadow-sm transition-all duration-300 ease-out cursor-pointer bg-white/40 ${
+              className={`relative rounded-[20px] sm:rounded-[24px] overflow-hidden group border border-brand-purple/15 shadow-sm hover:shadow-[0_20px_35px_-10px_rgba(118,85,143,0.32)] transition-shadow duration-300 ease-out cursor-pointer bg-white/40 ${
                 idx === 6 
                   ? 'col-span-2 md:col-span-2 lg:col-span-1 aspect-[16/9] md:aspect-[3/4]' 
                   : 'aspect-[3/4]'

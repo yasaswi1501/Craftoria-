@@ -120,7 +120,7 @@ const Contact = () => {
       />
 
       <div className="max-w-7xl mx-auto relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-7 lg:gap-12 items-start">
           
           {/* Left Column: Heading, Details & Direct Contacts */}
           <motion.div
@@ -164,8 +164,12 @@ const Contact = () => {
               </a>
             </div>
 
-            {/* Hand-drawn lavender stems vector graphic representation */}
-            <div className="pt-2 self-center lg:self-start opacity-70">
+            {/* Hand-drawn lavender stems vector graphic representation --
+                purely decorative, so it's hidden below the lg breakpoint:
+                on mobile/tablet (where this column stacks above the form
+                instead of sitting beside it) it was the single biggest
+                contributor to an awkward dead-space gap before the form. */}
+            <div className="hidden lg:block pt-2 self-start opacity-70">
               <svg className="w-40 h-40 text-brand-purple" viewBox="0 0 120 120" fill="none">
                 <path d="M40,110 C50,80 45,50 35,25" stroke="currentColor" strokeWidth="1" strokeDasharray="3 3" />
                 <path d="M60,110 C60,75 55,40 50,15" stroke="currentColor" strokeWidth="1.2" />

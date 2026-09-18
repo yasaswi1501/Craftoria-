@@ -17,7 +17,6 @@ export const productsData = [
     featured: false,
     bestSeller: false,
     discount: 0,
-    estimatedDelivery: '2-4 Business Days',
     details: 'Clean cut natural ash wood frame featuring a dual easel backing for vertical or horizontal placement. Coated with organic beeswax for a high-end feel.',
     shippingDetails: 'Standard courier shipping inside India.',
     returnPolicy: '7-day replacement/return accepted for unused items.'
@@ -39,7 +38,6 @@ export const productsData = [
     featured: false,
     bestSeller: false,
     discount: 0,
-    estimatedDelivery: '3-5 Business Days',
     details: 'Our classic ash wood frame, hand-finished with a delicate embroidered thread border for a richer, textured look.',
     shippingDetails: 'Standard courier shipping inside India.',
     returnPolicy: '7-day replacement/return accepted for unused items.'
@@ -61,7 +59,6 @@ export const productsData = [
     featured: false,
     bestSeller: false,
     discount: 0,
-    estimatedDelivery: '3-5 Business Days',
     details: 'A single frame holding 9 mini polaroid-style prints in a vertical column -- perfect for a whole memory timeline in one display piece.',
     shippingDetails: 'Standard courier shipping inside India.',
     returnPolicy: '7-day replacement/return accepted for unused items.'
@@ -83,7 +80,6 @@ export const productsData = [
     featured: true,
     bestSeller: true,
     discount: 100,
-    estimatedDelivery: '3-5 Business Days',
     details: 'Have a special anniversary, birthday, or graduation? Our artisans create custom memory canvases with handwritten messages, pressed flowers, and personalized photo layouts.',
     shippingDetails: 'Standard safe bubble-wrapped courier delivery.',
     returnPolicy: 'Customized pieces are crafted with love and replaced if damaged during shipping.'
@@ -108,7 +104,6 @@ export const productsData = [
     bestSeller: true,
     discount: 0,
     frameAddOn: { label: 'Add Wooden Frame', price: 300 },
-    estimatedDelivery: '3-5 Business Days',
     details: '3-inch diameter wooden embroidery hoop. Perfect for bedside tables, study desks, or wall collages. Hand-stitched with premium DMC cotton embroidery floss on textured linen fabric. Optional wooden frame mount available at checkout.',
     shippingDetails: 'Carefully bubble-wrapped in reinforced craft boxes.',
     returnPolicy: 'Handcrafted items replaced in case of transit damage.'
@@ -131,7 +126,6 @@ export const productsData = [
     bestSeller: true,
     discount: 0,
     frameAddOn: { label: 'Add Wooden Frame', price: 300 },
-    estimatedDelivery: '4-6 Business Days',
     details: '4-inch diameter wooden embroidery hoop. Our most popular embroidery size. Hand-embroidered with detailed silhouettes, personalized names, and special celebration dates. Optional wooden frame mount available at checkout.',
     shippingDetails: 'Ships standard courier delivery in gift-ready craft wrapping.',
     returnPolicy: 'Custom monogram embroidery is non-returnable once sewn.'
@@ -154,7 +148,6 @@ export const productsData = [
     bestSeller: false,
     discount: 0,
     frameAddOn: { label: 'Add Wooden Frame', price: 300 },
-    estimatedDelivery: '4-6 Business Days',
     details: '5-inch diameter wooden embroidery hoop. A magnificent statement hoop handcrafted over dozens of artisan hours. Features rich French knots, satin floral relief, and gilded ribbon clasps. Optional wooden frame mount available at checkout.',
     shippingDetails: 'Priority courier dispatch with protective outer carton.',
     returnPolicy: 'Replacement provided for defective items.'
@@ -178,7 +171,6 @@ export const productsData = [
     discount: 0,
     pricePrefix: 'Starting from',
     priceNote: 'Final price depends on the embroidery work/design.',
-    estimatedDelivery: '4-7 Business Days',
     details: 'Made with 100% breathable combed cotton. Our artisans hand-stitch delicate floral stems, personalized initials, or small aesthetic doodles directly onto the pocket or chest. Final price depends on the complexity of the embroidery design.',
     shippingDetails: 'Folded inside eco-friendly craft envelopes with satin ribbons.',
     returnPolicy: 'Customized apparel is non-refundable once personalized.'
@@ -200,7 +192,6 @@ export const productsData = [
     featured: true,
     bestSeller: true,
     discount: 100,
-    estimatedDelivery: '4-6 Business Days',
     details: 'Commission your unique thread artwork. Share reference photos or sketches and our artisan embroidery team will hand-sew every single stitch to order.',
     shippingDetails: 'Standard courier delivery with reinforced packaging.',
     returnPolicy: 'Handmade custom commissions are replaced if damaged in transit.'
@@ -224,7 +215,6 @@ export const productsData = [
     featured: true,
     bestSeller: true,
     discount: 0,
-    estimatedDelivery: '2-4 Business Days',
     details: 'Handcrafted plush red chenille flower keychain accented with elegant white pearls in the center and a premium gold-toned lobster clip.',
     shippingDetails: 'Standard envelope shipping with card backing.',
     returnPolicy: '7-day replacement for clip hardware defects.'
@@ -246,7 +236,6 @@ export const productsData = [
     featured: true,
     bestSeller: true,
     discount: 0,
-    estimatedDelivery: '2-4 Business Days',
     details: 'Tactile blue petals encircling a soft yellow center, crafted from high-density wool threads and sturdy metal loop rings.',
     shippingDetails: 'Standard courier delivery.',
     returnPolicy: '7-day easy returns policy.'
@@ -268,7 +257,6 @@ export const productsData = [
     featured: false,
     bestSeller: false,
     discount: 0,
-    estimatedDelivery: '3-5 Business Days',
     details: 'Delightful yellow bloom stalk keychain made with dense chenille wire loops and a vibrant green base, suspended from a sturdy gold clip.',
     shippingDetails: 'Standard envelope packaging.',
     returnPolicy: '7-day replacement policy.'
@@ -290,7 +278,6 @@ export const productsData = [
     featured: false,
     bestSeller: false,
     discount: 0,
-    estimatedDelivery: '4-6 Business Days',
     details: 'Handcrafted sky blue chenille heart keychain accompanied by a beautiful white enamel swan pendant attached near the main clip loop.',
     shippingDetails: 'Envelope courier dispatch with rigid card envelope.',
     returnPolicy: 'Bespoke initial charms are non-refundable.'
@@ -312,7 +299,6 @@ export const productsData = [
     featured: true,
     bestSeller: true,
     discount: 50,
-    estimatedDelivery: '2-4 Business Days',
     details: 'Customize your bag charm with initial letters, choice of chenille wire flowers, plush hearts, or velvet bells.',
     shippingDetails: 'Packaged in lovely gift cards and bubble-lined envelopes.',
     returnPolicy: '7-day replacements for shipping damage.'
@@ -337,7 +323,6 @@ export const productsData = [
     bestSeller: true,
     discount: 0,
     packLabel: 'Pack of 2',
-    estimatedDelivery: '2-4 Business Days',
     details: 'Printed on ultra-thick 300GSM Fujifilm glossy stock. Each strip contains 2 photos of your choice with clean borders and caption space.',
     shippingDetails: 'Hardboard envelope packaging preventing bending.',
     returnPolicy: 'Custom photo printing replaced in case of print errors.'
@@ -359,7 +344,6 @@ export const productsData = [
     featured: true,
     bestSeller: true,
     discount: 0,
-    estimatedDelivery: '2-4 Business Days',
     details: 'Set of 9 square mini polaroids perfect for phone covers, journals, and wall collages. High color fidelity and water-resistant coating.',
     shippingDetails: 'Packed in glassine sleeves inside rigid mailers.',
     returnPolicy: 'Defective prints replaced immediately.'
@@ -381,7 +365,6 @@ export const productsData = [
     featured: false,
     bestSeller: true,
     discount: 0,
-    estimatedDelivery: '2-4 Business Days',
     details: '15 customized polaroid memories printed with high-grade inks. Includes tiny wooden pegs for hanging on fairy lights or display wires.',
     shippingDetails: 'Standard courier delivery in protective packaging.',
     returnPolicy: 'Replacements provided for transit defects.'
@@ -404,7 +387,6 @@ export const productsData = [
     bestSeller: false,
     discount: 0,
     packLabel: 'Pack of 2',
-    estimatedDelivery: '2-4 Business Days',
     details: 'Iconic 3-in-1 photobooth strip format. Send 6 photos (3 per strip) via WhatsApp and we’ll format and print them with vintage aesthetics.',
     shippingDetails: 'Delivered in rigid card mailers.',
     returnPolicy: '100% replacement for print defects.'
@@ -427,7 +409,6 @@ export const productsData = [
     bestSeller: true,
     discount: 0,
     packLabel: 'Pack of 4',
-    estimatedDelivery: '2-4 Business Days',
     details: 'Choose your favorite song, artist, and personal photo. Our artisans generate real scannable music codes that play your song when scanned on Spotify!',
     shippingDetails: 'Ships standard courier delivery in gift packaging.',
     returnPolicy: 'Personalized items replaced if defective upon delivery.'
@@ -449,7 +430,6 @@ export const productsData = [
     featured: true,
     bestSeller: true,
     discount: 50,
-    estimatedDelivery: '2-4 Business Days',
     details: 'Upload any photos, polaroid ratios, or captions. We print, pack, and ribbon-tie your custom memories with love.',
     shippingDetails: 'Standard parcel dispatch.',
     returnPolicy: 'Exchange offered for transit damage.'
@@ -473,7 +453,6 @@ export const productsData = [
     featured: true,
     bestSeller: true,
     discount: 0,
-    estimatedDelivery: '3-5 Business Days',
     details: 'Hand-sculpted single flower (tulip, rose, or daisy) made of soft chenille wire stems that never wilt or need watering. Perfect budget-friendly gift token.',
     shippingDetails: 'Shipped in rigid cylindrical protective containers.',
     returnPolicy: '7-day easy replacements for transit defects.'
@@ -495,7 +474,6 @@ export const productsData = [
     featured: true,
     bestSeller: true,
     discount: 0,
-    estimatedDelivery: '3-5 Business Days',
     details: 'Our bestselling floral trio. Hand-twisted pastel stems with leaf accents, tied with matching satin ribbons.',
     shippingDetails: 'Protective flower tube delivery ensuring stems retain shape.',
     returnPolicy: '14-day replacement for stem damage.'
@@ -517,7 +495,6 @@ export const productsData = [
     featured: true,
     bestSeller: true,
     discount: 0,
-    estimatedDelivery: '3-5 Business Days',
     details: 'Grand 5-flower arrangement sculpted with dense chenille wire stems. Wrapped in multi-layer Korean craft wrapping sheets.',
     shippingDetails: 'Hard gift box container packaging.',
     returnPolicy: 'Free replacement for shipping damage.'
@@ -539,7 +516,6 @@ export const productsData = [
     featured: true,
     bestSeller: true,
     discount: 50,
-    estimatedDelivery: '3-5 Business Days',
     details: 'Tell our floral artisans your dream bouquet palette. We hand-twist each stem and wrap it to your personal celebration theme.',
     shippingDetails: 'Delivered in reinforced gift flower boxes.',
     returnPolicy: 'Custom floral arrangements replaced if damaged in shipping.'
@@ -563,7 +539,6 @@ export const productsData = [
     featured: true,
     bestSeller: true,
     discount: 0,
-    estimatedDelivery: '2-4 Business Days',
     details: 'Hand-sculpted pink daisies with pearl centers potted inside a textured brown basket with purple beaded borders and a cute blue heart detail. Features strong neodymium magnetic backing.',
     shippingDetails: 'Packaged in padded gift boxes.',
     returnPolicy: '7-day replacement for defective magnets.'
@@ -585,7 +560,6 @@ export const productsData = [
     featured: true,
     bestSeller: true,
     discount: 0,
-    estimatedDelivery: '2-4 Business Days',
     details: 'Handcrafted pastel lavender and blue flower stalks with a central pink tulip in a fluted brown pot with red ruffled trim and strong neodymium magnetic backing.',
     shippingDetails: 'Packaged in padded gift boxes.',
     returnPolicy: '7-day replacement for defective magnets.'
@@ -607,7 +581,6 @@ export const productsData = [
     featured: true,
     bestSeller: false,
     discount: 0,
-    estimatedDelivery: '3-5 Business Days',
     details: 'Artisan-crafted tabletop flower pot featuring three vibrant pipe cleaner tulips (sky blue, crimson red, sunny yellow) planted in a fluted brown basket pot with a cute pink scalloped ruffled trim. Never wilts, zero maintenance.',
     shippingDetails: 'Bubble-wrapped in thick foam boxes for zero-breakage transit.',
     returnPolicy: 'Free replacement if damaged during shipping.'
@@ -629,7 +602,6 @@ export const productsData = [
     featured: true,
     bestSeller: true,
     discount: 50,
-    estimatedDelivery: '3-5 Business Days',
     details: 'Create custom tabletop arrangements, personalized name magnets, or custom floral vases tailored to your home aesthetic.',
     shippingDetails: 'Standard courier delivery with protective carton.',
     returnPolicy: 'Exchange available for shipping damage.'
@@ -653,7 +625,6 @@ export const productsData = [
     featured: true,
     bestSeller: true,
     discount: 50,
-    estimatedDelivery: '2-4 Business Days',
     details: 'Anti-snag rubberized clip bases topped with soft plush flower blossoms. Lightweight and comfortable for all-day wear.',
     shippingDetails: 'Standard envelope courier shipping with card backing.',
     returnPolicy: '7-day replacement for clip defects.'
@@ -675,7 +646,6 @@ export const productsData = [
     featured: true,
     bestSeller: true,
     discount: 0,
-    estimatedDelivery: '2-4 Business Days',
     details: 'Hand-crafted plush red chenille flower hair band with a white swirl center attached to a gentle, snag-free elastic hair tie.',
     shippingDetails: 'Standard envelope courier shipping with card backing.',
     returnPolicy: '7-day replacement for defects.'
@@ -697,7 +667,6 @@ export const productsData = [
     featured: true,
     bestSeller: true,
     discount: 0,
-    estimatedDelivery: '2-4 Business Days',
     details: 'Elegant layered pink rose hair band sculpted from soft chenille loops and finished with a luminous faux pearl center.',
     shippingDetails: 'Standard envelope courier shipping with card backing.',
     returnPolicy: '7-day replacement for defects.'
@@ -719,7 +688,6 @@ export const productsData = [
     featured: false,
     bestSeller: false,
     discount: 0,
-    estimatedDelivery: '2-4 Business Days',
     details: 'Sunny yellow petal loops encircling a cozy brown spiral center, securely fixed onto a comfortable black elastic hair tie.',
     shippingDetails: 'Standard envelope courier shipping with card backing.',
     returnPolicy: '7-day replacement for defects.'
@@ -741,7 +709,6 @@ export const productsData = [
     featured: false,
     bestSeller: false,
     discount: 0,
-    estimatedDelivery: '2-4 Business Days',
     details: 'Eye-catching hot pink daisy with sunny yellow center and twin green leaf details attached to a stretchable elastic hair band.',
     shippingDetails: 'Standard envelope courier shipping with card backing.',
     returnPolicy: '7-day replacement for defects.'
@@ -763,7 +730,6 @@ export const productsData = [
     featured: true,
     bestSeller: true,
     discount: 50,
-    estimatedDelivery: '2-4 Business Days',
     details: 'Pick your charm colors, initial letters, or custom clip styles. Our artisans assemble each accessory set by hand.',
     shippingDetails: 'Standard courier delivery in gift pouch.',
     returnPolicy: 'Replacements provided for transit defects.'

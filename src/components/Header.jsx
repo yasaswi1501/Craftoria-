@@ -23,7 +23,7 @@ const Header = () => {
   const contactPhone = formatPhoneForDisplay(whatsappNumber);
   const { cart, setIsCartOpen } = useCart();
   const { wishlist } = useWishlist();
-  const { navigate } = useRouter();
+  const { navigate, currentPath } = useRouter();
   
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [isAccountOpen, setIsAccountOpen] = useState(false);
@@ -96,7 +96,12 @@ const Header = () => {
   useEscapeKey(isNavOpen, () => setIsNavOpen(false));
   useEscapeKey(isAccountDropdownOpen, () => setIsAccountDropdownOpen(false));
 
-  const currentPathname = window.location.pathname;
+  // Derived from the router's own currentPath (not window.location read
+  // directly) so this re-computes on every route change -- Header has no
+  // other state that's guaranteed to change on every navigation, so reading
+  // window.location directly here would go stale after e.g. navigating via
+  // a product card click elsewhere on the page.
+  const currentPathname = currentPath.split('#')[0].split('?')[0];
 
   // Mix of same-page section anchors (only meaningful on the homepage) and
   // real routed pages -- each carries its own navigation + active-state logic.

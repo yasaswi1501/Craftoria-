@@ -81,13 +81,12 @@ const Testimonials = () => {
               whileInView={{ opacity: 1, scale: 1, y: 0 }}
               viewport={{ once: true, margin: "-40px" }}
               transition={{ duration: 0.7, delay: idx * 0.14, ease: [0.22, 1, 0.36, 1] }}
-              whileHover={{ 
-                y: -6, 
-                scale: 1.02, 
-                boxShadow: "0 20px 35px -10px rgba(75, 46, 93, 0.16)",
-                transition: { duration: 0.25 } 
+              whileHover={{
+                y: -6,
+                scale: 1.02,
+                transition: { duration: 0.25 }
               }}
-              className="glass-card p-5 sm:p-7 rounded-2xl sm:rounded-3xl relative flex flex-col justify-between h-full border border-brand-purple/15 text-left hover:border-brand-purple/35 transition-all duration-300"
+              className="glass-card p-5 sm:p-7 rounded-2xl sm:rounded-3xl relative flex flex-col justify-between h-full border border-brand-purple/15 text-left hover:border-brand-purple/35 hover:shadow-[0_20px_35px_-10px_rgba(75,46,93,0.16)] transition-all duration-300"
             >
               {/* Quote Mark */}
               <div className="absolute top-6 left-6 text-brand-purple/15">

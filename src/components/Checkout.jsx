@@ -90,6 +90,10 @@ const Checkout = () => {
   // Pricing & Cart calculations
   const totalItemsCount = cart.reduce((acc, item) => acc + item.quantity, 0);
   const { subtotal: cartSubtotal, deliveryFee: deliveryCharge, total: grandTotal } = calculateOrderTotals(cart, deliveryOption);
+  // Per-option fee, shown on each delivery card so the badge is always
+  // accurate instead of a hardcoded "FREE" that ignored the actual subtotal.
+  const { deliveryFee: standardDeliveryFee } = calculateOrderTotals(cart, 'standard');
+  const { deliveryFee: expressDeliveryFee } = calculateOrderTotals(cart, 'express');
 
   const persistAddresses = (updated) => {
     if (user?.email) {
@@ -513,8 +517,9 @@ const Checkout = () => {
                 />
                 <div className="flex flex-col text-left leading-normal">
                   <span className="font-bold text-sm">Standard Delivery</span>
-                  <span className="text-brand-dark/70 mt-0.5">Estimated delivery: 3–5 business days</span>
-                  <span className="font-bold text-emerald-600 uppercase mt-1 tracking-wider text-[10px]">FREE</span>
+                  <span className={`font-bold uppercase mt-1 tracking-wider text-[10px] ${standardDeliveryFee > 0 ? 'text-brand-plum' : 'text-emerald-600'}`}>
+                    {standardDeliveryFee > 0 ? formatINR(standardDeliveryFee) : 'FREE'}
+                  </span>
                 </div>
               </div>
 
@@ -534,7 +539,7 @@ const Checkout = () => {
                 />
                 <div className="flex flex-col text-left leading-normal">
                   <span className="font-bold text-sm">Express Delivery</span>
-                  <span className="text-brand-dark/70 mt-0.5">Estimated delivery: 1–2 business days</span>
+                  <span className="font-bold text-brand-plum uppercase mt-1 tracking-wider text-[10px]">{formatINR(expressDeliveryFee)}</span>
                 </div>
               </div>
             </div>
@@ -624,10 +629,6 @@ const Checkout = () => {
                   <span>Shipping Option:</span>
                   <span className="capitalize">{deliveryOption === 'express' ? 'Express Delivery' : 'Standard Delivery'}</span>
                 </div>
-                <div className="flex justify-between font-semibold">
-                  <span>Estimated Time:</span>
-                  <span>{deliveryOption === 'express' ? '1–2 Business Days' : '3–5 Business Days'}</span>
-                </div>
               </div>
               <div className="flex justify-between font-bold text-xs pt-2.5 text-brand-dark/80">
                 <span>Packaging:</span>
@@ -639,7 +640,7 @@ const Checkout = () => {
                   <span>{formatINR(cartSubtotal)}</span>
                 </div>
                 <div className="flex justify-between font-semibold">
-                  <span>Delivery Estimate:</span>
+                  <span>Delivery:</span>
                   <span>{deliveryCharge > 0 ? formatINR(deliveryCharge) : 'FREE'}</span>
                 </div>
                 <div className="flex justify-between font-bold text-sm text-brand-plum pt-1">

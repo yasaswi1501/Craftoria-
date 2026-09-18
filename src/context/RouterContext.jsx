@@ -50,8 +50,18 @@ export const RouterProvider = ({ children }) => {
     window.addEventListener('popstate', handlePopState);
     window.addEventListener('hashchange', handlePopState);
 
-    // Global click interceptor for SPA navigation on all normal links
+    // Global click interceptor for SPA navigation on all normal links (the
+    // fallback for plain <a href="..."> tags that don't handle navigation
+    // themselves). Components that DO handle their own click -- e.g. Header
+    // and Footer's nav links, which call e.preventDefault() and navigate()
+    // directly to decide between a route change vs. an in-page scroll --
+    // must be skipped here, otherwise this listener re-runs on the same
+    // click (native bubbling continues past preventDefault()) and pushes a
+    // second, duplicate history entry for every single navigation, which
+    // breaks the browser back button (one "back" press just lands back on
+    // the same page instead of the previous one).
     const handleGlobalClick = (e) => {
+      if (e.defaultPrevented) return;
       const anchor = e.target.closest('a');
       if (
         anchor &&

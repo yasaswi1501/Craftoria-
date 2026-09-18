@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -41,6 +41,8 @@ const AccountMenu = ({ isOpen, onClose, initialTab = 'menu' }) => {
   const [profilePhone, setProfilePhone] = useState(user?.phone || '');
   const [profileSaveStatus, setProfileSaveStatus] = useState(null); // 'saving' | 'saved' | 'error'
   const [profilePicFailed, setProfilePicFailed] = useState(false);
+  const saveStatusTimeoutRef = useRef(null);
+  useEffect(() => () => clearTimeout(saveStatusTimeoutRef.current), []);
 
   // --- Address Delete Confirmation ---
   const [addressPendingDelete, setAddressPendingDelete] = useState(null);
@@ -154,7 +156,8 @@ const AccountMenu = ({ isOpen, onClose, initialTab = 'menu' }) => {
     });
     if (res.success) {
       setProfileSaveStatus('saved');
-      setTimeout(() => {
+      clearTimeout(saveStatusTimeoutRef.current);
+      saveStatusTimeoutRef.current = setTimeout(() => {
         setIsEditingProfile(false);
         setProfileSaveStatus(null);
       }, 1000);

@@ -30,6 +30,8 @@ const CustomizePage = ({ categoryId }) => {
   const [referenceImage, setReferenceImage] = useState(null); // { name, previewUrl } -- preview only, never persisted
   const [errors, setErrors] = useState({});
   const [isAdded, setIsAdded] = useState(false);
+  const isAddedTimeoutRef = useRef(null);
+  useEffect(() => () => clearTimeout(isAddedTimeoutRef.current), []);
   const fileInputRef = useRef(null);
 
   const styleOptions = useMemo(() => getCraftStylesForCategory(selectedCategory), [selectedCategory]);
@@ -122,7 +124,8 @@ const CustomizePage = ({ categoryId }) => {
 
     addToCart(cartItem, quantity);
     setIsAdded(true);
-    setTimeout(() => setIsAdded(false), 2200);
+    clearTimeout(isAddedTimeoutRef.current);
+    isAddedTimeoutRef.current = setTimeout(() => setIsAdded(false), 2200);
     handleReset();
   };
 

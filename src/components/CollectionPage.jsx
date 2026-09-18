@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowLeft, Heart, ShoppingBag, Search, SlidersHorizontal, X,
@@ -30,6 +30,13 @@ const CollectionPage = ({ collectionId }) => {
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
   // Add to cart animation tracking
   const [addedStates, setAddedStates] = useState({});
+  // Per-product pending reset timers, keyed by product id, so each card's
+  // "Added" flash can be cancelled independently on unmount instead of
+  // firing setState after the component (or the whole page) is gone.
+  const addedStateTimeoutsRef = useRef({});
+  useEffect(() => () => {
+    Object.values(addedStateTimeoutsRef.current).forEach(clearTimeout);
+  }, []);
 
   // Lock background body scroll cleanly when filter drawer is open
   useScrollLock(isFilterDrawerOpen);
@@ -126,7 +133,8 @@ const CollectionPage = ({ collectionId }) => {
     e.stopPropagation();
     addToCart(product);
     setAddedStates(prev => ({ ...prev, [product.id]: true }));
-    setTimeout(() => {
+    clearTimeout(addedStateTimeoutsRef.current[product.id]);
+    addedStateTimeoutsRef.current[product.id] = setTimeout(() => {
       setAddedStates(prev => ({ ...prev, [product.id]: false }));
     }, 1500);
   };
@@ -337,14 +345,25 @@ const CollectionPage = ({ collectionId }) => {
                       onClick={() => navigate(`/product/${product.slug}`)}
                       className="glass-card rounded-[20px] sm:rounded-[24px] overflow-hidden flex flex-col group border border-brand-purple/20 shadow-xs hover:shadow-md relative bg-white/50 cursor-pointer min-h-[300px] sm:min-h-[340px] transition-all"
                     >
-                      {/* Product Image */}
-                      <div className="h-[210px] sm:h-[220px] w-full border-b border-brand-purple/10 overflow-hidden relative bg-[#FDFBFD]">
+                      {/* Product Image -- a fixed-height slot keeps the grid
+                          aligned, but object-fit:contain (not cover) inside
+                          it means the full image always fits without
+                          cropping the top/bottom of portrait shots. */}
+                      <div className="h-[210px] sm:h-[220px] w-full border-b border-brand-purple/10 overflow-hidden relative bg-gradient-to-tr from-[#FCF7FF] via-[#F3E7FA] to-[#E9D7F5] flex items-center justify-center p-3 sm:p-4">
                         <img
                           src={getProductImage(product)}
                           alt={product.title}
                           loading="lazy"
                           decoding="async"
-                          className="w-full h-full object-cover select-none pointer-events-none group-hover:scale-108 transition-transform duration-700 ease-out"
+                          style={{
+                            objectFit: 'contain',
+                            objectPosition: 'center',
+                            width: '100%',
+                            height: '100%',
+                            maxWidth: '90%',
+                            maxHeight: '90%'
+                          }}
+                          className="select-none pointer-events-none group-hover:scale-105 transition-transform duration-500"
                         />
 
                         {/* Wishlist Button */}

@@ -109,7 +109,7 @@ export const generateWhatsAppOrderMessage = (cart, addressDetails = null, delive
     if (addressDetails.city || addressDetails.stateName || addressDetails.pinCode) {
       text += `• *City/State:* ${[addressDetails.city, addressDetails.stateName].filter(Boolean).join(', ')} - ${addressDetails.pinCode || ''}\n`;
     }
-    text += `• *Shipping Option:* ${deliveryOption === 'express' ? 'Express Delivery (1–2 Days)' : 'Standard Delivery (3–5 Days)'}\n`;
+    text += `• *Shipping Option:* ${deliveryOption === 'express' ? 'Express Delivery' : 'Standard Delivery'}\n`;
   }
 
   text += `\n*Photo / Reference Attachments:* If you have reference photos, polaroid pictures, or custom sketches, please attach them directly in this WhatsApp chat!\n`;

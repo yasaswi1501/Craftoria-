@@ -44,7 +44,7 @@ const CartDrawer = () => {
   if (!isCartOpen) return null;
 
   const totalItemsCount = cart.reduce((acc, item) => acc + item.quantity, 0);
-  const { subtotal: cartSubtotal, deliveryFee: DELIVERY_ESTIMATE, total: cartTotal } = calculateOrderTotals(cart, 'standard');
+  const { subtotal: cartSubtotal, deliveryFee: deliveryFeeAmount, total: cartTotal } = calculateOrderTotals(cart, 'standard');
 
   const handleClose = () => {
     setIsCartOpen(false);
@@ -361,8 +361,8 @@ const CartDrawer = () => {
                 <span className="font-bold text-brand-dark">{formatINR(cartSubtotal)}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-brand-dark/75">Delivery Estimate:</span>
-                <span className="font-bold text-brand-dark">{DELIVERY_ESTIMATE > 0 ? formatINR(DELIVERY_ESTIMATE) : 'FREE'}</span>
+                <span className="text-brand-dark/75">Delivery:</span>
+                <span className="font-bold text-brand-dark">{deliveryFeeAmount > 0 ? formatINR(deliveryFeeAmount) : 'FREE'}</span>
               </div>
               <div className="flex items-center justify-between pt-1">
                 <span className="text-brand-dark font-bold">Total:</span>

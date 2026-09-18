@@ -46,10 +46,20 @@ const About = () => {
               
               {/* potter's wheel design (SVG/CSS illustration) */}
               <div className="relative flex flex-col items-center justify-center">
-                {/* Potter's wheel base */}
-                <div className="w-48 h-10 bg-brand-dark/15 border-t border-brand-dark/25 rounded-[100%] shadow-inner flex items-center justify-center">
+                {/* Potter's wheel base -- spins continuously via a GPU-friendly
+                    transform (rotate), never a layout-triggering property, so
+                    it stays smooth on mobile. Framer Motion's app-wide
+                    reducedMotion="user" config (see main.jsx) automatically
+                    disables it for users with prefers-reduced-motion on,
+                    without any extra logic here. */}
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 9, repeat: Infinity, ease: 'linear' }}
+                  style={{ transformOrigin: '50% 50%' }}
+                  className="w-48 h-10 bg-brand-dark/15 border-t border-brand-dark/25 rounded-[100%] shadow-inner flex items-center justify-center"
+                >
                   <div className="w-36 h-6 border border-brand-dark/20 rounded-[100%]" />
-                </div>
+                </motion.div>
                 {/* Clay pot being molded on the wheel */}
                 <div className="w-20 h-28 bg-gradient-to-b from-amber-700/60 to-amber-900/50 border border-amber-800/30 rounded-t-3xl shadow-inner -mt-16 relative flex items-center justify-center">
                   <div className="absolute top-2 w-14 h-4 rounded-full border border-amber-800/35 bg-amber-700/30" />

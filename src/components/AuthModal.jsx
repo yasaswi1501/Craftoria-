@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
 import { X, Eye, EyeOff, Mail, Phone, Lock, User, ArrowLeft, Loader2, CheckCircle2 } from 'lucide-react';
@@ -54,6 +54,8 @@ const AuthModal = ({ isOpen, onClose }) => {
   const [addressType, setAddressType] = useState('Home'); // 'Home' | 'Work' | 'Other'
   const [addressErrors, setAddressErrors] = useState({});
   const [addressSavedSuccess, setAddressSavedSuccess] = useState(false);
+  const addressSavedTimeoutRef = useRef(null);
+  useEffect(() => () => clearTimeout(addressSavedTimeoutRef.current), []);
 
   // Load password strength checks
   useEffect(() => {
@@ -241,7 +243,8 @@ const AuthModal = ({ isOpen, onClose }) => {
     }
 
     setAddressSavedSuccess(true);
-    setTimeout(() => {
+    clearTimeout(addressSavedTimeoutRef.current);
+    addressSavedTimeoutRef.current = setTimeout(() => {
       clearFields();
       onClose();
     }, 1100);

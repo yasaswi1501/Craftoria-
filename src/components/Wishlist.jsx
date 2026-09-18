@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, ShoppingBag, Trash, ArrowLeft, Check, Sparkles, Minus, Plus, Eye } from 'lucide-react';
 import { useWishlist } from '../context/WishlistContext';
@@ -11,11 +11,16 @@ const Wishlist = () => {
   const { addToCart, cart, updateQuantity } = useCart();
   const { navigate } = useRouter();
   const [cartStates, setCartStates] = useState({}); // { productId: boolean }
+  const cartStateTimeoutsRef = useRef({});
+  useEffect(() => () => {
+    Object.values(cartStateTimeoutsRef.current).forEach(clearTimeout);
+  }, []);
 
   const handleAddToCart = (item) => {
     addToCart(item);
     setCartStates(prev => ({ ...prev, [item.id]: true }));
-    setTimeout(() => {
+    clearTimeout(cartStateTimeoutsRef.current[item.id]);
+    cartStateTimeoutsRef.current[item.id] = setTimeout(() => {
       setCartStates(prev => ({ ...prev, [item.id]: false }));
     }, 1500);
   };
