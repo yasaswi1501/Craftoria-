@@ -28,6 +28,10 @@ import customHomeDecor from '../assets/custom-home-decor.jpg';
 import potMagnetPinkBlossom from '../assets/pot-magnet-pink-blossom.jpg';
 import potMagnetLavenderTulip from '../assets/pot-magnet-lavender-tulip.jpg';
 import hairClips from '../assets/hair-clips.jpg';
+import hairbandRedFlower from '../assets/hairband-red-flower.jpg';
+import hairbandPinkRose from '../assets/hairband-pink-rose.jpg';
+import hairbandSunflower from '../assets/hairband-sunflower.jpg';
+import hairbandMagentaDaisy from '../assets/hairband-magenta-daisy.jpg';
 import customHairAccessories from '../assets/custom-hair-accessories.jpg';
 
 // Resolves a raw image filename (as stored in products.js / cart / wishlist
@@ -35,6 +39,10 @@ import customHairAccessories from '../assets/custom-hair-accessories.jpg';
 // mapping only needs to change in one place.
 export const getImageByFilename = (imgName) => {
   switch (imgName) {
+    case 'hairband-red-flower.jpg': return hairbandRedFlower;
+    case 'hairband-pink-rose.jpg': return hairbandPinkRose;
+    case 'hairband-sunflower.jpg': return hairbandSunflower;
+    case 'hairband-magenta-daisy.jpg': return hairbandMagentaDaisy;
     case 'pot-magnet-pink-blossom.jpg': return potMagnetPinkBlossom;
     case 'pot-magnet-lavender-tulip.jpg': return potMagnetLavenderTulip;
     case 'hair-clips.jpg': return hairClips;
@@ -85,6 +93,10 @@ export const getProductImage = (item) => {
   if (byFilename) return byFilename;
 
   if (id === 'accessories-clips') return hairClips;
+  if (id.includes('hairband-red') || id.includes('red-velvet-blossom')) return hairbandRedFlower;
+  if (id.includes('hairband-pink') || id.includes('pink-rosebud') || id.includes('pink-rose')) return hairbandPinkRose;
+  if (id.includes('hairband-sunflower') || (id.includes('hairband') && id.includes('yellow'))) return hairbandSunflower;
+  if (id.includes('hairband-magenta') || id.includes('magenta-daisy')) return hairbandMagentaDaisy;
   if (id.includes('custom-accessories')) return customHairAccessories;
   if (id === 'bloom-bouquet-1-flower') return bouquet1Flower;
   if (id === 'bloom-bouquet-3-flower') return bouquet3Flower;
