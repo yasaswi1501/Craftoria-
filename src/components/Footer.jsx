@@ -54,7 +54,7 @@ const Footer = () => {
           </p>
           <div className="flex items-center gap-2 text-xs text-brand-dark/70 font-medium">
             <MapPin className="w-3.5 h-3.5 text-brand-plum flex-shrink-0" />
-            <span>Artisan Studio, India</span>
+            <span>Visakhapatnam, India</span>
           </div>
         </div>
 
@@ -163,7 +163,7 @@ const Footer = () => {
 
       {/* Copyright Bar */}
       <div className="max-w-7xl mx-auto border-t border-brand-purple/10 mt-12 pt-8 pb-6 sm:pb-8 flex flex-col sm:flex-row items-center justify-between text-xs text-brand-dark/70 gap-4 text-center sm:text-left">
-        <span>© 2026 Craftoria Boutique. All rights reserved.</span>
+        <span>© 2026 Yasaswi Vadrevu. All rights reserved.</span>
         <span className="inline-flex items-center gap-1">
           Handcrafted with <Heart className="w-3.5 h-3.5 text-brand-purple fill-brand-purple" /> for art lovers everywhere.
         </span>
