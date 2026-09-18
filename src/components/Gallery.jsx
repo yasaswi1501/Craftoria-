@@ -3,10 +3,10 @@ import { HibiscusFlower, WatercolorWash } from './PremiumBackground';
 
 import hairbandMagentaDaisy from '../assets/hairband-magenta-daisy.jpg';
 import gallery2BlueFlowerKeychain from '../assets/gallery-2-blue-flower-keychain.jpg';
-import gallery1Polaroid from '../assets/gallery-1-polaroid.jpg';
+import gallery4HeartKeychain from '../assets/gallery-4-heart-keychain.jpg';
 import gallery3CoupleEmbroidery from '../assets/gallery-3-couple-embroidery.jpg';
 import gallery5ChildFrame from '../assets/gallery-5-child-frame.jpg';
-import gallery4HeartKeychain from '../assets/gallery-4-heart-keychain.jpg';
+import gallery6PinkBouquetKeychain from '../assets/gallery-6-pink-bouquet-keychain.jpg';
 import potMagnetPinkBlossom from '../assets/pot-magnet-pink-blossom.jpg';
 
 const Gallery = () => {
@@ -25,7 +25,7 @@ const Gallery = () => {
     },
     {
       id: 3,
-      src: gallery1Polaroid,
+      src: gallery4HeartKeychain,
       alt: 'Lavender flat-lay with Polaroid photographs, candles, books, and flowers',
       objectPosition: 'center',
     },
@@ -43,7 +43,7 @@ const Gallery = () => {
     },
     {
       id: 6,
-      src: gallery4HeartKeychain,
+      src: gallery6PinkBouquetKeychain,
       alt: 'Lavender heart-shaped crochet keychain hanging from antique brass wall hook',
       objectPosition: 'center',
     },
